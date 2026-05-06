@@ -75,16 +75,16 @@ const AuthenticatedApp = () => {
         })}
       </Suspense>
 
-      {/* Non-tab routes get the slide-over animation */}
+      {/* Non-tab routes get an iOS-style slide-and-fade transition */}
       {!isTab && (
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -24 }}
-            transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
-            className="h-full"
+            initial={{ opacity: 0, x: 32, scale: 0.99 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -16, scale: 0.99 }}
+            transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
+            className="h-full will-change-transform"
           >
             <Suspense fallback={<Spinner />}>
               <Routes location={location}>
