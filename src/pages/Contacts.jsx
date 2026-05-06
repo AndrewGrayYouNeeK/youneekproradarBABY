@@ -1,264 +1,137 @@
-import { useState, useRef } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import BottomTab from "@/components/radar/BottomTab";
-import AppHeader from "@/components/mobile/AppHeader";
-import useTabPageMemory from "@/hooks/useTabPageMemory";
-import { UserPlus, Trash2, Download, Upload, Phone, User, Shield, AlertTriangle } from "lucide-react";
+import { useState } from "react";
+import AppHeader from "@/components/nav/AppHeader";
+import BottomNav from "@/components/nav/BottomNav";
+import { loadContacts, saveContacts, cleanPhone, formatDisplay } from "@/lib/safety/contactsStore";
+import { UserPlus, Trash2, User, Phone, Shield, AlertTriangle } from "lucide-react";
 
-// ── Storage helpers ────────────────────────────────────────────────────────
-const STORAGE_KEY = "shelterContacts_v2";
-
-function loadContacts() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
-  catch { return []; }
-}
-function saveContacts(contacts) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(contacts));
-  // Mirror to legacy key so ShelterAlert still works
-  const phones = contacts.map((c) => c.phone).filter(Boolean);
-  localStorage.setItem("shelterContacts", JSON.stringify(phones));
-}
-
-// ── Validation ─────────────────────────────────────────────────────────────
-function cleanPhone(raw) {
-  const digits = raw.replace(/\D/g, "");
-  if (digits.length === 10) return `+1${digits}`;
-  if (digits.length === 11 && digits[0] === "1") return `+${digits}`;
-  return null;
-}
-function formatDisplay(phone) {
-  const d = phone.replace(/\D/g, "").replace(/^1/, "");
-  if (d.length !== 10) return phone;
-  return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
-}
+const MAX_CONTACTS = 10;
 
 export default function Contacts() {
-  useTabPageMemory("Contacts");
-  const queryClient = useQueryClient();
-  const fileInputRef = useRef(null);
+  const [contacts, setContacts] = useState(loadContacts);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
 
-  const { data: contacts = [] } = useQuery({
-    queryKey: ["shelterContacts_v2"],
-    queryFn: loadContacts,
-    initialData: loadContacts,
-  });
-
-  const addMutation = useMutation({
-    mutationFn: async (contact) => {
-      const current = queryClient.getQueryData(["shelterContacts_v2"]) || [];
-      const next = [...current, contact];
-      saveContacts(next);
-      return next;
-    },
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["shelterContacts_v2"] });
-      const prev = queryClient.getQueryData(["shelterContacts_v2"]) || [];
-      setName(""); setPhone(""); setError("");
-      return { prev };
-    },
-    onSuccess: (next) => queryClient.setQueryData(["shelterContacts_v2"], next),
-    onError: (_, __, ctx) => queryClient.setQueryData(["shelterContacts_v2"], ctx?.prev || []),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ["shelterContacts_v2"] }),
-  });
-
-  const removeMutation = useMutation({
-    mutationFn: async (id) => {
-      const next = (queryClient.getQueryData(["shelterContacts_v2"]) || []).filter((c) => c.id !== id);
-      saveContacts(next);
-      return next;
-    },
-    onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: ["shelterContacts_v2"] });
-      const prev = queryClient.getQueryData(["shelterContacts_v2"]) || [];
-      queryClient.setQueryData(["shelterContacts_v2"], prev.filter((c) => c.id !== id));
-      return { prev };
-    },
-    onError: (_, __, ctx) => queryClient.setQueryData(["shelterContacts_v2"], ctx?.prev || []),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ["shelterContacts_v2"] }),
-  });
+  const persist = (next) => {
+    setContacts(next);
+    saveContacts(next);
+  };
 
   const handleAdd = () => {
-    if (addMutation.isPending) return;
+    setError("");
     const trimName = name.trim();
     const cleaned = cleanPhone(phone);
-    if (!trimName) { setError("Enter a name."); return; }
-    if (!cleaned) { setError("Enter a valid 10-digit US number."); return; }
-    if (contacts.some((c) => c.phone === cleaned)) { setError("That number is already saved."); return; }
-    if (contacts.length >= 5) { setError("Max 5 shelter contacts."); return; }
-    addMutation.mutate({ id: Date.now().toString(), name: trimName, phone: cleaned });
+    if (!trimName) return setError("Please enter a name.");
+    if (!cleaned) return setError("Please enter a valid 10-digit US number.");
+    if (contacts.some((c) => c.phone === cleaned)) return setError("That number is already saved.");
+    if (contacts.length >= MAX_CONTACTS) return setError(`Max ${MAX_CONTACTS} contacts.`);
+    const next = [...contacts, { id: Date.now().toString(), name: trimName, phone: cleaned }];
+    persist(next);
+    setName("");
+    setPhone("");
   };
 
-  // Export contacts as JSON file for backup
-  const handleExport = () => {
-    const blob = new Blob([JSON.stringify(contacts, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = "shelter-contacts-backup.json"; a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  // Import from backup JSON
-  const handleImport = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const parsed = JSON.parse(ev.target.result);
-        if (!Array.isArray(parsed)) throw new Error("Invalid format");
-        const valid = parsed.filter((c) => c.id && c.name && c.phone);
-        // Merge, dedup by phone
-        const existing = queryClient.getQueryData(["shelterContacts_v2"]) || [];
-        const existingPhones = new Set(existing.map((c) => c.phone));
-        const merged = [...existing, ...valid.filter((c) => !existingPhones.has(c.phone))].slice(0, 5);
-        saveContacts(merged);
-        queryClient.setQueryData(["shelterContacts_v2"], merged);
-      } catch {
-        setError("Couldn't read that file — make sure it's a valid backup.");
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
-  };
+  const handleRemove = (id) => persist(contacts.filter((c) => c.id !== id));
 
   return (
-    <div className="safe-screen min-h-screen bg-slate-950 pb-28 text-white">
-      <AppHeader title="Contacts" />
-      <div className="mx-auto max-w-md space-y-5 px-4 pt-5">
+    <div className="min-h-screen bg-background pb-24 text-foreground">
+      <AppHeader title="Safety Contacts" />
 
-        {/* Header */}
+      <div className="mx-auto max-w-md space-y-5 px-4 pt-4">
         <div>
-          <h1 className="text-xl font-bold">Shelter Contacts</h1>
-          <p className="mt-1 text-sm text-slate-400">
-            These people get a text with your GPS location when you tap the shelter button during a tornado warning.
+          <h1 className="text-xl font-bold">Trusted Contacts</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            These people get a text with your GPS location when you tap "I'm Safe" on the Safety screen.
           </p>
         </div>
 
         {/* Add form */}
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Add Contact</div>
-          <div className="space-y-2">
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" aria-hidden="true" />
-              <input
-                value={name}
-                onChange={(e) => { setName(e.target.value); setError(""); }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleAdd();
-                  }
-                }}
-                placeholder="Name"
-                aria-label="Contact name"
-                className="w-full rounded-xl border border-white/10 bg-slate-900 pl-9 pr-3 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-500/50"
-              />
-            </div>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" aria-hidden="true" />
-              <input
-                value={phone}
-                onChange={(e) => { setPhone(e.target.value); setError(""); }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleAdd();
-                  }
-                }}
-                placeholder="(555) 867-5309"
-                aria-label="Contact phone number"
-                inputMode="tel"
-                type="tel"
-                className="w-full rounded-xl border border-white/10 bg-slate-900 pl-9 pr-3 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-500/50"
-              />
-            </div>
+        <div className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Add Contact</div>
+
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={name}
+              onChange={(e) => { setName(e.target.value); setError(""); }}
+              onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+              placeholder="Name"
+              aria-label="Contact name"
+              className="w-full rounded-xl border border-border/60 bg-secondary/40 pl-9 pr-3 py-3 text-sm outline-none placeholder:text-muted-foreground focus:border-primary/60"
+            />
           </div>
+
+          <div className="relative">
+            <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={phone}
+              onChange={(e) => { setPhone(e.target.value); setError(""); }}
+              onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+              placeholder="(555) 867-5309"
+              inputMode="tel"
+              type="tel"
+              aria-label="Contact phone"
+              className="w-full rounded-xl border border-border/60 bg-secondary/40 pl-9 pr-3 py-3 text-sm outline-none placeholder:text-muted-foreground focus:border-primary/60"
+            />
+          </div>
+
           {error && (
-            <div className="flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-950/40 px-3 py-2">
-              <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-red-400" aria-hidden="true" />
-              <p className="text-xs text-red-300">{error}</p>
+            <div className="flex items-center gap-2 rounded-xl border border-red-500/40 bg-red-950/40 px-3 py-2">
+              <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-red-400" />
+              <p className="text-xs text-red-200">{error}</p>
             </div>
           )}
+
           <button
-            type="button"
             onClick={handleAdd}
-            disabled={!name.trim() || !phone.trim() || addMutation.isPending}
-            aria-label="Add shelter contact"
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed"
+            disabled={!name.trim() || !phone.trim()}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground shadow-md transition-colors disabled:opacity-40"
           >
-            <UserPlus className="h-4 w-4" aria-hidden="true" />
-            {addMutation.isPending ? "Adding..." : "Add Contact"}
+            <UserPlus className="h-4 w-4" />
+            Add Contact
           </button>
         </div>
 
-        {/* Contact list */}
+        {/* List */}
         <div className="space-y-2">
           {contacts.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-8 text-center">
-              <div className="text-2xl mb-2">🏠</div>
-              <p className="text-sm text-slate-400">No contacts yet.</p>
-              <p className="mt-1 text-xs text-slate-600">Add up to 5 people who should know you're safe.</p>
+            <div className="rounded-2xl border border-dashed border-border bg-card/30 px-4 py-10 text-center">
+              <Shield className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">No contacts yet.</p>
+              <p className="mt-1 text-xs text-muted-foreground/70">Add up to {MAX_CONTACTS} people.</p>
             </div>
           ) : (
-            contacts.map((contact) => (
-              <div key={contact.id} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-950/60 border border-emerald-500/20">
-                  <span className="text-sm font-bold text-emerald-400">{contact.name[0].toUpperCase()}</span>
+            contacts.map((c) => (
+              <div key={c.id} className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/60 px-4 py-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 ring-1 ring-primary/30">
+                  <span className="text-sm font-bold text-primary">{c.name[0].toUpperCase()}</span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-sm font-semibold text-white truncate">{contact.name}</div>
-                  <div className="text-xs text-slate-400">{formatDisplay(contact.phone)}</div>
+                  <div className="truncate text-sm font-semibold">{c.name}</div>
+                  <div className="text-xs text-muted-foreground tabular-nums">{formatDisplay(c.phone)}</div>
                 </div>
                 <button
-                  type="button"
-                  onClick={() => removeMutation.mutate(contact.id)}
-                  disabled={removeMutation.isPending}
-                  aria-label={`Remove ${contact.name}`}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-red-500/30 bg-red-950/40 text-red-400 transition-colors hover:bg-red-900/60 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => handleRemove(c.id)}
+                  aria-label={`Remove ${c.name}`}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-red-500/30 bg-red-950/30 text-red-400 hover:bg-red-950/60"
+                  style={{ minHeight: "auto" }}
                 >
-                  <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             ))
           )}
         </div>
 
-        {/* Backup / Restore */}
-        {contacts.length > 0 && (
-          <div className="flex gap-2">
-            <button
-              onClick={handleExport}
-              aria-label="Export contacts backup"
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-medium text-slate-300 transition-colors hover:bg-white/10"
-            >
-              <Download className="h-3.5 w-3.5" aria-hidden="true" />
-              Export backup
-            </button>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              aria-label="Import contacts from backup"
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-medium text-slate-300 transition-colors hover:bg-white/10"
-            >
-              <Upload className="h-3.5 w-3.5" aria-hidden="true" />
-              Import backup
-            </button>
-            <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} className="hidden" aria-hidden="true" />
-          </div>
-        )}
-
-        {/* Privacy note */}
-        <div className="flex items-start gap-2 rounded-xl border border-white/5 bg-white/[0.02] px-3 py-3">
-          <Shield className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
-          <p className="text-xs leading-relaxed text-slate-500">
-            Contacts are stored only on this device. Your location is only shared when <em>you</em> tap the shelter button — it's never sent automatically.
+        <div className="flex items-start gap-2 rounded-xl border border-border/40 bg-card/30 px-3 py-3">
+          <Shield className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            Contacts are stored only on this device. Your location is shared only when <em>you</em> tap "I'm Safe" — never automatically.
           </p>
         </div>
-
       </div>
-      <BottomTab />
+
+      <BottomNav />
     </div>
   );
 }

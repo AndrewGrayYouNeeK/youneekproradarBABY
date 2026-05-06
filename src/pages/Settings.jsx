@@ -1,62 +1,66 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import BottomTab from "@/components/radar/BottomTab";
-import AppHeader from "@/components/mobile/AppHeader";
-import useTabPageMemory from "@/hooks/useTabPageMemory";
+import AppHeader from "@/components/nav/AppHeader";
+import BottomNav from "@/components/nav/BottomNav";
 import { Switch } from "@/components/ui/switch";
-import { ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle } from "lucide-react";
+import {
+  ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle,
+  Users, MapPin, Thermometer, Wind, Github
+} from "lucide-react";
 
 const APP_VERSION = "1.0.0";
 
 function Section({ title, children }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
-      <div className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 border-b border-white/5">
+    <div className="overflow-hidden rounded-2xl border border-border/60 bg-card/60">
+      <div className="border-b border-border/60 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
         {title}
       </div>
-      <div className="divide-y divide-white/5">{children}</div>
+      <div className="divide-y divide-border/40">{children}</div>
     </div>
   );
 }
 
-function SettingRow({ icon: Icon, label, sublabel, right, onClick, danger }) {
+function Row({ icon: Icon, label, sublabel, right, onClick, danger }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={!onClick}
       className={`flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors ${
-        onClick ? "hover:bg-white/5 active:bg-white/10" : "cursor-default"
-      } ${danger ? "text-red-300" : "text-white"}`}
+        onClick ? "hover:bg-secondary/50 active:bg-secondary" : "cursor-default"
+      } ${danger ? "text-red-300" : ""}`}
     >
       {Icon && (
-        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${danger ? "bg-red-950/60" : "bg-white/10"}`}>
-          <Icon className={`h-4 w-4 ${danger ? "text-red-400" : "text-slate-300"}`} aria-hidden="true" />
+        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${danger ? "bg-red-950/40" : "bg-secondary"}`}>
+          <Icon className={`h-4 w-4 ${danger ? "text-red-400" : "text-primary"}`} />
         </div>
       )}
       <div className="min-w-0 flex-1">
         <div className="text-sm font-medium leading-tight">{label}</div>
-        {sublabel && <div className="mt-0.5 text-xs text-slate-400 leading-snug">{sublabel}</div>}
+        {sublabel && <div className="mt-0.5 text-xs text-muted-foreground leading-snug">{sublabel}</div>}
       </div>
       {right !== undefined ? (
         <div className="shrink-0">{right}</div>
       ) : onClick ? (
-        <ChevronRight className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
+        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
       ) : null}
     </button>
   );
 }
 
 export default function Settings() {
-  useTabPageMemory("Settings");
+  const navigate = useNavigate();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const [notifyRain, setNotifyRain] = useState(() => localStorage.getItem("pref_notifyRain") !== "false");
-  const [notifyTornado, setNotifyTornado] = useState(() => localStorage.getItem("pref_notifyTornado") !== "false");
+  const [units, setUnits] = useState(() => localStorage.getItem("pref_units") || "imperial");
+  const [notifyAlerts, setNotifyAlerts] = useState(() => localStorage.getItem("pref_notifyAlerts") !== "false");
+  const [notifySevere, setNotifySevere] = useState(() => localStorage.getItem("pref_notifySevere") !== "false");
   const [autoTune, setAutoTune] = useState(() => localStorage.getItem("pref_autoTune") !== "false");
   const [showAbout, setShowAbout] = useState(false);
 
-  const handleToggle = (key, setter) => (val) => {
+  const setPref = (key, setter) => (val) => {
     setter(val);
     localStorage.setItem(key, String(val));
   };
@@ -71,111 +75,124 @@ export default function Settings() {
   });
 
   return (
-    <div className="safe-screen min-h-screen bg-slate-950 pb-28 text-white">
+    <div className="min-h-screen bg-background pb-24 text-foreground">
       <AppHeader title="Settings" />
-      <div className="mx-auto max-w-md space-y-4 px-4 pt-5">
 
+      <div className="mx-auto max-w-md space-y-4 px-4 pt-4">
         {/* Notifications */}
         <Section title="Notifications">
-          <SettingRow
+          <Row
             icon={Bell}
-            label="Rain arrival alerts"
-            sublabel="Get a heads-up before rain reaches your location"
-            right={
-              <Switch
-                checked={notifyRain}
-                onCheckedChange={handleToggle("pref_notifyRain", setNotifyRain)}
-                aria-label="Toggle rain arrival alerts"
-              />
-            }
+            label="Weather alerts"
+            sublabel="NWS active alerts for your location"
+            right={<Switch checked={notifyAlerts} onCheckedChange={setPref("pref_notifyAlerts", setNotifyAlerts)} />}
           />
-          <SettingRow
+          <Row
             icon={AlertTriangle}
-            label="Tornado & severe weather"
-            sublabel="Show the shelter button when warnings are active"
+            label="Severe weather"
+            sublabel="Tornado, hurricane, flash flood warnings"
+            right={<Switch checked={notifySevere} onCheckedChange={setPref("pref_notifySevere", setNotifySevere)} />}
+          />
+        </Section>
+
+        {/* Units */}
+        <Section title="Units">
+          <Row
+            icon={Thermometer}
+            label="Measurement system"
+            sublabel={units === "imperial" ? "°F · mph · inches" : "°C · km/h · mm"}
             right={
-              <Switch
-                checked={notifyTornado}
-                onCheckedChange={handleToggle("pref_notifyTornado", setNotifyTornado)}
-                aria-label="Toggle tornado warning alerts"
-              />
+              <div className="flex rounded-xl border border-border/60 bg-secondary/40 p-0.5">
+                <button
+                  onClick={setPref("pref_units", setUnits).bind(null, "imperial")}
+                  className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold ${units === "imperial" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                  style={{ minHeight: "auto" }}
+                >
+                  °F
+                </button>
+                <button
+                  onClick={setPref("pref_units", setUnits).bind(null, "metric")}
+                  className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold ${units === "metric" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+                  style={{ minHeight: "auto" }}
+                >
+                  °C
+                </button>
+              </div>
             }
           />
         </Section>
 
         {/* Radio */}
         <Section title="NOAA Radio">
-          <SettingRow
+          <Row
             icon={Radio}
             label="Auto-tune nearest station"
-            sublabel="Automatically select the closest NOAA station on startup"
-            right={
-              <Switch
-                checked={autoTune}
-                onCheckedChange={handleToggle("pref_autoTune", setAutoTune)}
-                aria-label="Toggle auto-tune nearest station"
-              />
-            }
+            sublabel="Pick the closest NOAA broadcast on launch"
+            right={<Switch checked={autoTune} onCheckedChange={setPref("pref_autoTune", setAutoTune)} />}
           />
         </Section>
 
-        {/* About */}
-        <Section title="About">
-          <SettingRow
-            icon={Info}
-            label="YouNeeK Pro Radar"
-            sublabel={`Version ${APP_VERSION} — by Andrew Gray`}
-            onClick={() => setShowAbout((v) => !v)}
-            right={<ChevronRight className={`h-4 w-4 text-slate-500 transition-transform ${showAbout ? "rotate-90" : ""}`} />}
-          />
-          {showAbout && (
-            <div className="px-4 pb-4 pt-1 text-xs leading-relaxed text-slate-400 space-y-2">
-              <p>Real-time NEXRAD radar mosaics from Iowa Environmental Mesonet. NWS active weather alerts. NOAA Weather Radio with automatic nearest-station tuning. One-tap shelter notification to your emergency contacts.</p>
-              <p className="text-slate-500">Data sources: Iowa Mesonet · api.weather.gov · open-meteo.com</p>
-              <p className="text-slate-500">© 2026 Andrew Gray · YouNeeK</p>
-            </div>
-          )}
-          <SettingRow
-            icon={Shield}
-            label="Privacy"
-            sublabel="Location is used locally only — never stored or shared"
-            right={null}
-          />
-          <SettingRow
-            icon={Info}
-            label="Re-run app walkthrough"
-            sublabel="See the intro guide again"
+        {/* Quick links */}
+        <Section title="Account">
+          <Row icon={Users} label="Safety Contacts" sublabel="Manage trusted recipients" onClick={() => navigate("/Contacts")} />
+          <Row
+            icon={MapPin}
+            label="Reset saved location"
+            sublabel="Use device GPS again on next launch"
             onClick={() => {
-              localStorage.removeItem("onboarded_v1");
+              localStorage.removeItem("user_location_v1");
               window.location.reload();
             }}
           />
         </Section>
 
-        {/* Account */}
-        <Section title="Account">
+        {/* About */}
+        <Section title="About">
+          <Row
+            icon={Info}
+            label="YouNeeK Pro Radar"
+            sublabel={`Version ${APP_VERSION}`}
+            onClick={() => setShowAbout((v) => !v)}
+            right={<ChevronRight className={`h-4 w-4 text-muted-foreground transition-transform ${showAbout ? "rotate-90" : ""}`} />}
+          />
+          {showAbout && (
+            <div className="space-y-2 px-4 pb-4 pt-1 text-xs leading-relaxed text-muted-foreground">
+              <p>
+                Real-time NEXRAD radar from Iowa Environmental Mesonet. National Weather Service active alerts.
+                NOAA Weather Radio with auto-tuning. Lightning strikes, severe weather warnings, hourly + 7-day
+                forecasts, air quality, and one-tap "I'm Safe" check-ins.
+              </p>
+              <p>Data: Iowa Mesonet · api.weather.gov · open-meteo.com</p>
+              <p>© 2026 YouNeeK</p>
+            </div>
+          )}
+          <Row icon={Shield} label="Privacy" sublabel="All data stays on your device" right={null} />
+        </Section>
+
+        {/* Danger */}
+        <Section title="Danger Zone">
           {!confirmingDelete ? (
-            <SettingRow
+            <Row
               icon={Trash2}
-              label="Delete Account"
+              label="Delete account"
               sublabel="Permanently removes your account and data"
               onClick={() => setConfirmingDelete(true)}
               danger
             />
           ) : (
             <div className="space-y-3 p-4">
-              <p className="text-sm text-red-200 leading-snug">This permanently deletes your account. There's no going back.</p>
+              <p className="text-sm text-red-200 leading-snug">
+                This permanently deletes your account. There's no going back.
+              </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setConfirmingDelete(false)}
-                  aria-label="Cancel account deletion"
-                  className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-sm text-white"
+                  className="flex-1 rounded-xl border border-border/60 bg-secondary/40 px-3 py-3 text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => deleteAccountMutation.mutate()}
-                  aria-label="Confirm account deletion"
                   disabled={deleteAccountMutation.isPending}
                   className="flex-1 rounded-xl bg-red-600 px-3 py-3 text-sm font-bold text-white disabled:opacity-60"
                 >
@@ -185,9 +202,9 @@ export default function Settings() {
             </div>
           )}
         </Section>
-
       </div>
-      <BottomTab />
+
+      <BottomNav />
     </div>
   );
 }

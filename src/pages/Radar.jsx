@@ -1,181 +1,82 @@
-import { useState, useCallback, Suspense, lazy } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-const RadarDisplay = lazy(() => import("../components/radar/RadarDisplay"));
-import TargetDialog from "../components/radar/TargetDialog";
-import BottomTab from "../components/radar/BottomTab";
-import AppHeader from "@/components/mobile/AppHeader";
-import RainArrivalAlert from "@/components/radar/RainArrivalAlert";
-import { useNavigationStack } from "@/lib/NavigationStack";
-import useTabPageMemory from "@/hooks/useTabPageMemory";
+import { useState, lazy, Suspense } from "react";
+import AppHeader from "@/components/nav/AppHeader";
+import BottomNav from "@/components/nav/BottomNav";
+import RadarLegend from "@/components/radar/RadarLegend";
+import RadarControls from "@/components/radar/RadarControls";
+import useLocation from "@/hooks/useLocation";
+import { Crosshair, Activity } from "lucide-react";
 
-const DEFAULT_SETTINGS = {
-  showLabels: true,
-  showTails: true,
-  theme: "green",    // green | amber | blue
-  showNexrad: true,  // live NEXRAD overlay
-  station: "KJKL",   // default station (nearest to Columbia, KY)
-};
+const RadarMap = lazy(() => import("@/components/radar/RadarMap"));
 
 export default function Radar() {
-  useTabPageMemory("Radar");
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { goBack } = useNavigationStack();
-  const queryClient = useQueryClient();
-  const { data: targets = [] } = useQuery({
-    queryKey: ["radarTargets"],
-    queryFn: async () => JSON.parse(localStorage.getItem("radarTargets") || "[]"),
-    initialData: [],
-  });
-  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
-  const [showRadio, setShowRadio] = useState(true);
-  const [showTools, setShowTools] = useState(false);
-
-  const urlParams = new URLSearchParams(location.search);
-  const dialogMode = urlParams.get("dialog");
-  const selectedTargetId = urlParams.get("targetId");
-  const pendingClick = dialogMode === "create"
-    ? {
-        bearing: Number(urlParams.get("bearing") || 0),
-        range: Number(urlParams.get("range") || 0),
-      }
-    : null;
-  const selectedTarget = targets.find((target) => target.id === selectedTargetId) || null;
-
-  const handleRadarClick = useCallback((clickData) => {
-    const params = new URLSearchParams();
-    params.set("dialog", "create");
-    params.set("bearing", String(clickData?.bearing ?? 0));
-    params.set("range", String(clickData?.range ?? 0));
-    navigate(`${location.pathname}?${params.toString()}`);
-  }, [navigate, location.pathname]);
-
-  const handleTargetClick = useCallback((target) => {
-    const params = new URLSearchParams();
-    params.set("dialog", "inspect");
-    params.set("targetId", target.id);
-    navigate(`${location.pathname}?${params.toString()}`);
-  }, [navigate, location.pathname]);
-
-  const createTargetMutation = useMutation({
-    mutationFn: async () => {
-      const nextTargets = queryClient.getQueryData(["radarTargets"]) || [];
-      localStorage.setItem("radarTargets", JSON.stringify(nextTargets));
-      return nextTargets;
-    },
-    onMutate: async (targetData) => {
-      await queryClient.cancelQueries({ queryKey: ["radarTargets"] });
-      const previousTargets = queryClient.getQueryData(["radarTargets"]) || [];
-      const newTarget = {
-        id: Date.now().toString(),
-        ...targetData,
-        createdAt: new Date().toISOString(),
-      };
-      queryClient.setQueryData(["radarTargets"], [...previousTargets, newTarget]);
-      if (location.search) {
-        goBack(location.pathname);
-      } else {
-        navigate(location.pathname, { replace: true });
-      }
-      return { previousTargets };
-    },
-    onError: (_error, _targetData, context) => {
-      queryClient.setQueryData(["radarTargets"], context?.previousTargets || []);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["radarTargets"] });
-    },
-  });
-
-  const deleteTargetMutation = useMutation({
-    mutationFn: async () => {
-      const nextTargets = queryClient.getQueryData(["radarTargets"]) || [];
-      localStorage.setItem("radarTargets", JSON.stringify(nextTargets));
-      return nextTargets;
-    },
-    onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: ["radarTargets"] });
-      const previousTargets = queryClient.getQueryData(["radarTargets"]) || [];
-      queryClient.setQueryData(["radarTargets"], previousTargets.filter((target) => target.id !== id));
-      if (location.search) {
-        goBack(location.pathname);
-      } else {
-        navigate(location.pathname, { replace: true });
-      }
-      return { previousTargets };
-    },
-    onError: (_error, _id, context) => {
-      queryClient.setQueryData(["radarTargets"], context?.previousTargets || []);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["radarTargets"] });
-    },
-  });
-
-  const handleCreateTarget = useCallback((targetData) => {
-    createTargetMutation.mutate(targetData);
-  }, [createTargetMutation]);
-
-  const handleDeleteTarget = useCallback((id) => {
-    deleteTargetMutation.mutate(id);
-  }, [deleteTargetMutation]);
-
-  const handleCloseDialog = useCallback(() => {
-    if (location.search) {
-      goBack(location.pathname);
-    } else {
-      navigate(location.pathname, { replace: true });
-    }
-  }, [goBack, navigate, location.pathname, location.search]);
-
-  const handleToolsToggle = useCallback(() => {
-    setShowTools((prev) => !prev);
-  }, []);
+  const { location, loading } = useLocation();
+  const [radarLayer, setRadarLayer] = useState("base_reflectivity");
+  const [basemap, setBasemap] = useState("dark");
+  const [radarOpacity, setRadarOpacity] = useState(0.7);
+  const [showLightning, setShowLightning] = useState(false);
 
   return (
-    <div className="safe-screen h-screen bg-gray-950 overflow-hidden pb-24">
-      <AppHeader title="Radar" />
-      <div className="relative h-[calc(100%-3.5rem-env(safe-area-inset-top))] w-full overflow-hidden">
-        <RainArrivalAlert />
-        <Suspense
-          fallback={(
-            <div className="flex h-full items-center justify-center">
-              <div className="h-8 w-8 rounded-full border-4 border-slate-200 border-t-slate-800 animate-spin"></div>
-            </div>
-          )}
+    <div className="relative h-screen w-full overflow-hidden bg-background">
+      <AppHeader
+        title="Live Radar"
+        location={location.label || `${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)}`}
+        transparent
+        right={
+          <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+            Live
+          </div>
+        }
+      />
+
+      <div className="absolute inset-0 pt-14">
+        {!loading && (
+          <Suspense fallback={<MapFallback />}>
+            <RadarMap
+              center={location}
+              basemap={basemap}
+              radarLayer={radarLayer}
+              radarOpacity={radarOpacity}
+              showLightning={showLightning}
+            />
+          </Suspense>
+        )}
+
+        <RadarControls
+          radarLayer={radarLayer}
+          setRadarLayer={setRadarLayer}
+          basemap={basemap}
+          setBasemap={setBasemap}
+          radarOpacity={radarOpacity}
+          setRadarOpacity={setRadarOpacity}
+          showLightning={showLightning}
+          setShowLightning={setShowLightning}
+        />
+
+        <RadarLegend />
+
+        <button
+          aria-label="Recenter"
+          onClick={() => window.location.reload()}
+          className="absolute bottom-24 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
+          style={{ minHeight: "auto" }}
         >
-          <RadarDisplay
-            settings={settings}
-            showNexrad={settings.showNexrad}
-            onSettingsChange={setSettings}
-            showRadio={showRadio}
-            onToggleRadio={setShowRadio}
-            showTools={showTools}
-            onToolsToggle={handleToolsToggle}
-          />
-        </Suspense>
+          <Crosshair className="h-5 w-5" />
+        </button>
       </div>
 
-      <BottomTab onToolsClick={handleToolsToggle} showTools={showTools} />
+      <BottomNav />
+    </div>
+  );
+}
 
-      {/* Dialogs */}
-      {dialogMode === "create" && pendingClick && (
-        <TargetDialog
-          mode="create"
-          initialData={pendingClick}
-          onConfirm={handleCreateTarget}
-          onClose={handleCloseDialog}
-        />
-      )}
-      {dialogMode === "inspect" && selectedTarget && (
-        <TargetDialog
-          mode="inspect"
-          target={selectedTarget}
-          onDelete={() => handleDeleteTarget(selectedTarget.id)}
-          onClose={handleCloseDialog}
-        />
-      )}
+function MapFallback() {
+  return (
+    <div className="flex h-full items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <Activity className="h-8 w-8 animate-pulse text-primary" />
+        <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Loading radar…</div>
+      </div>
     </div>
   );
 }
