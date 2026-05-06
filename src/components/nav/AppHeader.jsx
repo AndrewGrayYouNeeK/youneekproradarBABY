@@ -53,6 +53,7 @@ export default function AppHeader({ title, location, right = null, transparent =
 
 function SideMenu({ onClose, onNavigate }) {
   const items = [
+    { label: "Locations", icon: MapPin, path: "/Locations" },
     { label: "Contacts", icon: Users, path: "/Contacts" },
     { label: "Settings", icon: SettingsIcon, path: "/Settings" },
     { label: "Privacy", icon: Shield, path: "/Settings" },

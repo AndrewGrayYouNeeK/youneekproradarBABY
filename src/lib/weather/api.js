@@ -35,6 +35,91 @@ export async function fetchActiveAlerts(lat, lon) {
   return r.json();
 }
 
+// Forecast Discussion (AFD) — meteorologist's narrative.
+// Get the WFO from the point, then fetch the latest AFD product.
+export async function fetchForecastDiscussion(lat, lon) {
+  const point = await fetchNWSPoint(lat, lon);
+  const office = point?.properties?.cwa; // 3-letter office code (e.g., "LMK")
+  if (!office) throw new Error("No WFO");
+  const list = await fetch(`https://api.weather.gov/products/types/AFD/locations/${office}`, {
+    headers: { Accept: "application/ld+json", "User-Agent": NWS_HEADERS["User-Agent"] },
+  });
+  if (!list.ok) throw new Error(`AFD list ${list.status}`);
+  const listJson = await list.json();
+  const latest = listJson?.["@graph"]?.[0];
+  if (!latest?.["@id"]) throw new Error("No AFD products");
+  const prod = await fetch(latest["@id"], {
+    headers: { Accept: "application/ld+json", "User-Agent": NWS_HEADERS["User-Agent"] },
+  });
+  if (!prod.ok) throw new Error(`AFD ${prod.status}`);
+  const j = await prod.json();
+  return {
+    office,
+    issued: j.issuanceTime || latest.issuanceTime,
+    text: j.productText || "",
+  };
+}
+
+// SPC Convective Outlook — today's severe risk for the location.
+// Use the SPC point query (returns categorical + probabilistic risk).
+export async function fetchSPCOutlook(lat, lon) {
+  // SPC public Day 1 categorical outlook GeoJSON (updates several times daily)
+  const r = await fetch("https://www.spc.noaa.gov/products/outlook/day1otlk_cat.lyr.geojson");
+  if (!r.ok) throw new Error(`SPC ${r.status}`);
+  const j = await r.json();
+  // Find the highest-risk polygon containing the point
+  const tiers = ["TSTM", "MRGL", "SLGT", "ENH", "MDT", "HIGH"];
+  let best = null;
+  for (const f of j.features || []) {
+    const label = (f.properties?.LABEL || f.properties?.DN || "").toString().toUpperCase();
+    const tier = tiers.find((t) => label.includes(t));
+    if (!tier) continue;
+    if (pointInPolygon([lon, lat], f.geometry)) {
+      const rank = tiers.indexOf(tier);
+      if (!best || rank > best.rank) best = { tier, rank, label };
+    }
+  }
+  return best || { tier: "NONE", rank: -1, label: "No Risk" };
+}
+
+function pointInPolygon(point, geometry) {
+  if (!geometry) return false;
+  const polys = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
+  for (const poly of polys || []) {
+    if (rayCast(point, poly[0])) return true;
+  }
+  return false;
+}
+function rayCast([x, y], ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i], [xj, yj] = ring[j];
+    const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+// NWS HeatRisk — daily tier (0–4) from forecast grid.
+export async function fetchHeatRisk(lat, lon) {
+  const point = await fetchNWSPoint(lat, lon);
+  const gridUrl = point?.properties?.forecastGridData;
+  if (!gridUrl) throw new Error("No grid");
+  const r = await fetch(gridUrl, { headers: NWS_HEADERS });
+  if (!r.ok) throw new Error(`Grid ${r.status}`);
+  const j = await r.json();
+  // heatIndex max → derive simple tier (NWS HeatRisk experimental — fallback approach)
+  const vals = j?.properties?.heatIndex?.values || j?.properties?.apparentTemperature?.values || [];
+  const todayMax = vals.slice(0, 8).reduce((m, v) => Math.max(m, (v.value ?? -999)), -999);
+  const tempF = todayMax * 9 / 5 + 32; // grid is celsius
+  let tier = 0, label = "None";
+  if (tempF >= 80) { tier = 1; label = "Minor"; }
+  if (tempF >= 90) { tier = 2; label = "Moderate"; }
+  if (tempF >= 100) { tier = 3; label = "Major"; }
+  if (tempF >= 110) { tier = 4; label = "Extreme"; }
+  return { tier, label, peakF: Math.round(tempF) };
+}
+
 // Open-Meteo for current conditions, AQI, UV — no API key needed.
 export async function fetchCurrentConditions(lat, lon) {
   const url = new URL("https://api.open-meteo.com/v1/forecast");

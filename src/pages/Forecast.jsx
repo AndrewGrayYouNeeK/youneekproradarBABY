@@ -5,6 +5,9 @@ import CurrentConditionsCard from "@/components/forecast/CurrentConditionsCard";
 import HourlyStrip from "@/components/forecast/HourlyStrip";
 import DailyList from "@/components/forecast/DailyList";
 import StatCard from "@/components/ui/StatCard";
+import ForecastDiscussion from "@/components/forecast/ForecastDiscussion";
+import SPCOutlookCard from "@/components/forecast/SPCOutlookCard";
+import HeatRiskCard from "@/components/forecast/HeatRiskCard";
 import useLocation from "@/hooks/useLocation";
 import { fetchCurrentConditions, fetchHourlyForecast, fetchDailyForecast, fetchAirQuality, degToCardinal } from "@/lib/weather/api";
 import { Wind, Droplets, Sunrise, Sunset, Eye, Gauge, Sun, Activity } from "lucide-react";
@@ -54,9 +57,15 @@ export default function Forecast() {
       <div className="mx-auto max-w-md space-y-4 px-4 pt-4">
         <CurrentConditionsCard data={current} location={location} />
 
+        <SPCOutlookCard location={location} />
+
+        <HeatRiskCard location={location} />
+
         <HourlyStrip hourly={hourly} />
 
         <DailyList daily={daily} />
+
+        <ForecastDiscussion location={location} />
 
         <div className="grid grid-cols-2 gap-3">
           <StatCard icon={Wind} label="Wind" value={`${Math.round(c.wind_speed_10m ?? 0)} mph`} sub={`${degToCardinal(c.wind_direction_10m)} · gust ${Math.round(c.wind_gusts_10m ?? 0)}`} />

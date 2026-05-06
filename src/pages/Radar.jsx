@@ -3,6 +3,7 @@ import AppHeader from "@/components/nav/AppHeader";
 import BottomNav from "@/components/nav/BottomNav";
 import RadarLegend from "@/components/radar/RadarLegend";
 import RadarControls from "@/components/radar/RadarControls";
+import TimeLapseBar from "@/components/radar/TimeLapseBar";
 import useLocation from "@/hooks/useLocation";
 import { Crosshair, Activity } from "lucide-react";
 
@@ -13,6 +14,9 @@ export default function Radar() {
   const [radarLayer, setRadarLayer] = useState("base_reflectivity");
   const [basemap, setBasemap] = useState("dark");
   const [radarOpacity, setRadarOpacity] = useState(0.7);
+  const [timeLapse, setTimeLapse] = useState(false);
+  const [playing, setPlaying] = useState(true);
+  const [speed, setSpeed] = useState("normal");
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-background">
@@ -23,7 +27,7 @@ export default function Radar() {
         right={
           <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-            Live
+            {timeLapse ? "Loop" : "Live"}
           </div>
         }
       />
@@ -35,6 +39,9 @@ export default function Radar() {
             basemap={basemap}
             radarLayer={radarLayer}
             radarOpacity={radarOpacity}
+            timeLapse={timeLapse}
+            playing={playing}
+            speed={speed}
           />
         </Suspense>
 
@@ -52,11 +59,20 @@ export default function Radar() {
         <button
           aria-label="Recenter"
           onClick={() => window.location.reload()}
-          className="absolute bottom-24 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
+          className="absolute bottom-40 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
           style={{ minHeight: "auto" }}
         >
           <Crosshair className="h-5 w-5" />
         </button>
+
+        <TimeLapseBar
+          enabled={timeLapse}
+          setEnabled={setTimeLapse}
+          playing={playing}
+          setPlaying={setPlaying}
+          speed={speed}
+          setSpeed={setSpeed}
+        />
       </div>
 
       <BottomNav />
