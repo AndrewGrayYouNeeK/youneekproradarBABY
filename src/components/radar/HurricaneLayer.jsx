@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
+import { base44 } from "@/api/base44Client";
 
-// Free, real-time tropical cyclone data from NOAA's National Hurricane Center.
-// GeoJSON feed of all current active storms (Atlantic + Pacific basins).
-const NHC_ACTIVE_STORMS = "https://www.nhc.noaa.gov/CurrentStorms.json";
+// Real-time tropical cyclone data from NOAA's National Hurricane Center,
+// proxied via a backend function to avoid browser CORS restrictions.
+const fetchStorms = async () => {
+  const res = await base44.functions.invoke("getActiveStorms", {});
+  return res?.data?.activeStorms || [];
+};
 
 // Hurricane icon — pulsing spiral
 const stormIcon = (category) => {
@@ -29,19 +33,16 @@ export default function HurricaneLayer({ enabled }) {
   useEffect(() => {
     if (!enabled) return;
     let cancelled = false;
-    fetch(NHC_ACTIVE_STORMS)
-      .then((r) => r.json())
-      .then((d) => {
-        if (cancelled) return;
-        setStorms(d?.activeStorms || []);
-      })
-      .catch(() => setStorms([]));
-    const t = setInterval(() => {
-      fetch(NHC_ACTIVE_STORMS)
-        .then((r) => r.json())
-        .then((d) => !cancelled && setStorms(d?.activeStorms || []))
-        .catch(() => {});
-    }, 10 * 60_000);
+    const load = async () => {
+      try {
+        const data = await fetchStorms();
+        if (!cancelled) setStorms(data);
+      } catch {
+        if (!cancelled) setStorms([]);
+      }
+    };
+    load();
+    const t = setInterval(load, 10 * 60_000);
     return () => { cancelled = true; clearInterval(t); };
   }, [enabled]);
 
@@ -49,11 +50,12 @@ export default function HurricaneLayer({ enabled }) {
     if (!enabled) return;
     const layers = [];
     storms.forEach((s) => {
-      const lat = parseFloat(s.latitudeNumeric);
-      const lon = parseFloat(s.longitudeNumeric);
+      // NHC feed uses different field names depending on storm state.
+      const lat = parseFloat(s.latitudeNumeric ?? s.clat ?? s.lat);
+      const lon = parseFloat(s.longitudeNumeric ?? s.clon ?? s.lon);
       if (isNaN(lat) || isNaN(lon)) return;
 
-      const wind = parseInt(s.intensity || "0", 10);
+      const wind = parseInt(s.intensity ?? s.intensityMph ?? "0", 10);
       const cat = wind >= 157 ? 5 : wind >= 130 ? 4 : wind >= 111 ? 3 : wind >= 96 ? 2 : wind >= 74 ? 1 : 0;
 
       const marker = L.marker([lat, lon], { icon: stormIcon(cat) }).addTo(map);
