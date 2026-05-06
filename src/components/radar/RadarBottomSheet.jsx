@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronUp, ChevronDown, Wind, Droplets, Gauge, Eye, Sun, Activity, AlertTriangle, MapPin } from "lucide-react";
+import { ChevronUp, ChevronDown, Wind, Droplets, Gauge, Eye, Sun, Activity, AlertTriangle, MapPin, X, CloudSun } from "lucide-react";
 import {
   fetchCurrentConditions,
   fetchHourlyForecast,
@@ -18,6 +18,7 @@ const SNAP = { peek: 18, half: 55, full: 88 };
 
 export default function RadarBottomSheet({ location }) {
   const [snap, setSnap] = useState("peek");
+  const [hidden, setHidden] = useState(false);
 
   const { data: current } = useQuery({
     queryKey: ["currentConditions", location.latitude, location.longitude],
@@ -81,6 +82,21 @@ export default function RadarBottomSheet({ location }) {
 
   const heightVh = SNAP[snap];
 
+  if (hidden) {
+    return (
+      <button
+        onClick={() => setHidden(false)}
+        aria-label="Show forecast"
+        className="absolute bottom-20 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full border border-primary/50 bg-primary/90 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-lg shadow-primary/30 hover:bg-primary"
+        style={{ minHeight: "auto" }}
+      >
+        <CloudSun className="h-4 w-4" />
+        Forecast
+        <ChevronUp className="h-3.5 w-3.5" />
+      </button>
+    );
+  }
+
   return (
     <motion.div
       drag="y"
@@ -92,19 +108,29 @@ export default function RadarBottomSheet({ location }) {
       className="absolute bottom-16 left-0 right-0 z-30 mx-auto max-w-md overflow-hidden rounded-t-3xl border-t border-border/60 glass-strong shadow-2xl"
       style={{ touchAction: "none" }}
     >
-      {/* Drag handle */}
-      <button
-        onClick={cycleSnap}
-        className="flex w-full flex-col items-center gap-1 px-4 py-2"
-        aria-label="Expand or collapse"
-      >
-        <div className="h-1 w-10 rounded-full bg-border" />
-        {snap === "peek" ? (
-          <ChevronUp className="h-3 w-3 text-muted-foreground" />
-        ) : (
-          <ChevronDown className="h-3 w-3 text-muted-foreground" />
-        )}
-      </button>
+      {/* Drag handle + close */}
+      <div className="relative">
+        <button
+          onClick={cycleSnap}
+          className="flex w-full flex-col items-center gap-1 px-4 py-2"
+          aria-label="Expand or collapse"
+        >
+          <div className="h-1 w-10 rounded-full bg-border" />
+          {snap === "peek" ? (
+            <ChevronUp className="h-3 w-3 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-3 w-3 text-muted-foreground" />
+          )}
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); setHidden(true); }}
+          aria-label="Hide forecast"
+          className="absolute right-2 top-1.5 flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-secondary/60 text-muted-foreground hover:bg-secondary hover:text-foreground"
+          style={{ minHeight: "auto" }}
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
 
       {/* Always-visible peek summary */}
       <div className="px-4 pb-2">
