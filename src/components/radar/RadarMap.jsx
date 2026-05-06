@@ -25,11 +25,6 @@ export const BASEMAP_STYLES = {
     url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     attribution: "© Esri",
   },
-  street: {
-    name: "Street",
-    url: "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png",
-    attribution: "© CARTO © OSM",
-  },
 };
 
 // Smooth pan when location changes
