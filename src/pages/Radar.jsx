@@ -4,6 +4,7 @@ import BottomNav from "@/components/nav/BottomNav";
 import RadarLegend from "@/components/radar/RadarLegend";
 import RadarControls from "@/components/radar/RadarControls";
 import TimeLapseBar from "@/components/radar/TimeLapseBar";
+import RadarBottomSheet from "@/components/radar/RadarBottomSheet";
 import useLocation from "@/hooks/useLocation";
 import { Crosshair, Activity } from "lucide-react";
 
@@ -73,6 +74,8 @@ export default function Radar() {
           speed={speed}
           setSpeed={setSpeed}
         />
+
+        <RadarBottomSheet location={location} />
       </div>
 
       <BottomNav />
