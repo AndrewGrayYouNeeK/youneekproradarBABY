@@ -24,13 +24,15 @@ function Section({ title, children }) {
 }
 
 function Row({ icon: Icon, label, sublabel, right, onClick, danger }) {
+  const interactive = !!onClick;
+  const Wrapper = interactive ? "button" : "div";
+  const wrapperProps = interactive ? { type: "button", onClick } : {};
+
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={!onClick}
+    <Wrapper
+      {...wrapperProps}
       className={`flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors ${
-        onClick ? "hover:bg-secondary/50 active:bg-secondary" : "cursor-default"
+        interactive ? "hover:bg-secondary/50 active:bg-secondary" : "cursor-default"
       } ${danger ? "text-red-300" : ""}`}
     >
       {Icon && (
@@ -43,11 +45,11 @@ function Row({ icon: Icon, label, sublabel, right, onClick, danger }) {
         {sublabel && <div className="mt-0.5 text-xs text-muted-foreground leading-snug">{sublabel}</div>}
       </div>
       {right !== undefined ? (
-        <div className="shrink-0">{right}</div>
-      ) : onClick ? (
+        <div className="shrink-0" onClick={(e) => e.stopPropagation()}>{right}</div>
+      ) : interactive ? (
         <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
       ) : null}
-    </button>
+    </Wrapper>
   );
 }
 

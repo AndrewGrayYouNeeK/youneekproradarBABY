@@ -95,7 +95,7 @@
     -webkit-user-select: none;
   }
 
-  button, input, select, textarea {
+  button:not([role="switch"]), input, select, textarea {
     min-height: 44px;
   }
 
