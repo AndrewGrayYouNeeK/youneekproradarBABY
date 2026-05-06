@@ -17,7 +17,7 @@ export default function RadarControls({
 
   return (
     <>
-      <div className="absolute right-3 top-3 z-20 flex flex-col gap-2">
+      <div className="absolute right-3 top-16 z-20 flex flex-col gap-2">
         <ControlBtn icon={Layers} label="Layers" active={open === "layers"} onClick={() => setOpen(open === "layers" ? null : "layers")} />
         <ControlBtn icon={MapIcon} label="Map" active={open === "basemap"} onClick={() => setOpen(open === "basemap" ? null : "basemap")} />
         <ControlBtn icon={Zap} label="Lightning" active={showLightning} onClick={() => setShowLightning(!showLightning)} />
@@ -101,7 +101,7 @@ function Panel({ title, children, onClose }) {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
       transition={{ duration: 0.18 }}
-      className="absolute right-16 top-3 z-20 w-64 rounded-2xl border border-border/60 glass-strong p-3"
+      className="absolute right-16 top-16 z-20 w-64 rounded-2xl border border-border/60 glass-strong p-3"
     >
       <div className="mb-2 flex items-center justify-between">
         <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{title}</div>
