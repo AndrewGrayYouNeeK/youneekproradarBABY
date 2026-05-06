@@ -35,7 +35,7 @@ export const BASEMAP_STYLES = {
 function FlyTo({ center }) {
   const map = useMap();
   useEffect(() => {
-    if (center?.[0] && center?.[1]) {
+    if (Number.isFinite(center?.[0]) && Number.isFinite(center?.[1])) {
       map.flyTo(center, map.getZoom(), { duration: 0.8 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
