@@ -35,7 +35,7 @@ export default function Contacts() {
 
   return (
     <div className="min-h-screen bg-background pb-24 text-foreground">
-      <AppHeader title="Safety Contacts" />
+      <AppHeader title="Safety Contacts" showBack />
 
       <div className="mx-auto max-w-md space-y-5 px-4 pt-4">
         <div>

@@ -40,7 +40,7 @@ export default function Locations() {
 
   return (
     <div className="min-h-screen bg-background pb-24 text-foreground">
-      <AppHeader title="Locations" />
+      <AppHeader title="Locations" showBack />
 
       <div className="mx-auto max-w-md space-y-4 px-4 pt-4">
         <div>

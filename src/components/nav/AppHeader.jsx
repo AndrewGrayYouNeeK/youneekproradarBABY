@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu, MapPin, X, Settings as SettingsIcon, Users, Info, Shield } from "lucide-react";
+import { Menu, MapPin, X, Settings as SettingsIcon, Users, Info, Shield, ArrowLeft, Radar as RadarIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function AppHeader({ title, location, right = null, transparent = false }) {
+export default function AppHeader({ title, location, right = null, transparent = false, showBack = false }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -15,14 +15,26 @@ export default function AppHeader({ title, location, right = null, transparent =
         }`}
       >
         <div className="flex h-14 items-center justify-between px-3">
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-            className="flex h-10 w-10 items-center justify-center rounded-xl text-foreground/90 hover:bg-secondary"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+          {showBack ? (
+            <button
+              type="button"
+              onClick={() => navigate("/Radar")}
+              aria-label="Back to Radar"
+              className="flex h-10 items-center gap-1 rounded-xl px-2 text-foreground/90 hover:bg-secondary"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="text-xs font-semibold">Back</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-label="Open menu"
+              className="flex h-10 w-10 items-center justify-center rounded-xl text-foreground/90 hover:bg-secondary"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+          )}
 
           <div className="flex flex-1 flex-col items-center justify-center px-2 leading-tight">
             <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
@@ -53,6 +65,7 @@ export default function AppHeader({ title, location, right = null, transparent =
 
 function SideMenu({ onClose, onNavigate }) {
   const items = [
+    { label: "Radar", icon: RadarIcon, path: "/Radar" },
     { label: "Locations", icon: MapPin, path: "/Locations" },
     { label: "Contacts", icon: Users, path: "/Contacts" },
     { label: "Settings", icon: SettingsIcon, path: "/Settings" },

@@ -78,7 +78,7 @@ export default function Settings() {
 
   return (
     <div className="min-h-screen bg-background pb-24 text-foreground">
-      <AppHeader title="Settings" />
+      <AppHeader title="Settings" showBack />
 
       <div className="mx-auto max-w-md space-y-4 px-4 pt-4">
         <Section title="Notifications">
