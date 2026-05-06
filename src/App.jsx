@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider, useAuth } from "@/lib/AuthContext";
 import UserNotRegisteredError from "@/components/UserNotRegisteredError";
+import TornadoAlertPopup from "@/components/safety/TornadoAlertPopup";
 
 const Radar = lazy(() => import("./pages/Radar"));
 const Forecast = lazy(() => import("./pages/Forecast"));
@@ -62,6 +63,7 @@ const AuthenticatedApp = () => {
           </Routes>
         </Suspense>
       </motion.div>
+      <TornadoAlertPopup />
     </AnimatePresence>
   );
 };

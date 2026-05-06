@@ -152,12 +152,30 @@ export default function Radio() {
               />
             </div>
 
-            {error && (
-              <div className="mt-3 flex items-start gap-2 rounded-xl border border-red-500/40 bg-red-950/30 px-3 py-2 text-xs text-red-200">
-                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                <span>{error} Try another station below.</span>
+            {error && station && (
+              <div className="mt-3 space-y-2 rounded-xl border border-red-500/40 bg-red-950/30 px-3 py-2.5 text-xs text-red-200">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  <span>{error}</span>
+                </div>
+                {station.source && (
+                  <a
+                    href={station.source}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 rounded-lg bg-red-900/40 px-2.5 py-1 text-[11px] font-semibold text-red-100 hover:bg-red-900/60"
+                  >
+                    Open source page →
+                  </a>
+                )}
               </div>
             )}
+
+            <div className="mt-3 rounded-xl bg-secondary/30 px-3 py-2 text-[10px] leading-relaxed text-muted-foreground">
+              Streams are public Broadcastify feeds. Some browsers may block playback due to CORS or
+              regional restrictions. If a station won't play, tap "Open source page" to listen on
+              broadcastify.com.
+            </div>
           </div>
         </div>
 
