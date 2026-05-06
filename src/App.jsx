@@ -25,6 +25,18 @@ const Spinner = () => (
   </div>
 );
 
+// Tabs that should retain their state (scroll position, mounted instance)
+// when the user switches away and comes back.
+const TABS = [
+  { path: "/Radar", Component: Radar },
+  { path: "/Forecast", Component: Forecast },
+  { path: "/Alerts", Component: Alerts },
+  { path: "/Radio", Component: Radio },
+  { path: "/Safety", Component: Safety },
+];
+
+const TAB_PATHS = TABS.map((t) => t.path);
+
 const AuthenticatedApp = () => {
   const location = useLocation();
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -39,34 +51,57 @@ const AuthenticatedApp = () => {
     }
   }
 
+  const isTab = TAB_PATHS.includes(location.pathname);
+
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        initial={{ opacity: 0, x: 24 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -24 }}
-        transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
-        className="h-full"
-      >
-        <Suspense fallback={<Spinner />}>
-          <Routes location={location}>
-            <Route path="/" element={<Navigate to="/Radar" replace />} />
-            <Route path="/Radar" element={<Radar />} />
-            <Route path="/Forecast" element={<Forecast />} />
-            <Route path="/Alerts" element={<Alerts />} />
-            <Route path="/Radio" element={<Radio />} />
-            <Route path="/Safety" element={<Safety />} />
-            <Route path="/Contacts" element={<Contacts />} />
-            <Route path="/Locations" element={<Locations />} />
-            <Route path="/Settings" element={<Settings />} />
-            <Route path="*" element={<PageNotFound />} />
-          </Routes>
-        </Suspense>
-      </motion.div>
+    <>
+      {/* Persistent tab layer — all main tabs stay mounted so scroll position
+          and component state are preserved when switching between them. */}
+      <Suspense fallback={<Spinner />}>
+        {TABS.map(({ path, Component }) => {
+          const active = location.pathname === path;
+          return (
+            <div
+              key={path}
+              aria-hidden={!active}
+              style={{
+                display: active ? "block" : "none",
+                height: "100%",
+              }}
+            >
+              <Component />
+            </div>
+          );
+        })}
+      </Suspense>
+
+      {/* Non-tab routes get the slide-over animation */}
+      {!isTab && (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -24 }}
+            transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
+            className="h-full"
+          >
+            <Suspense fallback={<Spinner />}>
+              <Routes location={location}>
+                <Route path="/" element={<Navigate to="/Radar" replace />} />
+                <Route path="/Contacts" element={<Contacts />} />
+                <Route path="/Locations" element={<Locations />} />
+                <Route path="/Settings" element={<Settings />} />
+                <Route path="*" element={<PageNotFound />} />
+              </Routes>
+            </Suspense>
+          </motion.div>
+        </AnimatePresence>
+      )}
+
       <TornadoAlertPopup />
       <OnboardingGate />
-    </AnimatePresence>
+    </>
   );
 };
 

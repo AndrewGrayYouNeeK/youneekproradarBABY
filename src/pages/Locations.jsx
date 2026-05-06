@@ -25,12 +25,29 @@ export default function Locations() {
   };
 
   const handleAdd = (loc) => {
-    setSaved(addSavedLocation(loc));
+    // Optimistic add: update UI first, then persist.
+    const prev = saved;
+    const optimistic = [...saved, { ...loc, id: `tmp-${Date.now()}` }];
+    setSaved(optimistic);
     setQuery("");
     setResults([]);
+    try {
+      setSaved(addSavedLocation(loc));
+    } catch {
+      setSaved(prev);
+    }
   };
 
-  const handleRemove = (id) => setSaved(removeSavedLocation(id));
+  const handleRemove = (id) => {
+    // Optimistic delete: remove from UI immediately, then persist.
+    const prev = saved;
+    setSaved(saved.filter((l) => l.id !== id));
+    try {
+      removeSavedLocation(id);
+    } catch {
+      setSaved(prev);
+    }
+  };
 
   const handleSelect = (loc) => {
     setStoredLocation(loc);

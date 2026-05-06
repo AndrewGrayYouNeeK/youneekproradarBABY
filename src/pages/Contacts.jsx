@@ -31,7 +31,17 @@ export default function Contacts() {
     setPhone("");
   };
 
-  const handleRemove = (id) => persist(contacts.filter((c) => c.id !== id));
+  const handleRemove = (id) => {
+    // Optimistic update: remove from UI immediately, then persist to storage.
+    const next = contacts.filter((c) => c.id !== id);
+    setContacts(next);
+    try {
+      saveContacts(next);
+    } catch {
+      // Roll back if storage fails
+      setContacts(contacts);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-24 text-foreground">

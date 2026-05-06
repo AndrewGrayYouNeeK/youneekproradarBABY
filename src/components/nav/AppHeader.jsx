@@ -18,8 +18,8 @@ export default function AppHeader({ title, location, right = null, transparent =
           {showBack ? (
             <button
               type="button"
-              onClick={() => navigate("/Radar")}
-              aria-label="Back to Radar"
+              onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/Radar"))}
+              aria-label="Go back"
               className="flex h-10 items-center gap-1 rounded-xl px-2 text-foreground/90 hover:bg-secondary"
             >
               <ArrowLeft className="h-5 w-5" />
