@@ -1,6 +1,6 @@
 import { useState } from "react";
 import useAppNav from "@/hooks/useAppNav";
-import { Menu, MapPin, X, Settings as SettingsIcon, Users, Info, Shield, ArrowLeft, Radar as RadarIcon } from "lucide-react";
+import { Menu, MapPin, X, Settings as SettingsIcon, Users, Info, Shield, ArrowLeft, Radar as RadarIcon, BookOpen, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function AppHeader({ title, location, right = null, transparent = false, showBack = false }) {
@@ -69,8 +69,10 @@ function SideMenu({ onClose, onNavigate }) {
     { label: "Locations", icon: MapPin, path: "/Locations" },
     { label: "Contacts", icon: Users, path: "/Contacts" },
     { label: "Settings", icon: SettingsIcon, path: "/Settings" },
+    { label: "Learn", icon: BookOpen, path: "/Learn" },
+    { label: "About", icon: Info, path: "/About" },
+    { label: "Contact", icon: Mail, path: "/Contact" },
     { label: "Privacy", icon: Shield, path: "/Settings" },
-    { label: "About", icon: Info, path: "/Settings" },
   ];
   return (
     <motion.div
