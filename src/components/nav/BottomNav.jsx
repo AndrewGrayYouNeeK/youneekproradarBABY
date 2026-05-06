@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Radar, CloudSun, AlertTriangle, Radio, ShieldAlert } from "lucide-react";
 
 const TABS = [
@@ -10,6 +10,21 @@ const TABS = [
 ];
 
 export default function BottomNav() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleTabClick = (to) => (e) => {
+    // If tapping the already-active tab, scroll to top + reset to root path
+    if (location.pathname === to) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      // Reset query/hash if any, keeping path stable
+      if (location.search || location.hash) {
+        navigate(to, { replace: true });
+      }
+    }
+  };
+
   return (
     <nav
       className="fixed bottom-0 left-1/2 z-40 w-full max-w-4xl -translate-x-1/2 border-t border-border/60 glass-strong safe-bottom"
@@ -20,6 +35,7 @@ export default function BottomNav() {
           <li key={to}>
             <NavLink
               to={to}
+              onClick={handleTabClick(to)}
               className={({ isActive }) =>
                 `flex flex-col items-center justify-center gap-0.5 py-2.5 text-[10px] font-medium tracking-wide transition-colors ${
                   isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"

@@ -2,7 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import AppHeader from "@/components/nav/AppHeader";
 import BottomNav from "@/components/nav/BottomNav";
 import AlertCard from "@/components/alerts/AlertCard";
+import RefreshSpinner from "@/components/ui/RefreshSpinner";
 import useLocation from "@/hooks/useLocation";
+import usePullToRefresh from "@/hooks/usePullToRefresh";
 import { fetchActiveAlerts, alertSeverity } from "@/lib/weather/api";
 import { ShieldCheck, RefreshCw, AlertTriangle } from "lucide-react";
 
@@ -17,12 +19,15 @@ export default function Alerts() {
     refetchInterval: 2 * 60_000,
   });
 
+  const { isRefreshing, pullToRefreshHandlers } = usePullToRefresh({ onRefresh: () => refetch() });
+
   const alerts = (data?.features || [])
     .slice()
     .sort((a, b) => alertSeverity(b.properties?.event).priority - alertSeverity(a.properties?.event).priority);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="relative min-h-screen bg-background pb-24" {...pullToRefreshHandlers}>
+      <RefreshSpinner visible={isRefreshing || isFetching} />
       <AppHeader
         title="Active Alerts"
         location={location.label || `${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)}`}

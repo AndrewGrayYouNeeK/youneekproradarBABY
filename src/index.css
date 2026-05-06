@@ -80,6 +80,14 @@
     overscroll-behavior: none;
     font-feature-settings: "cv11", "ss01", "ss03";
     -webkit-font-smoothing: antialiased;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* iOS-style momentum scrolling on all scrollable surfaces */
+  *,
+  *::before,
+  *::after {
+    -webkit-overflow-scrolling: touch;
   }
 
   .safe-screen {

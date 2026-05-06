@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import AppHeader from "@/components/nav/AppHeader";
 import BottomNav from "@/components/nav/BottomNav";
 import CurrentConditionsCard from "@/components/forecast/CurrentConditionsCard";
@@ -8,12 +8,15 @@ import StatCard from "@/components/ui/StatCard";
 import ForecastDiscussion from "@/components/forecast/ForecastDiscussion";
 import SPCOutlookCard from "@/components/forecast/SPCOutlookCard";
 import HeatRiskCard from "@/components/forecast/HeatRiskCard";
+import RefreshSpinner from "@/components/ui/RefreshSpinner";
 import useLocation from "@/hooks/useLocation";
+import usePullToRefresh from "@/hooks/usePullToRefresh";
 import { fetchCurrentConditions, fetchHourlyForecast, fetchDailyForecast, fetchAirQuality, degToCardinal } from "@/lib/weather/api";
 import { Wind, Droplets, Sunrise, Sunset, Eye, Gauge, Sun, Activity } from "lucide-react";
 
 export default function Forecast() {
   const { location, loading: locLoading } = useLocation();
+  const queryClient = useQueryClient();
 
   const { data: current } = useQuery({
     queryKey: ["currentConditions", location.latitude, location.longitude],
@@ -47,8 +50,18 @@ export default function Forecast() {
   const d = current?.daily || {};
   const aqi = aq?.current?.us_aqi;
 
+  const { isRefreshing, pullToRefreshHandlers } = usePullToRefresh({
+    onRefresh: () => {
+      queryClient.invalidateQueries({ queryKey: ["currentConditions"] });
+      queryClient.invalidateQueries({ queryKey: ["hourly"] });
+      queryClient.invalidateQueries({ queryKey: ["daily"] });
+      queryClient.invalidateQueries({ queryKey: ["aq"] });
+    },
+  });
+
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="relative min-h-screen bg-background pb-24" {...pullToRefreshHandlers}>
+      <RefreshSpinner visible={isRefreshing} />
       <AppHeader
         title="Forecast"
         location={location.label || `${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)}`}
