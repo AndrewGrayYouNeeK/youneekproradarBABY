@@ -9,7 +9,7 @@ import { Crosshair, Activity } from "lucide-react";
 const RadarMap = lazy(() => import("@/components/radar/RadarMap"));
 
 export default function Radar() {
-  const { location, loading } = useLocation();
+  const { location } = useLocation();
   const [radarLayer, setRadarLayer] = useState("base_reflectivity");
   const [basemap, setBasemap] = useState("dark");
   const [radarOpacity, setRadarOpacity] = useState(0.7);
@@ -30,17 +30,15 @@ export default function Radar() {
       />
 
       <div className="absolute inset-0 pt-14">
-        {!loading && (
-          <Suspense fallback={<MapFallback />}>
-            <RadarMap
-              center={location}
-              basemap={basemap}
-              radarLayer={radarLayer}
-              radarOpacity={radarOpacity}
-              showLightning={showLightning}
-            />
-          </Suspense>
-        )}
+        <Suspense fallback={<MapFallback />}>
+          <RadarMap
+            center={location}
+            basemap={basemap}
+            radarLayer={radarLayer}
+            radarOpacity={radarOpacity}
+            showLightning={showLightning}
+          />
+        </Suspense>
 
         <RadarControls
           radarLayer={radarLayer}

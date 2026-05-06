@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { resolveLocation, DEFAULT_LOCATION } from "@/lib/weather/locationUtils";
+import { resolveLocation, DEFAULT_LOCATION, getStoredLocation } from "@/lib/weather/locationUtils";
 
 export default function useLocation() {
-  const [location, setLocation] = useState(DEFAULT_LOCATION);
-  const [loading, setLoading] = useState(true);
+  // Start with stored or default — never block render with `loading: true`.
+  const [location, setLocation] = useState(() => getStoredLocation() || DEFAULT_LOCATION);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (getStoredLocation()) return; // already have a location, skip
+    setLoading(true);
     let mounted = true;
     resolveLocation().then((loc) => {
       if (mounted) {

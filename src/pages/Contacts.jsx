@@ -45,7 +45,6 @@ export default function Contacts() {
           </p>
         </div>
 
-        {/* Add form */}
         <div className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4">
           <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Add Contact</div>
 
@@ -92,7 +91,6 @@ export default function Contacts() {
           </button>
         </div>
 
-        {/* List */}
         <div className="space-y-2">
           {contacts.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border bg-card/30 px-4 py-10 text-center">

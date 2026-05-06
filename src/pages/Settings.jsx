@@ -7,7 +7,7 @@ import BottomNav from "@/components/nav/BottomNav";
 import { Switch } from "@/components/ui/switch";
 import {
   ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle,
-  Users, MapPin, Thermometer, Wind, Github
+  Users, MapPin, Thermometer
 } from "lucide-react";
 
 const APP_VERSION = "1.0.0";
@@ -79,7 +79,6 @@ export default function Settings() {
       <AppHeader title="Settings" />
 
       <div className="mx-auto max-w-md space-y-4 px-4 pt-4">
-        {/* Notifications */}
         <Section title="Notifications">
           <Row
             icon={Bell}
@@ -95,7 +94,6 @@ export default function Settings() {
           />
         </Section>
 
-        {/* Units */}
         <Section title="Units">
           <Row
             icon={Thermometer}
@@ -104,14 +102,14 @@ export default function Settings() {
             right={
               <div className="flex rounded-xl border border-border/60 bg-secondary/40 p-0.5">
                 <button
-                  onClick={setPref("pref_units", setUnits).bind(null, "imperial")}
+                  onClick={() => { setUnits("imperial"); localStorage.setItem("pref_units", "imperial"); }}
                   className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold ${units === "imperial" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
                   style={{ minHeight: "auto" }}
                 >
                   °F
                 </button>
                 <button
-                  onClick={setPref("pref_units", setUnits).bind(null, "metric")}
+                  onClick={() => { setUnits("metric"); localStorage.setItem("pref_units", "metric"); }}
                   className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold ${units === "metric" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
                   style={{ minHeight: "auto" }}
                 >
@@ -122,7 +120,6 @@ export default function Settings() {
           />
         </Section>
 
-        {/* Radio */}
         <Section title="NOAA Radio">
           <Row
             icon={Radio}
@@ -132,7 +129,6 @@ export default function Settings() {
           />
         </Section>
 
-        {/* Quick links */}
         <Section title="Account">
           <Row icon={Users} label="Safety Contacts" sublabel="Manage trusted recipients" onClick={() => navigate("/Contacts")} />
           <Row
@@ -146,7 +142,6 @@ export default function Settings() {
           />
         </Section>
 
-        {/* About */}
         <Section title="About">
           <Row
             icon={Info}
@@ -169,7 +164,6 @@ export default function Settings() {
           <Row icon={Shield} label="Privacy" sublabel="All data stays on your device" right={null} />
         </Section>
 
-        {/* Danger */}
         <Section title="Danger Zone">
           {!confirmingDelete ? (
             <Row
