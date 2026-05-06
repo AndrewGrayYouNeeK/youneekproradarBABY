@@ -152,7 +152,11 @@ export default function RadarMap({
   const basemapCfg = BASEMAP_STYLES[basemap] || BASEMAP_STYLES.dark;
   const radarCfg = RADAR_LAYERS[radarLayer] || RADAR_LAYERS.base_reflectivity;
 
-  const mapCenter = useMemo(() => [center.latitude, center.longitude], [center.latitude, center.longitude]);
+  const mapCenter = useMemo(() => {
+    const lat = Number(center?.latitude);
+    const lng = Number(center?.longitude);
+    return [Number.isFinite(lat) ? lat : 39.5, Number.isFinite(lng) ? lng : -98.35];
+  }, [center?.latitude, center?.longitude]);
 
   return (
     <div className="absolute inset-0" style={{ zIndex: 0, isolation: "isolate" }}>
