@@ -21,6 +21,7 @@ const Locations = lazy(() => import("./pages/Locations"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Learn = lazy(() => import("./pages/Learn"));
+const FAQ = lazy(() => import("./pages/FAQ"));
 
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center bg-background">
@@ -98,6 +99,7 @@ const AuthenticatedApp = () => {
                 <Route path="/About" element={<About />} />
                 <Route path="/Contact" element={<Contact />} />
                 <Route path="/Learn" element={<Learn />} />
+                <Route path="/FAQ" element={<FAQ />} />
                 <Route path="*" element={<PageNotFound />} />
               </Routes>
             </Suspense>
