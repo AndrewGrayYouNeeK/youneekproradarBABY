@@ -105,7 +105,7 @@ export default function RadarMap({
   const mapCenter = useMemo(() => [center.latitude, center.longitude], [center.latitude, center.longitude]);
 
   return (
-    <div className="absolute inset-0">
+    <div className="absolute inset-0" style={{ zIndex: 0, isolation: "isolate" }}>
       <MapContainer
         center={mapCenter}
         zoom={zoom}
