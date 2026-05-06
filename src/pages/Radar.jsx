@@ -74,7 +74,7 @@ export default function Radar() {
             <button
               aria-label={hurricanes ? "Hide hurricanes" : "Show hurricanes"}
               onClick={() => setHurricanes((v) => !v)}
-              className={`absolute right-3 top-44 z-20 flex h-11 w-11 items-center justify-center rounded-xl border glass-strong transition-colors ${
+              className={`absolute right-3 top-[12.5rem] z-20 flex h-11 w-11 items-center justify-center rounded-xl border glass-strong transition-colors ${
                 hurricanes ? "border-orange-500/60 text-orange-400" : "border-border/60 text-foreground hover:bg-secondary"
               }`}
               style={{ minHeight: "auto" }}
@@ -85,7 +85,7 @@ export default function Radar() {
             <button
               aria-label="Recenter"
               onClick={() => window.location.reload()}
-              className="absolute bottom-40 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
+              className="absolute right-3 top-[15.5rem] z-20 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
               style={{ minHeight: "auto" }}
             >
               <Crosshair className="h-5 w-5" />
@@ -118,7 +118,7 @@ export default function Radar() {
           <button
             aria-label="Hide controls"
             onClick={() => setHideUI(true)}
-            className="absolute bottom-40 left-3 z-30 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
+            className="absolute right-3 top-[18.5rem] z-30 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
             style={{ minHeight: "auto" }}
           >
             <EyeOff className="h-5 w-5" />

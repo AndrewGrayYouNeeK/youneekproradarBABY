@@ -12,7 +12,7 @@ const SCALE = [
 
 export default function RadarLegend() {
   return (
-    <div className="absolute left-3 bottom-24 z-10 rounded-2xl border border-border/60 glass-strong px-3 py-2.5">
+    <div className="absolute left-3 top-32 z-10 rounded-2xl border border-border/60 glass-strong px-3 py-2.5">
       <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">dBZ</div>
       <div className="flex flex-col gap-0.5">
         {SCALE.map((s) => (
