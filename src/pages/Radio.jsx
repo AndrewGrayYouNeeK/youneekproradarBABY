@@ -15,6 +15,7 @@ export default function Radio() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [loadingAudio, setLoadingAudio] = useState(false);
+  const [useFallback, setUseFallback] = useState(false);
 
   // Auto-tune nearest station on mount
   useEffect(() => {
@@ -35,6 +36,7 @@ export default function Radio() {
   useEffect(() => {
     if (!station || !audioRef.current) return;
     setError(null);
+    setUseFallback(false);
     audioRef.current.src = station.stream;
     if (playing) {
       setLoadingAudio(true);
@@ -152,29 +154,39 @@ export default function Radio() {
               />
             </div>
 
-            {error && station && (
+            {error && station && !useFallback && (
               <div className="mt-3 space-y-2 rounded-xl border border-red-500/40 bg-red-950/30 px-3 py-2.5 text-xs text-red-200">
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span>{error}</span>
                 </div>
-                {station.source && (
-                  <a
-                    href={station.source}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-lg bg-red-900/40 px-2.5 py-1 text-[11px] font-semibold text-red-100 hover:bg-red-900/60"
-                  >
-                    Open source page →
-                  </a>
-                )}
+                <button
+                  onClick={() => { setUseFallback(true); setError(null); setPlaying(false); }}
+                  className="inline-flex items-center gap-1 rounded-lg bg-red-900/40 px-2.5 py-1 text-[11px] font-semibold text-red-100 hover:bg-red-900/60"
+                >
+                  Play in embedded player →
+                </button>
+              </div>
+            )}
+
+            {useFallback && station && (
+              <div className="mt-3 overflow-hidden rounded-xl border border-border/60 bg-black">
+                <iframe
+                  key={station.id}
+                  src={`https://www.broadcastify.com/webPlayer/${station.id}`}
+                  title={`${station.call} ${station.city}`}
+                  className="h-32 w-full"
+                  allow="autoplay"
+                />
+                <div className="border-t border-border/60 bg-secondary/40 px-3 py-2 text-[10px] text-muted-foreground">
+                  Playing via Broadcastify embedded player
+                </div>
               </div>
             )}
 
             <div className="mt-3 rounded-xl bg-secondary/30 px-3 py-2 text-[10px] leading-relaxed text-muted-foreground">
-              Streams are public Broadcastify feeds. Some browsers may block playback due to CORS or
-              regional restrictions. If a station won't play, tap "Open source page" to listen on
-              broadcastify.com.
+              Streams are public Broadcastify feeds. If a station won't play directly, tap "Play in
+              embedded player" to load it on this page.
             </div>
           </div>
         </div>
