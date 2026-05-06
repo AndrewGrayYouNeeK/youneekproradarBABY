@@ -1,5 +1,6 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Radar, CloudSun, AlertTriangle, Radio, ShieldAlert } from "lucide-react";
+import useAppNav from "@/hooks/useAppNav";
 
 const TABS = [
   { to: "/Radar", label: "Radar", icon: Radar },
@@ -10,18 +11,14 @@ const TABS = [
 ];
 
 export default function BottomNav() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const { pathname, replace } = useAppNav();
 
   const handleTabClick = (to) => (e) => {
-    // If tapping the already-active tab, scroll to top + reset to root path
-    if (location.pathname === to) {
+    // If tapping the already-active tab, scroll to top + clear any query/hash
+    if (pathname === to) {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
-      // Reset query/hash if any, keeping path stable
-      if (location.search || location.hash) {
-        navigate(to, { replace: true });
-      }
+      if (window.location.search || window.location.hash) replace(to);
     }
   };
 

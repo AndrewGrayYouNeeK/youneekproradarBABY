@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import useAppNav from "@/hooks/useAppNav";
 import { Menu, MapPin, X, Settings as SettingsIcon, Users, Info, Shield, ArrowLeft, Radar as RadarIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function AppHeader({ title, location, right = null, transparent = false, showBack = false }) {
-  const navigate = useNavigate();
+  const { goBack, go } = useAppNav();
   const [open, setOpen] = useState(false);
 
   return (
@@ -18,7 +18,7 @@ export default function AppHeader({ title, location, right = null, transparent =
           {showBack ? (
             <button
               type="button"
-              onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/Radar"))}
+              onClick={goBack}
               aria-label="Go back"
               className="flex h-10 items-center gap-1 rounded-xl px-2 text-foreground/90 hover:bg-secondary"
             >
@@ -56,7 +56,7 @@ export default function AppHeader({ title, location, right = null, transparent =
 
       <AnimatePresence>
         {open && (
-          <SideMenu onClose={() => setOpen(false)} onNavigate={(p) => { setOpen(false); navigate(p); }} />
+          <SideMenu onClose={() => setOpen(false)} onNavigate={(p) => { setOpen(false); go(p); }} />
         )}
       </AnimatePresence>
     </>

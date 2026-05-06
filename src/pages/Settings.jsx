@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import AppHeader from "@/components/nav/AppHeader";
 import BottomNav from "@/components/nav/BottomNav";
 import { Switch } from "@/components/ui/switch";
+import useAppNav from "@/hooks/useAppNav";
+import { useSettings, useUpdateSetting } from "@/hooks/useSettingsMutations";
 import {
   ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle,
   Users, MapPin, Thermometer
@@ -54,18 +55,14 @@ function Row({ icon: Icon, label, sublabel, right, onClick, danger }) {
 }
 
 export default function Settings() {
-  const navigate = useNavigate();
+  const { go, reload } = useAppNav();
+  const { data: settings } = useSettings();
+  const updateSetting = useUpdateSetting();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const [units, setUnits] = useState(() => localStorage.getItem("pref_units") || "imperial");
-  const [notifyAlerts, setNotifyAlerts] = useState(() => localStorage.getItem("pref_notifyAlerts") !== "false");
-  const [notifySevere, setNotifySevere] = useState(() => localStorage.getItem("pref_notifySevere") !== "false");
-  const [autoTune, setAutoTune] = useState(() => localStorage.getItem("pref_autoTune") !== "false");
   const [showAbout, setShowAbout] = useState(false);
 
-  const setPref = (key, setter) => (val) => {
-    setter(val);
-    localStorage.setItem(key, String(val));
-  };
+  const { units, notifyAlerts, notifySevere, autoTune } = settings;
+  const setPref = (key) => (val) => updateSetting.mutate({ key, value: val });
 
   const deleteAccountMutation = useMutation({
     mutationFn: async () => {
@@ -86,13 +83,13 @@ export default function Settings() {
             icon={Bell}
             label="Weather alerts"
             sublabel="NWS active alerts for your location"
-            right={<Switch checked={notifyAlerts} onCheckedChange={setPref("pref_notifyAlerts", setNotifyAlerts)} />}
+            right={<Switch checked={notifyAlerts} onCheckedChange={setPref("notifyAlerts")} />}
           />
           <Row
             icon={AlertTriangle}
             label="Severe weather"
             sublabel="Tornado, hurricane, flash flood warnings"
-            right={<Switch checked={notifySevere} onCheckedChange={setPref("pref_notifySevere", setNotifySevere)} />}
+            right={<Switch checked={notifySevere} onCheckedChange={setPref("notifySevere")} />}
           />
         </Section>
 
@@ -104,14 +101,14 @@ export default function Settings() {
             right={
               <div className="flex rounded-xl border border-border/60 bg-secondary/40 p-0.5">
                 <button
-                  onClick={() => { setUnits("imperial"); localStorage.setItem("pref_units", "imperial"); }}
+                  onClick={() => updateSetting.mutate({ key: "units", value: "imperial" })}
                   className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold ${units === "imperial" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
                   style={{ minHeight: "auto" }}
                 >
                   °F
                 </button>
                 <button
-                  onClick={() => { setUnits("metric"); localStorage.setItem("pref_units", "metric"); }}
+                  onClick={() => updateSetting.mutate({ key: "units", value: "metric" })}
                   className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold ${units === "metric" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
                   style={{ minHeight: "auto" }}
                 >
@@ -127,19 +124,19 @@ export default function Settings() {
             icon={Radio}
             label="Auto-tune nearest station"
             sublabel="Pick the closest NOAA broadcast on launch"
-            right={<Switch checked={autoTune} onCheckedChange={setPref("pref_autoTune", setAutoTune)} />}
+            right={<Switch checked={autoTune} onCheckedChange={setPref("autoTune")} />}
           />
         </Section>
 
         <Section title="Account">
-          <Row icon={Users} label="Safety Contacts" sublabel="Manage trusted recipients" onClick={() => navigate("/Contacts")} />
+          <Row icon={Users} label="Safety Contacts" sublabel="Manage trusted recipients" onClick={() => go("/Contacts")} />
           <Row
             icon={MapPin}
             label="Reset saved location"
             sublabel="Use device GPS again on next launch"
             onClick={() => {
               localStorage.removeItem("user_location_v1");
-              window.location.reload();
+              reload();
             }}
           />
         </Section>

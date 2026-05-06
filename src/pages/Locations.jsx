@@ -1,19 +1,23 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import AppHeader from "@/components/nav/AppHeader";
 import BottomNav from "@/components/nav/BottomNav";
 import { setStoredLocation } from "@/lib/weather/locationUtils";
+import { searchLocations } from "@/lib/weather/savedLocations";
 import {
-  getSavedLocations, addSavedLocation, removeSavedLocation, searchLocations,
-} from "@/lib/weather/savedLocations";
+  useSavedLocations, useAddLocation, useRemoveLocation,
+} from "@/hooks/useLocationsMutations";
+import useAppNav from "@/hooks/useAppNav";
 import { Search, MapPin, Plus, Trash2, Check, Star } from "lucide-react";
 
 export default function Locations() {
-  const navigate = useNavigate();
+  const { go, reload } = useAppNav();
+  const { data: saved = [] } = useSavedLocations();
+  const addLocation = useAddLocation();
+  const removeLocation = useRemoveLocation();
+
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
-  const [saved, setSaved] = useState(getSavedLocations);
 
   const doSearch = async (q) => {
     setQuery(q);
@@ -25,34 +29,17 @@ export default function Locations() {
   };
 
   const handleAdd = (loc) => {
-    // Optimistic add: update UI first, then persist.
-    const prev = saved;
-    const optimistic = [...saved, { ...loc, id: `tmp-${Date.now()}` }];
-    setSaved(optimistic);
+    addLocation.mutate(loc);
     setQuery("");
     setResults([]);
-    try {
-      setSaved(addSavedLocation(loc));
-    } catch {
-      setSaved(prev);
-    }
   };
 
-  const handleRemove = (id) => {
-    // Optimistic delete: remove from UI immediately, then persist.
-    const prev = saved;
-    setSaved(saved.filter((l) => l.id !== id));
-    try {
-      removeSavedLocation(id);
-    } catch {
-      setSaved(prev);
-    }
-  };
+  const handleRemove = (id) => removeLocation.mutate(id);
 
   const handleSelect = (loc) => {
     setStoredLocation(loc);
-    navigate("/Radar");
-    window.location.reload();
+    go("/Radar");
+    reload();
   };
 
   return (

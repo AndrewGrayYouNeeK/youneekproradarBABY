@@ -1,47 +1,35 @@
 import { useState } from "react";
 import AppHeader from "@/components/nav/AppHeader";
 import BottomNav from "@/components/nav/BottomNav";
-import { loadContacts, saveContacts, cleanPhone, formatDisplay } from "@/lib/safety/contactsStore";
+import { formatDisplay } from "@/lib/safety/contactsStore";
+import {
+  useContacts, useAddContact, useRemoveContact,
+} from "@/hooks/useContactsMutations";
 import { UserPlus, Trash2, User, Phone, Shield, AlertTriangle } from "lucide-react";
 
 const MAX_CONTACTS = 10;
 
 export default function Contacts() {
-  const [contacts, setContacts] = useState(loadContacts);
+  const { data: contacts = [] } = useContacts();
+  const addContact = useAddContact(MAX_CONTACTS);
+  const removeContact = useRemoveContact();
+
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
 
-  const persist = (next) => {
-    setContacts(next);
-    saveContacts(next);
-  };
-
   const handleAdd = () => {
     setError("");
-    const trimName = name.trim();
-    const cleaned = cleanPhone(phone);
-    if (!trimName) return setError("Please enter a name.");
-    if (!cleaned) return setError("Please enter a valid 10-digit US number.");
-    if (contacts.some((c) => c.phone === cleaned)) return setError("That number is already saved.");
-    if (contacts.length >= MAX_CONTACTS) return setError(`Max ${MAX_CONTACTS} contacts.`);
-    const next = [...contacts, { id: Date.now().toString(), name: trimName, phone: cleaned }];
-    persist(next);
-    setName("");
-    setPhone("");
+    addContact.mutate(
+      { name, phone },
+      {
+        onSuccess: () => { setName(""); setPhone(""); },
+        onError: (e) => setError(e.message),
+      }
+    );
   };
 
-  const handleRemove = (id) => {
-    // Optimistic update: remove from UI immediately, then persist to storage.
-    const next = contacts.filter((c) => c.id !== id);
-    setContacts(next);
-    try {
-      saveContacts(next);
-    } catch {
-      // Roll back if storage fails
-      setContacts(contacts);
-    }
-  };
+  const handleRemove = (id) => removeContact.mutate(id);
 
   return (
     <div className="min-h-screen bg-background pb-24 text-foreground">
