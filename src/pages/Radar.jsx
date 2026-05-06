@@ -104,16 +104,26 @@ export default function Radar() {
           </>
         )}
 
-        <button
-          aria-label={hideUI ? "Show controls" : "Hide controls"}
-          onClick={() => setHideUI((v) => !v)}
-          className={`absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary ${
-            hideUI ? "top-4 right-3 safe-top" : "bottom-40 left-3"
-          }`}
-          style={{ minHeight: "auto" }}
-        >
-          {hideUI ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
-        </button>
+        {hideUI ? (
+          <button
+            aria-label="Show controls"
+            onClick={() => setHideUI(false)}
+            className="absolute top-4 right-3 z-30 flex items-center gap-2 rounded-full border-2 border-primary/70 bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-xl shadow-primary/30 hover:bg-primary/90 safe-top"
+            style={{ minHeight: "auto" }}
+          >
+            <Eye className="h-4 w-4" />
+            Show Controls
+          </button>
+        ) : (
+          <button
+            aria-label="Hide controls"
+            onClick={() => setHideUI(true)}
+            className="absolute bottom-40 left-3 z-30 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
+            style={{ minHeight: "auto" }}
+          >
+            <EyeOff className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
       {!hideUI && <BottomNav />}
