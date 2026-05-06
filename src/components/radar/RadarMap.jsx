@@ -134,7 +134,7 @@ export default function RadarMap({
   basemap = "dark",
   radarLayer = "base_reflectivity",
   radarOpacity = 0.7,
-  zoom = 8,
+  zoom = 2,
   timeLapse = false,
   playing = true,
   speed = "normal",
@@ -163,6 +163,7 @@ export default function RadarMap({
       <MapContainer
         center={mapCenter}
         zoom={zoom}
+        minZoom={2}
         zoomControl={false}
         attributionControl={false}
         className="h-full w-full bg-background"
