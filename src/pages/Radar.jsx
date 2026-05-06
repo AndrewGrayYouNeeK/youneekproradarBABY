@@ -7,7 +7,7 @@ import TimeLapseBar from "@/components/radar/TimeLapseBar";
 import RadarBottomSheet from "@/components/radar/RadarBottomSheet";
 import LocationSearchBar from "@/components/radar/LocationSearchBar";
 import useLocation from "@/hooks/useLocation";
-import { Crosshair, Activity, Eye, EyeOff, Wind } from "lucide-react";
+import { Crosshair, Activity, Eye, EyeOff, Wind, Globe2 } from "lucide-react";
 
 const RadarMap = lazy(() => import("@/components/radar/RadarMap"));
 
@@ -20,6 +20,7 @@ export default function Radar() {
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState("normal");
   const [hurricanes, setHurricanes] = useState(false);
+  const [globalRadar, setGlobalRadar] = useState(false);
   const [hideUI, setHideUI] = useState(false);
 
   return (
@@ -55,6 +56,7 @@ export default function Radar() {
             playing={playing}
             speed={speed}
             hurricanes={hurricanes}
+            globalRadar={globalRadar}
           />
         </Suspense>
 
@@ -72,9 +74,20 @@ export default function Radar() {
             <RadarLegend />
 
             <button
+              aria-label={globalRadar ? "Hide global radar" : "Show global radar"}
+              onClick={() => setGlobalRadar((v) => !v)}
+              className={`absolute right-3 top-[12.5rem] z-20 flex h-11 w-11 items-center justify-center rounded-xl border glass-strong transition-colors ${
+                globalRadar ? "border-cyan-500/60 text-cyan-400" : "border-border/60 text-foreground hover:bg-secondary"
+              }`}
+              style={{ minHeight: "auto" }}
+            >
+              <Globe2 className="h-5 w-5" />
+            </button>
+
+            <button
               aria-label={hurricanes ? "Hide hurricanes" : "Show hurricanes"}
               onClick={() => setHurricanes((v) => !v)}
-              className={`absolute right-3 top-[12.5rem] z-20 flex h-11 w-11 items-center justify-center rounded-xl border glass-strong transition-colors ${
+              className={`absolute right-3 top-[15.5rem] z-20 flex h-11 w-11 items-center justify-center rounded-xl border glass-strong transition-colors ${
                 hurricanes ? "border-orange-500/60 text-orange-400" : "border-border/60 text-foreground hover:bg-secondary"
               }`}
               style={{ minHeight: "auto" }}
@@ -85,7 +98,7 @@ export default function Radar() {
             <button
               aria-label="Recenter"
               onClick={() => window.location.reload()}
-              className="absolute right-3 top-[15.5rem] z-20 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
+              className="absolute right-3 top-[18.5rem] z-20 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
               style={{ minHeight: "auto" }}
             >
               <Crosshair className="h-5 w-5" />
@@ -118,7 +131,7 @@ export default function Radar() {
           <button
             aria-label="Hide controls"
             onClick={() => setHideUI(true)}
-            className="absolute right-3 top-[18.5rem] z-30 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
+            className="absolute right-3 top-[21.5rem] z-30 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
             style={{ minHeight: "auto" }}
           >
             <EyeOff className="h-5 w-5" />

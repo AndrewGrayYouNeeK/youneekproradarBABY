@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import HurricaneLayer from "./HurricaneLayer";
+import RainViewerLayer from "./RainViewerLayer";
 
 // Iowa Mesonet tile layer pattern
 const IEM_BASE = "https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0";
@@ -139,6 +140,7 @@ export default function RadarMap({
   playing = true,
   speed = "normal",
   hurricanes = false,
+  globalRadar = false,
 }) {
   const [frameIndex, setFrameIndex] = useState(0);
 
@@ -176,6 +178,8 @@ export default function RadarMap({
         ) : (
           <StaticRadar layer={radarCfg.layer} opacity={radarOpacity} frameIndex={frameIndex} />
         )}
+
+        {globalRadar && <RainViewerLayer opacity={radarOpacity} />}
 
         <HurricaneLayer enabled={hurricanes} />
 
