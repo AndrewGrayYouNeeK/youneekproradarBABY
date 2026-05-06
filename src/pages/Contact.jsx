@@ -1,8 +1,8 @@
 import AppHeader from "@/components/nav/AppHeader";
 import BottomNav from "@/components/nav/BottomNav";
-import { Mail, Github, Twitter, MessageCircle } from "lucide-react";
+import { Mail, Github, MessageCircle } from "lucide-react";
 
-const SUPPORT_EMAIL = "support@youneek.app";
+const SUPPORT_EMAIL = "andrewgray@youneek.xyz";
 
 export default function Contact() {
   return (
@@ -28,21 +28,6 @@ export default function Contact() {
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold">Email Support</div>
               <div className="truncate text-xs text-muted-foreground">{SUPPORT_EMAIL}</div>
-            </div>
-          </a>
-
-          <a
-            href="https://twitter.com/youneek"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/60 p-4 transition-colors hover:bg-secondary/50"
-          >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary">
-              <Twitter className="h-5 w-5 text-primary" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="text-sm font-semibold">Twitter / X</div>
-              <div className="truncate text-xs text-muted-foreground">@youneek</div>
             </div>
           </a>
 
