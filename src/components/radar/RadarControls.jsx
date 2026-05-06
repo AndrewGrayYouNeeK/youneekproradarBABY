@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Layers, Map as MapIcon, Zap, Eye, X, Check } from "lucide-react";
+import { Layers, Map as MapIcon, Eye, X, Check } from "lucide-react";
 import { RADAR_LAYERS, BASEMAP_STYLES } from "./RadarMap";
 
 export default function RadarControls({
@@ -10,8 +10,6 @@ export default function RadarControls({
   setBasemap,
   radarOpacity,
   setRadarOpacity,
-  showLightning,
-  setShowLightning,
 }) {
   const [open, setOpen] = useState(null); // 'layers' | 'basemap' | null
 
@@ -20,7 +18,6 @@ export default function RadarControls({
       <div className="absolute right-3 top-16 z-20 flex flex-col gap-2">
         <ControlBtn icon={Layers} label="Layers" active={open === "layers"} onClick={() => setOpen(open === "layers" ? null : "layers")} />
         <ControlBtn icon={MapIcon} label="Map" active={open === "basemap"} onClick={() => setOpen(open === "basemap" ? null : "basemap")} />
-        <ControlBtn icon={Zap} label="Lightning" active={showLightning} onClick={() => setShowLightning(!showLightning)} />
       </div>
 
       <AnimatePresence>

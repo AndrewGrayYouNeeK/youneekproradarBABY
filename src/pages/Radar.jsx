@@ -13,7 +13,6 @@ export default function Radar() {
   const [radarLayer, setRadarLayer] = useState("base_reflectivity");
   const [basemap, setBasemap] = useState("dark");
   const [radarOpacity, setRadarOpacity] = useState(0.7);
-  const [showLightning, setShowLightning] = useState(false);
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-background">
@@ -36,7 +35,6 @@ export default function Radar() {
             basemap={basemap}
             radarLayer={radarLayer}
             radarOpacity={radarOpacity}
-            showLightning={showLightning}
           />
         </Suspense>
 
@@ -47,8 +45,6 @@ export default function Radar() {
           setBasemap={setBasemap}
           radarOpacity={radarOpacity}
           setRadarOpacity={setRadarOpacity}
-          showLightning={showLightning}
-          setShowLightning={setShowLightning}
         />
 
         <RadarLegend />

@@ -6,12 +6,13 @@ import "leaflet/dist/leaflet.css";
 // Iowa Mesonet tile layer pattern
 const IEM_BASE = "https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0";
 
-// Available radar product layers (FREE, no key)
+// Available radar product layers (FREE, no key) — IEM TMS layer names
 export const RADAR_LAYERS = {
-  base_reflectivity: { name: "Base Reflectivity", layer: "nexrad-n0q-900913", desc: "Standard precipitation radar" },
-  composite: { name: "Composite", layer: "nexrad-n0r-900913", desc: "Composite reflectivity" },
-  precip_1h: { name: "Precip (1hr)", layer: "q2-p1h-900913", desc: "1-hour rainfall accumulation" },
-  precip_24h: { name: "Precip (24hr)", layer: "q2-p24h-900913", desc: "24-hour rainfall accumulation" },
+  base_reflectivity: { name: "Base Reflectivity", layer: "nexrad-n0q", desc: "Standard precipitation radar" },
+  echo_tops: { name: "Echo Tops", layer: "nexrad-eet", desc: "Storm height — spot strong cells" },
+  precip_1h: { name: "Precip (1hr)", layer: "q2-n1p", desc: "1-hour rainfall accumulation" },
+  precip_24h: { name: "Precip (24hr)", layer: "q2-p24h", desc: "24-hour rainfall accumulation" },
+  precip_72h: { name: "Precip (72hr)", layer: "q2-p72h", desc: "72-hour rainfall accumulation" },
 };
 
 export const BASEMAP_STYLES = {
@@ -79,9 +80,6 @@ export default function RadarMap({
   basemap = "dark",
   radarLayer = "base_reflectivity",
   radarOpacity = 0.7,
-  showLightning = false,
-  lightningStrikes = [],
-  alertPolygons = [],
   zoom = 8,
 }) {
   const [frameIndex, setFrameIndex] = useState(0);
@@ -127,10 +125,6 @@ export default function RadarMap({
           pathOptions={{ color: "#38bdf8", weight: 1, opacity: 0.3, fillOpacity: 0 }}
         />
 
-        {showLightning &&
-          lightningStrikes.map((s, i) => (
-            <Marker key={i} position={[s.lat, s.lon]} icon={lightningIcon} />
-          ))}
       </MapContainer>
     </div>
   );
