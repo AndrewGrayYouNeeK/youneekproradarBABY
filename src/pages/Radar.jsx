@@ -5,8 +5,9 @@ import RadarLegend from "@/components/radar/RadarLegend";
 import RadarControls from "@/components/radar/RadarControls";
 import TimeLapseBar from "@/components/radar/TimeLapseBar";
 import RadarBottomSheet from "@/components/radar/RadarBottomSheet";
+import LocationSearchBar from "@/components/radar/LocationSearchBar";
 import useLocation from "@/hooks/useLocation";
-import { Crosshair, Activity } from "lucide-react";
+import { Crosshair, Activity, Eye, EyeOff, Wind } from "lucide-react";
 
 const RadarMap = lazy(() => import("@/components/radar/RadarMap"));
 
@@ -18,22 +19,32 @@ export default function Radar() {
   const [timeLapse, setTimeLapse] = useState(false);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState("normal");
+  const [hurricanes, setHurricanes] = useState(false);
+  const [hideUI, setHideUI] = useState(false);
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-background">
-      <AppHeader
-        title="Live Radar"
-        location={location.label || `${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)}`}
-        transparent
-        right={
-          <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-            {timeLapse ? "Loop" : "Live"}
-          </div>
-        }
-      />
+      {!hideUI && (
+        <AppHeader
+          title="Live Radar"
+          location={location.label || `${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)}`}
+          transparent
+          right={
+            <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+              {timeLapse ? "Loop" : "Live"}
+            </div>
+          }
+        />
+      )}
 
-      <div className="absolute inset-0 pt-14">
+      {!hideUI && (
+        <div className="absolute left-1/2 top-16 z-20 w-full max-w-md -translate-x-1/2 px-3">
+          <LocationSearchBar />
+        </div>
+      )}
+
+      <div className={`absolute inset-0 ${hideUI ? "" : "pt-14"}`}>
         <Suspense fallback={<MapFallback />}>
           <RadarMap
             center={location}
@@ -43,42 +54,69 @@ export default function Radar() {
             timeLapse={timeLapse}
             playing={playing}
             speed={speed}
+            hurricanes={hurricanes}
           />
         </Suspense>
 
-        <RadarControls
-          radarLayer={radarLayer}
-          setRadarLayer={setRadarLayer}
-          basemap={basemap}
-          setBasemap={setBasemap}
-          radarOpacity={radarOpacity}
-          setRadarOpacity={setRadarOpacity}
-        />
+        {!hideUI && (
+          <>
+            <RadarControls
+              radarLayer={radarLayer}
+              setRadarLayer={setRadarLayer}
+              basemap={basemap}
+              setBasemap={setBasemap}
+              radarOpacity={radarOpacity}
+              setRadarOpacity={setRadarOpacity}
+            />
 
-        <RadarLegend />
+            <RadarLegend />
+
+            <button
+              aria-label={hurricanes ? "Hide hurricanes" : "Show hurricanes"}
+              onClick={() => setHurricanes((v) => !v)}
+              className={`absolute right-3 top-44 z-20 flex h-11 w-11 items-center justify-center rounded-xl border glass-strong transition-colors ${
+                hurricanes ? "border-orange-500/60 text-orange-400" : "border-border/60 text-foreground hover:bg-secondary"
+              }`}
+              style={{ minHeight: "auto" }}
+            >
+              <Wind className="h-5 w-5" />
+            </button>
+
+            <button
+              aria-label="Recenter"
+              onClick={() => window.location.reload()}
+              className="absolute bottom-40 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
+              style={{ minHeight: "auto" }}
+            >
+              <Crosshair className="h-5 w-5" />
+            </button>
+
+            <TimeLapseBar
+              enabled={timeLapse}
+              setEnabled={setTimeLapse}
+              playing={playing}
+              setPlaying={setPlaying}
+              speed={speed}
+              setSpeed={setSpeed}
+            />
+
+            <RadarBottomSheet location={location} />
+          </>
+        )}
 
         <button
-          aria-label="Recenter"
-          onClick={() => window.location.reload()}
-          className="absolute bottom-40 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
+          aria-label={hideUI ? "Show controls" : "Hide controls"}
+          onClick={() => setHideUI((v) => !v)}
+          className={`absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary ${
+            hideUI ? "top-4 right-3 safe-top" : "bottom-40 left-3"
+          }`}
           style={{ minHeight: "auto" }}
         >
-          <Crosshair className="h-5 w-5" />
+          {hideUI ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
         </button>
-
-        <TimeLapseBar
-          enabled={timeLapse}
-          setEnabled={setTimeLapse}
-          playing={playing}
-          setPlaying={setPlaying}
-          speed={speed}
-          setSpeed={setSpeed}
-        />
-
-        <RadarBottomSheet location={location} />
       </div>
 
-      <BottomNav />
+      {!hideUI && <BottomNav />}
     </div>
   );
 }
