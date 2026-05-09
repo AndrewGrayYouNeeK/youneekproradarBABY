@@ -73,7 +73,7 @@ function SideMenu({ onClose, onNavigate }) {
     { label: "FAQ", icon: HelpCircle, path: "/FAQ" },
     { label: "About", icon: Info, path: "/About" },
     { label: "Contact", icon: Mail, path: "/Contact" },
-    { label: "Privacy", icon: Shield, path: "/Settings" },
+    { label: "Privacy", icon: Shield, path: "/Privacy" },
   ];
   return (
     <motion.div
