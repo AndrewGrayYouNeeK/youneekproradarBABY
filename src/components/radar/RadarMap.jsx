@@ -16,7 +16,6 @@ export const RADAR_LAYERS = {
   echo_tops: { name: "Echo Tops", layer: "nexrad-eet", desc: "Storm height — spot strong cells" },
   precip_1h: { name: "Precip (1hr)", layer: "q2-n1p", desc: "1-hour rainfall accumulation" },
   precip_24h: { name: "Precip (24hr)", layer: "q2-p24h", desc: "24-hour rainfall accumulation" },
-  precip_72h: { name: "Precip (72hr)", layer: "q2-p72h", desc: "72-hour rainfall accumulation" },
 };
 
 export const BASEMAP_STYLES = {
