@@ -15,7 +15,7 @@ export default function RadarControls({
 
   return (
     <>
-      <div className="absolute right-3 top-16 z-20 flex flex-col gap-2">
+      <div className="absolute right-3 top-16 z-20 flex flex-col gap-2.5">
         <ControlBtn icon={Layers} label="Layers" active={open === "layers"} onClick={() => setOpen(open === "layers" ? null : "layers")} />
         <ControlBtn icon={MapIcon} label="Map" active={open === "basemap"} onClick={() => setOpen(open === "basemap" ? null : "basemap")} />
       </div>
