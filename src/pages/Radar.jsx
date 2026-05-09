@@ -18,7 +18,7 @@ export default function Radar() {
   const [timeLapse, setTimeLapse] = useState(false);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState("normal");
-  const [globalRadar, setGlobalRadar] = useState(true);
+  const [globalRadar, setGlobalRadar] = useState(false);
   const [hideUI, setHideUI] = useState(false);
 
   return (
