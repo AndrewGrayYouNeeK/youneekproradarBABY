@@ -18,7 +18,7 @@ export default function Radar() {
   const [timeLapse, setTimeLapse] = useState(false);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState("normal");
-  const [globalRadar, setGlobalRadar] = useState(false);
+  const [globalRadar, setGlobalRadar] = useState(true);
   const [hideUI, setHideUI] = useState(false);
 
   return (
@@ -54,6 +54,7 @@ export default function Radar() {
             playing={playing}
             speed={speed}
             globalRadar={globalRadar}
+            zoom={9}
           />
         </Suspense>
 
