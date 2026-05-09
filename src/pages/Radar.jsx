@@ -7,7 +7,7 @@ import TimeLapseBar from "@/components/radar/TimeLapseBar";
 import RadarBottomSheet from "@/components/radar/RadarBottomSheet";
 import LocationSearchBar from "@/components/radar/LocationSearchBar";
 import useLocation from "@/hooks/useLocation";
-import { Crosshair, Activity, Eye, EyeOff, Wind, Globe2, Clock } from "lucide-react";
+import { Crosshair, Activity, Eye, EyeOff, Globe2, Clock } from "lucide-react";
 
 const RadarMap = lazy(() => import("@/components/radar/RadarMap"));
 
@@ -19,7 +19,6 @@ export default function Radar() {
   const [timeLapse, setTimeLapse] = useState(false);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState("normal");
-  const [hurricanes, setHurricanes] = useState(false);
   const [globalRadar, setGlobalRadar] = useState(false);
   const [hideUI, setHideUI] = useState(false);
 
@@ -55,7 +54,6 @@ export default function Radar() {
             timeLapse={timeLapse}
             playing={playing}
             speed={speed}
-            hurricanes={hurricanes}
             globalRadar={globalRadar}
           />
         </Suspense>
@@ -73,7 +71,7 @@ export default function Radar() {
 
             <RadarLegend />
 
-            <div className="absolute right-3 top-[20rem] z-20 flex flex-col gap-2.5">
+            <div className="absolute right-3 top-[15.25rem] z-20 flex flex-col gap-2.5">
               <button
                 aria-label={globalRadar ? "Hide global radar" : "Show global radar"}
                 onClick={() => setGlobalRadar((v) => !v)}
@@ -103,17 +101,6 @@ export default function Radar() {
                 style={{ minHeight: "auto" }}
               >
                 <Crosshair className="h-5 w-5" />
-              </button>
-
-              <button
-                aria-label={hurricanes ? "Hide hurricanes" : "Show hurricanes"}
-                onClick={() => setHurricanes((v) => !v)}
-                className={`flex h-11 w-11 items-center justify-center rounded-xl border glass-strong transition-colors ${
-                  hurricanes ? "border-orange-500/60 text-orange-400" : "border-border/60 text-foreground hover:bg-secondary"
-                }`}
-                style={{ minHeight: "auto" }}
-              >
-                <Wind className="h-5 w-5" />
               </button>
 
               <button
