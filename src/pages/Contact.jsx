@@ -32,7 +32,7 @@ export default function Contact() {
           </a>
 
           <a
-            href="https://github.com/youneek"
+            href="https://github.com/AndrewgrayYouneek"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/60 p-4 transition-colors hover:bg-secondary/50"
@@ -42,7 +42,7 @@ export default function Contact() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold">GitHub</div>
-              <div className="truncate text-xs text-muted-foreground">github.com/youneek</div>
+              <div className="truncate text-xs text-muted-foreground">github.com/AndrewgrayYouneek</div>
             </div>
           </a>
 
