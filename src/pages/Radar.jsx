@@ -3,7 +3,6 @@ import AppHeader from "@/components/nav/AppHeader";
 import BottomNav from "@/components/nav/BottomNav";
 import RadarLegend from "@/components/radar/RadarLegend";
 import RadarControls from "@/components/radar/RadarControls";
-import RadarBottomSheet from "@/components/radar/RadarBottomSheet";
 import LocationSearchBar from "@/components/radar/LocationSearchBar";
 import useLocation from "@/hooks/useLocation";
 import { Crosshair, Activity, Eye, EyeOff, Globe2, Clock } from "lucide-react";
@@ -112,8 +111,6 @@ export default function Radar() {
                 <EyeOff className="h-5 w-5" />
               </button>
             </div>
-
-            <RadarBottomSheet location={location} />
           </>
         )}
 
