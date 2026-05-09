@@ -38,7 +38,7 @@ const FAQS = [
 
 export default function FAQ() {
   return (
-    <div className="min-h-screen bg-background pb-24 text-foreground">
+    <div className="h-full overflow-y-auto bg-background pb-24 text-foreground">
       <AppHeader title="FAQ" showBack />
 
       <main className="mx-auto max-w-2xl space-y-6 px-4 pt-4 pb-8">

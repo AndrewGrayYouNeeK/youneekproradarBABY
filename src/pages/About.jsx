@@ -3,7 +3,7 @@ import BottomNav from "@/components/nav/BottomNav";
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-background pb-24 text-foreground">
+    <div className="h-full overflow-y-auto bg-background pb-24 text-foreground">
       <AppHeader title="About" showBack />
 
       <main className="mx-auto max-w-2xl space-y-5 px-4 pt-4 pb-8">
