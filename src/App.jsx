@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from "@/lib/AuthContext";
 import UserNotRegisteredError from "@/components/UserNotRegisteredError";
 import TornadoAlertPopup from "@/components/safety/TornadoAlertPopup";
 import OnboardingGate from "@/components/onboarding/OnboardingGate";
+import EmergencyRefreshButton from "@/components/EmergencyRefreshButton";
 
 const Radar = lazy(() => import("./pages/Radar"));
 const Forecast = lazy(() => import("./pages/Forecast"));
@@ -111,6 +112,7 @@ const AuthenticatedApp = () => {
 
       <TornadoAlertPopup />
       <OnboardingGate />
+      <EmergencyRefreshButton />
     </>
   );
 };
