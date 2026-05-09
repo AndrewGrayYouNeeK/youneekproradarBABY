@@ -13,7 +13,7 @@ import {
   DEFAULT_MESSAGE,
 } from "@/lib/safety/contactsStore";
 import { fetchActiveAlerts, alertSeverity } from "@/lib/weather/api";
-import { ShieldCheck, MessageSquare, Users, MapPin, Edit3, Check, AlertTriangle, Send } from "lucide-react";
+import { MessageSquare, Users, MapPin, Edit3, Check, AlertTriangle, Send, LifeBuoy } from "lucide-react";
 
 export default function Safety() {
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ export default function Safety() {
     setEditingMsg(false);
   };
 
-  const handleSendSafe = () => {
+  const handleSendHelp = () => {
     if (contacts.length === 0) {
       navigate("/Contacts");
       return;
@@ -89,38 +89,38 @@ export default function Safety() {
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/30 p-4">
+          <div className="rounded-2xl border border-border/60 bg-card/60 p-4">
             <div className="flex items-center gap-3">
-              <ShieldCheck className="h-5 w-5 text-emerald-400" />
+              <Check className="h-5 w-5 text-muted-foreground" />
               <div>
-                <div className="text-sm font-semibold text-emerald-100">No active severe alerts</div>
-                <div className="text-xs text-emerald-200/70">You're in the clear right now.</div>
+                <div className="text-sm font-semibold">No active severe alerts</div>
+                <div className="text-xs text-muted-foreground">You're in the clear right now.</div>
               </div>
             </div>
           </div>
         )}
 
-        {/* I'm Safe — primary action */}
-        <div className="overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-emerald-500/15 via-card to-card p-5">
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">
-            <Send className="h-3.5 w-3.5" />
-            I'm Safe Check-In
+        {/* Help Me — primary emergency action */}
+        <div className="overflow-hidden rounded-3xl border border-red-500/40 bg-gradient-to-br from-red-500/20 via-card to-card p-5">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-red-400">
+            <AlertTriangle className="h-3.5 w-3.5" />
+            Emergency SOS
           </div>
           <p className="mt-2 text-sm text-foreground/80">
-            Send your trusted contacts a text with your live GPS location. Opens your phone's
+            Send your trusted contacts an urgent "Help Me" text with your live GPS location. Opens your phone's
             messaging app — nothing is sent automatically.
           </p>
 
           <button
-            onClick={handleSendSafe}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-4 py-4 text-base font-bold text-emerald-950 shadow-lg shadow-emerald-500/20 transition-transform active:scale-[0.98]"
+            onClick={handleSendHelp}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-red-500 px-4 py-4 text-base font-bold text-white shadow-lg shadow-red-500/30 transition-transform active:scale-[0.98] hover:bg-red-600"
           >
-            <ShieldCheck className="h-5 w-5" />
-            {contacts.length === 0 ? "Add Contacts to Get Started" : `Send "I'm Safe" to ${contacts.length}`}
+            <LifeBuoy className="h-5 w-5" />
+            {contacts.length === 0 ? "Add Contacts to Get Started" : `Send "Help Me" to ${contacts.length}`}
           </button>
 
           {sentAt && (
-            <div className="mt-3 flex items-center gap-2 text-xs text-emerald-300">
+            <div className="mt-3 flex items-center gap-2 text-xs text-red-300">
               <Check className="h-3.5 w-3.5" />
               Last opened at {sentAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
             </div>
@@ -220,10 +220,10 @@ function ConfirmSend({ contacts, message, location, onConfirm, onCancel }) {
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onCancel} />
       <div className="relative w-full max-w-md rounded-t-3xl border-t border-border/60 bg-card p-5 sm:rounded-3xl sm:border shadow-2xl">
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-border sm:hidden" />
-        <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">Ready to send</div>
-        <h3 className="mt-1 text-lg font-bold">Open your messaging app?</h3>
+        <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-red-400">Ready to send</div>
+        <h3 className="mt-1 text-lg font-bold">Send emergency "Help Me"?</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          We'll fill in this message and your location for {contacts.length} {contacts.length === 1 ? "contact" : "contacts"}. You'll tap send.
+          We'll fill in your help message and live location for {contacts.length} {contacts.length === 1 ? "contact" : "contacts"}. You'll tap send.
         </p>
 
         <div className="mt-4 max-h-32 overflow-y-auto rounded-xl bg-secondary/40 p-3 text-xs space-y-1">
@@ -253,7 +253,7 @@ function ConfirmSend({ contacts, message, location, onConfirm, onCancel }) {
           </button>
           <button
             onClick={onConfirm}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-sm font-bold text-emerald-950 shadow-lg shadow-emerald-500/20"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-500 py-3 text-sm font-bold text-white shadow-lg shadow-red-500/30"
           >
             <Send className="h-4 w-4" /> Open Messages
           </button>

@@ -3,7 +3,7 @@ const KEY = "safety_contacts_v1";
 const MSG_KEY = "safety_message_v1";
 
 export const DEFAULT_MESSAGE =
-  "I'm safe. Severe weather alert in my area — here's my current location:";
+  "HELP ME. I need assistance — severe weather in my area. Here's my current location:";
 
 export function loadContacts() {
   try {
