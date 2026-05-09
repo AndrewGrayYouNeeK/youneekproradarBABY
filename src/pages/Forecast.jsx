@@ -60,14 +60,14 @@ export default function Forecast() {
   });
 
   return (
-    <div className="relative min-h-screen bg-background pb-24" {...pullToRefreshHandlers}>
+    <div className="relative h-full overflow-y-auto bg-background" {...pullToRefreshHandlers}>
       <RefreshSpinner visible={isRefreshing} />
       <AppHeader
         title="Forecast"
         location={location.label || `${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)}`}
       />
 
-      <div className="mx-auto max-w-md space-y-4 px-4 pt-4">
+      <div className="mx-auto max-w-md space-y-4 px-4 pt-4 pb-32">
         <CurrentConditionsCard data={current} location={location} />
 
         <SPCOutlookCard location={location} />
