@@ -73,7 +73,7 @@ export default function Radar() {
 
             <RadarLegend />
 
-            <div className="absolute right-3 top-32 z-20 flex flex-col gap-2.5">
+            <div className="absolute right-3 top-[20rem] z-20 flex flex-col gap-2.5">
               <button
                 aria-label={globalRadar ? "Hide global radar" : "Show global radar"}
                 onClick={() => setGlobalRadar((v) => !v)}
