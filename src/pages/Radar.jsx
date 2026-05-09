@@ -7,7 +7,7 @@ import TimeLapseBar from "@/components/radar/TimeLapseBar";
 import RadarBottomSheet from "@/components/radar/RadarBottomSheet";
 import LocationSearchBar from "@/components/radar/LocationSearchBar";
 import useLocation from "@/hooks/useLocation";
-import { Crosshair, Activity, Eye, EyeOff, Wind, Globe2 } from "lucide-react";
+import { Crosshair, Activity, Eye, EyeOff, Wind, Globe2, Clock } from "lucide-react";
 
 const RadarMap = lazy(() => import("@/components/radar/RadarMap"));
 
@@ -104,6 +104,17 @@ export default function Radar() {
               <Crosshair className="h-5 w-5" />
             </button>
 
+            <button
+              aria-label={timeLapse ? "Show live radar" : "Show radar loop"}
+              onClick={() => setTimeLapse((v) => !v)}
+              className={`absolute right-3 top-[21.5rem] z-20 flex h-11 w-11 items-center justify-center rounded-xl border glass-strong transition-colors ${
+                timeLapse ? "border-primary/60 text-primary" : "border-border/60 text-foreground hover:bg-secondary"
+              }`}
+              style={{ minHeight: "auto" }}
+            >
+              <Clock className="h-5 w-5" />
+            </button>
+
             <TimeLapseBar
               enabled={timeLapse}
               setEnabled={setTimeLapse}
@@ -131,7 +142,7 @@ export default function Radar() {
           <button
             aria-label="Hide controls"
             onClick={() => setHideUI(true)}
-            className="absolute right-3 top-[21.5rem] z-30 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
+            className="absolute right-3 top-[24.5rem] z-30 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
             style={{ minHeight: "auto" }}
           >
             <EyeOff className="h-5 w-5" />
