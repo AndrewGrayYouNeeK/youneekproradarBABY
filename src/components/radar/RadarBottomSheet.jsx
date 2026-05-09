@@ -13,8 +13,9 @@ import {
   degToCardinal,
 } from "@/lib/weather/api";
 
-// Three snap points (% of viewport height): peek, half, full
-const SNAP = { peek: 18, half: 55, full: 88 };
+// Three snap points (% of viewport height): peek, half, full.
+// Capped so the bottom-nav tabs always remain visible.
+const SNAP = { peek: 18, half: 50, full: 75 };
 
 export default function RadarBottomSheet({ location }) {
   const [snap, setSnap] = useState("peek");

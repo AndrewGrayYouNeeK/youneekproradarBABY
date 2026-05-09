@@ -3,7 +3,6 @@ import AppHeader from "@/components/nav/AppHeader";
 import BottomNav from "@/components/nav/BottomNav";
 import RadarLegend from "@/components/radar/RadarLegend";
 import RadarControls from "@/components/radar/RadarControls";
-import TimeLapseBar from "@/components/radar/TimeLapseBar";
 import RadarBottomSheet from "@/components/radar/RadarBottomSheet";
 import LocationSearchBar from "@/components/radar/LocationSearchBar";
 import useLocation from "@/hooks/useLocation";
@@ -112,15 +111,6 @@ export default function Radar() {
                 <EyeOff className="h-5 w-5" />
               </button>
             </div>
-
-            <TimeLapseBar
-              enabled={timeLapse}
-              setEnabled={setTimeLapse}
-              playing={playing}
-              setPlaying={setPlaying}
-              speed={speed}
-              setSpeed={setSpeed}
-            />
 
             <RadarBottomSheet location={location} />
           </>
