@@ -7,7 +7,7 @@ import TimeLapseBar from "@/components/radar/TimeLapseBar";
 import RadarBottomSheet from "@/components/radar/RadarBottomSheet";
 import LocationSearchBar from "@/components/radar/LocationSearchBar";
 import useLocation from "@/hooks/useLocation";
-import { Crosshair, Activity, Eye, EyeOff, Wind, Globe2, Clock, Camera } from "lucide-react";
+import { Crosshair, Activity, Eye, EyeOff, Wind, Globe2, Clock } from "lucide-react";
 
 const RadarMap = lazy(() => import("@/components/radar/RadarMap"));
 
@@ -21,7 +21,6 @@ export default function Radar() {
   const [speed, setSpeed] = useState("normal");
   const [hurricanes, setHurricanes] = useState(false);
   const [globalRadar, setGlobalRadar] = useState(false);
-  const [demoStorm, setDemoStorm] = useState(false);
   const [hideUI, setHideUI] = useState(false);
 
   return (
@@ -58,7 +57,6 @@ export default function Radar() {
             speed={speed}
             hurricanes={hurricanes}
             globalRadar={globalRadar}
-            demoStorm={demoStorm}
           />
         </Suspense>
 
@@ -115,18 +113,6 @@ export default function Radar() {
               style={{ minHeight: "auto" }}
             >
               <Wind className="h-5 w-5" />
-            </button>
-
-            <button
-              aria-label={demoStorm ? "Hide demo storm" : "Show demo storm for screenshot"}
-              onClick={() => setDemoStorm((v) => !v)}
-              className={`absolute left-3 top-16 z-20 flex h-11 items-center gap-1.5 rounded-xl border glass-strong px-3 text-[10px] font-bold uppercase tracking-wider transition-colors ${
-                demoStorm ? "border-fuchsia-500/60 text-fuchsia-300" : "border-border/60 text-muted-foreground hover:bg-secondary"
-              }`}
-              style={{ minHeight: "auto" }}
-            >
-              <Camera className="h-4 w-4" />
-              {demoStorm ? "Demo On" : "Demo"}
             </button>
 
             <TimeLapseBar
