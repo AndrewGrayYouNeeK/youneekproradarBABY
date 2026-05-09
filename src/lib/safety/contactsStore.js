@@ -1,9 +1,13 @@
 // Local-only contacts storage. No backend, no PII transmission.
 const KEY = "safety_contacts_v1";
 const MSG_KEY = "safety_message_v1";
+const SAFE_MSG_KEY = "safety_safe_message_v1";
 
 export const DEFAULT_MESSAGE =
   "HELP ME. I need assistance — severe weather in my area. Here's my current location:";
+
+export const DEFAULT_SAFE_MESSAGE =
+  "I'M SAFE. The tornado warning has passed and I'm okay. Here's my current location:";
 
 export function loadContacts() {
   try {
@@ -26,6 +30,14 @@ export function loadMessage() {
 
 export function saveMessage(msg) {
   localStorage.setItem(MSG_KEY, msg || DEFAULT_MESSAGE);
+}
+
+export function loadSafeMessage() {
+  return localStorage.getItem(SAFE_MSG_KEY) || DEFAULT_SAFE_MESSAGE;
+}
+
+export function saveSafeMessage(msg) {
+  localStorage.setItem(SAFE_MSG_KEY, msg || DEFAULT_SAFE_MESSAGE);
 }
 
 export function cleanPhone(raw) {
