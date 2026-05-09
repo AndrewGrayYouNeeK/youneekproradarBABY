@@ -85,14 +85,14 @@ export default function Radar() {
             </button>
 
             <button
-              aria-label={hurricanes ? "Hide hurricanes" : "Show hurricanes"}
-              onClick={() => setHurricanes((v) => !v)}
+              aria-label={timeLapse ? "Show live radar" : "Show radar loop"}
+              onClick={() => setTimeLapse((v) => !v)}
               className={`absolute right-3 top-[15.5rem] z-20 flex h-11 w-11 items-center justify-center rounded-xl border glass-strong transition-colors ${
-                hurricanes ? "border-orange-500/60 text-orange-400" : "border-border/60 text-foreground hover:bg-secondary"
+                timeLapse ? "border-primary/60 text-primary" : "border-border/60 text-foreground hover:bg-secondary"
               }`}
               style={{ minHeight: "auto" }}
             >
-              <Wind className="h-5 w-5" />
+              <Clock className="h-5 w-5" />
             </button>
 
             <button
@@ -105,14 +105,14 @@ export default function Radar() {
             </button>
 
             <button
-              aria-label={timeLapse ? "Show live radar" : "Show radar loop"}
-              onClick={() => setTimeLapse((v) => !v)}
+              aria-label={hurricanes ? "Hide hurricanes" : "Show hurricanes"}
+              onClick={() => setHurricanes((v) => !v)}
               className={`absolute right-3 top-[21.5rem] z-20 flex h-11 w-11 items-center justify-center rounded-xl border glass-strong transition-colors ${
-                timeLapse ? "border-primary/60 text-primary" : "border-border/60 text-foreground hover:bg-secondary"
+                hurricanes ? "border-orange-500/60 text-orange-400" : "border-border/60 text-foreground hover:bg-secondary"
               }`}
               style={{ minHeight: "auto" }}
             >
-              <Clock className="h-5 w-5" />
+              <Wind className="h-5 w-5" />
             </button>
 
             <TimeLapseBar
