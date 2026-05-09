@@ -30,6 +30,12 @@ export default function Radar() {
           title="Live Radar"
           location={location.label || `${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)}`}
           transparent
+          right={
+            <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+              {timeLapse ? "Loop" : "Live"}
+            </div>
+          }
         />
       )}
 
@@ -122,23 +128,14 @@ export default function Radar() {
             Show Controls
           </button>
         ) : (
-          <>
-            <button
-              aria-label="Hide controls"
-              onClick={() => setHideUI(true)}
-              className="absolute right-3 top-[21.5rem] z-30 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
-              style={{ minHeight: "auto" }}
-            >
-              <EyeOff className="h-5 w-5" />
-            </button>
-
-            <div className="absolute right-3 top-[24.5rem] z-20 flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
-              <span className="absolute left-1.5 top-1.5 h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-              <span className="text-[9px] font-bold uppercase tracking-wide">
-                {timeLapse ? "Loop" : "Live"}
-              </span>
-            </div>
-          </>
+          <button
+            aria-label="Hide controls"
+            onClick={() => setHideUI(true)}
+            className="absolute right-3 top-[21.5rem] z-30 flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 glass-strong text-foreground hover:bg-secondary"
+            style={{ minHeight: "auto" }}
+          >
+            <EyeOff className="h-5 w-5" />
+          </button>
         )}
       </div>
 
