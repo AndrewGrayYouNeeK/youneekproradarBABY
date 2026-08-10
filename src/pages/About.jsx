@@ -19,8 +19,8 @@ export default function About() {
             <strong>YouNeeK Pro Radar</strong> is a fast, mobile-first severe-weather companion. It pulls live
             NEXRAD reflectivity tiles from the Iowa Environmental Mesonet, active warnings and watches from the
             U.S. National Weather Service (api.weather.gov), and current conditions, hourly forecasts, and
-            7-day outlooks from Apple WeatherKit (via your Apple Developer account). Together these data
-            sources give you the same situational awareness used by emergency managers, storm chasers, and meteorology students — packaged into a
+            7-day outlooks from Open-Meteo. Together these public data sources give you the same situational
+            awareness used by emergency managers, storm chasers, and meteorology students — packaged into a meteorology students — packaged into a
             single screen that works on any phone, tablet, or desktop browser.
           </p>
           <p>
@@ -35,9 +35,10 @@ export default function About() {
             Core features include an animated time-lapse radar loop, hurricane and tropical storm tracking,
             SPC convective outlooks, heat-risk forecasts, NOAA Weather Radio audio with auto-tuning to your
             nearest broadcast, an "I'm Safe" check-in that texts trusted contacts your GPS coordinates, and
-            tornado-warning popups that interrupt the app with safety instructions. Everything is designed to
-            stay readable in a dark room, accessible with one thumb, and respectful of your data — saved
-            locations and safety contacts live only on your device.
+            tornado-warning popups that interrupt the app with safety instructions. A native iOS app with
+            Apple WeatherKit forecasts is available in the <code>ios/</code> folder for App Store release later.
+            Everything is designed to stay readable in a dark room, accessible with one thumb, and respectful
+            of your data — saved locations and safety contacts live only on your device.
           </p>
           <p>
             <strong>Who builds it:</strong> YouNeeK Pro Radar is developed by the YouNeeK team, an
@@ -53,8 +54,7 @@ export default function About() {
           <ul className="mt-2 list-disc space-y-1 pl-5">
             <li>NEXRAD radar tiles — Iowa Environmental Mesonet</li>
             <li>Active alerts — api.weather.gov (NWS)</li>
-            <li>Forecasts — Apple WeatherKit</li>
-            <li>Air quality — open-meteo.com</li>
+            <li>Forecasts &amp; air quality — open-meteo.com</li>
             <li>Tropical cyclones — National Hurricane Center</li>
           </ul>
         </section>

@@ -1,40 +1,41 @@
-import jwt from "jsonwebtoken";
+import { SignJWT, importPKCS8 } from "jose";
 
 const WEATHERKIT_BASE = "https://weatherkit.apple.com/api/v1/weather";
 
-export function isWeatherKitConfigured() {
+export function isWeatherKitConfigured(env) {
   return Boolean(
-    process.env.WEATHERKIT_TEAM_ID &&
-      process.env.WEATHERKIT_KEY_ID &&
-      process.env.WEATHERKIT_SERVICE_ID &&
-      process.env.WEATHERKIT_PRIVATE_KEY
+    env.WEATHERKIT_TEAM_ID &&
+      env.WEATHERKIT_KEY_ID &&
+      env.WEATHERKIT_SERVICE_ID &&
+      env.WEATHERKIT_PRIVATE_KEY
   );
 }
 
-function getPrivateKey() {
-  return process.env.WEATHERKIT_PRIVATE_KEY.replace(/\\n/g, "\n");
+function normalizePrivateKey(key) {
+  return key.replace(/\\n/g, "\n");
 }
 
-export function createWeatherKitToken() {
-  const teamId = process.env.WEATHERKIT_TEAM_ID;
-  const keyId = process.env.WEATHERKIT_KEY_ID;
-  const serviceId = process.env.WEATHERKIT_SERVICE_ID;
+export async function createWeatherKitToken(env) {
+  const teamId = env.WEATHERKIT_TEAM_ID;
+  const keyId = env.WEATHERKIT_KEY_ID;
+  const serviceId = env.WEATHERKIT_SERVICE_ID;
+  const privateKey = await importPKCS8(normalizePrivateKey(env.WEATHERKIT_PRIVATE_KEY), "ES256");
 
-  return jwt.sign({}, getPrivateKey(), {
-    algorithm: "ES256",
-    expiresIn: "55m",
-    issuer: teamId,
-    subject: serviceId,
-    header: {
+  return new SignJWT({})
+    .setProtectedHeader({
       alg: "ES256",
       kid: keyId,
       id: `${teamId}.${serviceId}`,
-    },
-  });
+    })
+    .setIssuer(teamId)
+    .setSubject(serviceId)
+    .setIssuedAt()
+    .setExpirationTime("55m")
+    .sign(privateKey);
 }
 
-export async function fetchWeatherKit(lat, lon, dataSets = "currentWeather,forecastHourly,forecastDaily") {
-  if (!isWeatherKitConfigured()) {
+export async function fetchWeatherKit(env, lat, lon, dataSets = "currentWeather,forecastHourly,forecastDaily") {
+  if (!isWeatherKitConfigured(env)) {
     throw new Error("WeatherKit is not configured");
   }
 
@@ -44,7 +45,7 @@ export async function fetchWeatherKit(lat, lon, dataSets = "currentWeather,forec
     throw new Error("Invalid coordinates");
   }
 
-  const token = createWeatherKitToken();
+  const token = await createWeatherKitToken(env);
   const url = new URL(`${WEATHERKIT_BASE}/en/${latitude}/${longitude}`);
   url.searchParams.set("dataSets", dataSets);
   url.searchParams.set("units", "us");

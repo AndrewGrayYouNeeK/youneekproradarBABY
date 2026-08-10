@@ -1,10 +1,5 @@
-// Weather data fetchers — Apple WeatherKit (primary) with NWS/Open-Meteo fallbacks.
-
-import {
-  fetchWeatherKitCurrent,
-  fetchWeatherKitDaily,
-  fetchWeatherKitHourly,
-} from "./weatherkit.js";
+// Weather data fetchers — NWS + Open-Meteo on web (free, no keys).
+// Apple WeatherKit is used in the native iOS app (see ios/).
 
 const NWS_HEADERS = { Accept: "application/geo+json", "User-Agent": "YouNeeKRadar/1.0 (weather)" };
 
@@ -15,29 +10,21 @@ export async function fetchNWSPoint(lat, lon) {
 }
 
 export async function fetchHourlyForecast(lat, lon) {
-  try {
-    return await fetchWeatherKitHourly(lat, lon);
-  } catch {
-    const point = await fetchNWSPoint(lat, lon);
-    const url = point?.properties?.forecastHourly;
-    if (!url) throw new Error("No forecastHourly URL");
-    const r = await fetch(url, { headers: NWS_HEADERS });
-    if (!r.ok) throw new Error(`Hourly ${r.status}`);
-    return r.json();
-  }
+  const point = await fetchNWSPoint(lat, lon);
+  const url = point?.properties?.forecastHourly;
+  if (!url) throw new Error("No forecastHourly URL");
+  const r = await fetch(url, { headers: NWS_HEADERS });
+  if (!r.ok) throw new Error(`Hourly ${r.status}`);
+  return r.json();
 }
 
 export async function fetchDailyForecast(lat, lon) {
-  try {
-    return await fetchWeatherKitDaily(lat, lon);
-  } catch {
-    const point = await fetchNWSPoint(lat, lon);
-    const url = point?.properties?.forecast;
-    if (!url) throw new Error("No forecast URL");
-    const r = await fetch(url, { headers: NWS_HEADERS });
-    if (!r.ok) throw new Error(`Forecast ${r.status}`);
-    return r.json();
-  }
+  const point = await fetchNWSPoint(lat, lon);
+  const url = point?.properties?.forecast;
+  if (!url) throw new Error("No forecast URL");
+  const r = await fetch(url, { headers: NWS_HEADERS });
+  if (!r.ok) throw new Error(`Forecast ${r.status}`);
+  return r.json();
 }
 
 export async function fetchActiveAlerts(lat, lon) {
@@ -134,28 +121,24 @@ export async function fetchHeatRisk(lat, lon) {
   return { tier, label, peakF: Math.round(tempF) };
 }
 
-// Current conditions — Apple WeatherKit primary, Open-Meteo fallback.
+// Open-Meteo for current conditions, AQI, UV — no API key needed.
 export async function fetchCurrentConditions(lat, lon) {
-  try {
-    return await fetchWeatherKitCurrent(lat, lon);
-  } catch {
-    const url = new URL("https://api.open-meteo.com/v1/forecast");
-    url.searchParams.set("latitude", lat);
-    url.searchParams.set("longitude", lon);
-    url.searchParams.set(
-      "current",
-      "temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,wind_speed_10m,wind_direction_10m,wind_gusts_10m,weather_code,pressure_msl,cloud_cover,uv_index,visibility,is_day"
-    );
-    url.searchParams.set("daily", "sunrise,sunset,uv_index_max,precipitation_probability_max,temperature_2m_max,temperature_2m_min");
-    url.searchParams.set("temperature_unit", "fahrenheit");
-    url.searchParams.set("wind_speed_unit", "mph");
-    url.searchParams.set("precipitation_unit", "inch");
-    url.searchParams.set("timezone", "auto");
-    url.searchParams.set("forecast_days", "1");
-    const r = await fetch(url.toString());
-    if (!r.ok) throw new Error(`OM ${r.status}`);
-    return r.json();
-  }
+  const url = new URL("https://api.open-meteo.com/v1/forecast");
+  url.searchParams.set("latitude", lat);
+  url.searchParams.set("longitude", lon);
+  url.searchParams.set(
+    "current",
+    "temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,wind_speed_10m,wind_direction_10m,wind_gusts_10m,weather_code,pressure_msl,cloud_cover,uv_index,visibility,is_day"
+  );
+  url.searchParams.set("daily", "sunrise,sunset,uv_index_max,precipitation_probability_max,temperature_2m_max,temperature_2m_min");
+  url.searchParams.set("temperature_unit", "fahrenheit");
+  url.searchParams.set("wind_speed_unit", "mph");
+  url.searchParams.set("precipitation_unit", "inch");
+  url.searchParams.set("timezone", "auto");
+  url.searchParams.set("forecast_days", "1");
+  const r = await fetch(url.toString());
+  if (!r.ok) throw new Error(`OM ${r.status}`);
+  return r.json();
 }
 
 export async function fetchAirQuality(lat, lon) {
