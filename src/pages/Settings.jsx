@@ -155,7 +155,7 @@ export default function Settings() {
                 NOAA Weather Radio with auto-tuning. Lightning strikes, severe weather warnings, hourly + 7-day
                 forecasts, air quality, and one-tap "I'm Safe" check-ins.
               </p>
-              <p>Data: Iowa Mesonet · api.weather.gov · open-meteo.com</p>
+              <p>Data: Iowa Mesonet · api.weather.gov · Apple WeatherKit · open-meteo.com</p>
               <p>© 2026 YouNeeK</p>
             </div>
           )}

@@ -27,7 +27,23 @@ npm install
 npm run dev
 ```
 
-No API keys required — uses Iowa Mesonet public tiles and NWS public GeoJSON endpoints.
+No API keys required for radar or alerts — uses Iowa Mesonet public tiles and NWS public GeoJSON endpoints.
+
+### Apple WeatherKit (forecasts)
+
+Forecasts use [Apple WeatherKit](https://developer.apple.com/weatherkit/) via your Apple Developer Program membership. Set up once:
+
+1. In [Apple Developer → Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources):
+   - Create a **Services ID** (e.g. `com.youneek.proradar.weather`)
+   - Create a **Key** with WeatherKit enabled and download the `.p8` file
+2. Copy `.env.example` to `.env` and fill in:
+   - `WEATHERKIT_TEAM_ID` — your 10-character Team ID
+   - `WEATHERKIT_KEY_ID` — the key ID from step 1
+   - `WEATHERKIT_SERVICE_ID` — the Services ID you registered
+   - `WEATHERKIT_PRIVATE_KEY` — contents of the `.p8` file (keep newlines as `\n`)
+3. On Vercel, add the same variables in Project Settings → Environment Variables.
+
+If WeatherKit is not configured, the app falls back to NWS/Open-Meteo for forecasts.
 
 ## Data Sources
 
@@ -41,6 +57,7 @@ No API keys required — uses Iowa Mesonet public tiles and NWS public GeoJSON e
 - Leaflet.js for map rendering
 - Iowa Mesonet XYZ tiles for radar
 - NWS GeoJSON API for live alerts
+- Apple WeatherKit for current conditions and forecasts (requires Apple Developer account)
 - Vercel serverless function for hurricane data (NHC proxy)
 - `sms:` URI scheme for emergency contacts
 - Local-only storage — no account or backend required
