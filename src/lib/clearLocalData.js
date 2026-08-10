@@ -17,7 +17,4 @@ const APP_STORAGE_KEYS = [
 
 export function clearLocalData() {
   APP_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
-  Object.keys(localStorage).forEach((key) => {
-    if (key.startsWith("base44_")) localStorage.removeItem(key);
-  });
 }
