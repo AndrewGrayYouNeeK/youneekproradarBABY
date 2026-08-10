@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
 import AppHeader from "@/components/nav/AppHeader";
 import BottomNav from "@/components/nav/BottomNav";
 import { Switch } from "@/components/ui/switch";
 import useAppNav from "@/hooks/useAppNav";
 import { useSettings, useUpdateSetting } from "@/hooks/useSettingsMutations";
+import { clearLocalData } from "@/lib/clearLocalData";
 import {
   ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle,
   Users, MapPin, Thermometer
@@ -64,11 +64,10 @@ export default function Settings() {
   const { units, notifyAlerts, notifySevere, autoTune } = settings;
   const setPref = (key) => (val) => updateSetting.mutate({ key, value: val });
 
-  const deleteAccountMutation = useMutation({
+  const clearDataMutation = useMutation({
     mutationFn: async () => {
-      const me = await base44.auth.me();
-      await base44.entities.User.delete(me.id);
-      await base44.auth.logout("/");
+      clearLocalData();
+      window.location.href = "/";
     },
     onMutate: () => setConfirmingDelete(false),
   });
@@ -167,15 +166,15 @@ export default function Settings() {
           {!confirmingDelete ? (
             <Row
               icon={Trash2}
-              label="Delete account"
-              sublabel="Permanently removes your account and data"
+              label="Clear all app data"
+              sublabel="Removes saved locations, contacts, and preferences"
               onClick={() => setConfirmingDelete(true)}
               danger
             />
           ) : (
             <div className="space-y-3 p-4">
               <p className="text-sm text-red-200 leading-snug">
-                This permanently deletes your account. There's no going back.
+                This permanently removes all data stored on this device. There's no going back.
               </p>
               <div className="flex gap-2">
                 <button
@@ -185,11 +184,11 @@ export default function Settings() {
                   Cancel
                 </button>
                 <button
-                  onClick={() => deleteAccountMutation.mutate()}
-                  disabled={deleteAccountMutation.isPending}
+                  onClick={() => clearDataMutation.mutate()}
+                  disabled={clearDataMutation.isPending}
                   className="flex-1 rounded-xl bg-red-600 px-3 py-3 text-sm font-bold text-white disabled:opacity-60"
                 >
-                  {deleteAccountMutation.isPending ? "Deleting…" : "Delete"}
+                  {clearDataMutation.isPending ? "Clearing…" : "Clear Data"}
                 </button>
               </div>
             </div>

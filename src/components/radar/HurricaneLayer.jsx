@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
-import { base44 } from "@/api/base44Client";
-
-// Real-time tropical cyclone data from NOAA's National Hurricane Center,
-// proxied via a backend function to avoid browser CORS restrictions.
-const fetchStorms = async () => {
-  const res = await base44.functions.invoke("getActiveStorms", {});
-  return res?.data?.activeStorms || [];
-};
+import { fetchActiveStorms } from "@/lib/api/storms";
 
 // Hurricane icon — pulsing spiral
 const stormIcon = (category) => {
@@ -35,7 +28,7 @@ export default function HurricaneLayer({ enabled }) {
     let cancelled = false;
     const load = async () => {
       try {
-        const data = await fetchStorms();
+        const data = await fetchActiveStorms();
         if (!cancelled) setStorms(data);
       } catch {
         if (!cancelled) setStorms([]);

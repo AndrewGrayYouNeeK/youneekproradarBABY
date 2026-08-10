@@ -41,7 +41,9 @@ No API keys required — uses Iowa Mesonet public tiles and NWS public GeoJSON e
 - Leaflet.js for map rendering
 - Iowa Mesonet XYZ tiles for radar
 - NWS GeoJSON API for live alerts
+- Vercel serverless function for hurricane data (NHC proxy)
 - `sms:` URI scheme for emergency contacts
+- Local-only storage — no account or backend required
 
 ## Built By
 

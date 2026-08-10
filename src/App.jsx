@@ -5,8 +5,7 @@ import { queryClientInstance } from "@/lib/query-client";
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import PageNotFound from "./lib/PageNotFound";
-import { AuthProvider, useAuth } from "@/lib/AuthContext";
-import UserNotRegisteredError from "@/components/UserNotRegisteredError";
+import { AuthProvider } from "@/lib/AuthContext";
 import TornadoAlertPopup from "@/components/safety/TornadoAlertPopup";
 import OnboardingGate from "@/components/onboarding/OnboardingGate";
 import EmergencyRefreshButton from "@/components/EmergencyRefreshButton";
@@ -43,20 +42,8 @@ const TABS = [
 
 const TAB_PATHS = TABS.map((t) => t.path);
 
-const AuthenticatedApp = () => {
+const AppRoutes = () => {
   const location = useLocation();
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
-
-  if (isLoadingPublicSettings || isLoadingAuth) return <Spinner />;
-
-  if (authError) {
-    if (authError.type === "user_not_registered") return <UserNotRegisteredError />;
-    if (authError.type === "auth_required") {
-      navigateToLogin();
-      return null;
-    }
-  }
-
   const isTab = TAB_PATHS.includes(location.pathname);
 
   return (
@@ -123,7 +110,7 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <div className="mx-auto h-screen w-full max-w-4xl overflow-hidden bg-background">
-            <AuthenticatedApp />
+            <AppRoutes />
           </div>
         </Router>
         <Toaster />
