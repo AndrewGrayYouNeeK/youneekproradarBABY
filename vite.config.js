@@ -10,14 +10,4 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  server: {
-    proxy: {
-      "/api/getActiveStorms": {
-        target: "https://www.nhc.noaa.gov",
-        changeOrigin: true,
-        rewrite: () => "/CurrentStorms.json",
-        headers: { "User-Agent": "YouNeeKProRadar/1.0" },
-      },
-    },
-  },
 });

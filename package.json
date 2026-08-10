@@ -1,5 +1,5 @@
 {
-  "name": "youneek-pro-radar",
+  "name": "youneek-pro-radarYNK222",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -10,8 +10,7 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
     "preview": "vite preview",
-    "pages:dev": "npm run build && wrangler pages dev dist",
-    "pages:deploy": "npm run build && wrangler pages deploy dist"
+    "pages:deploy": "npm run build && wrangler pages deploy dist --project-name=youneek-pro-radarynk222"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",
@@ -56,8 +55,6 @@
     "html2canvas": "^1.4.1",
     "input-otp": "^1.4.2",
     "jspdf": "^4.0.0",
-    "jose": "^6.0.11",
-    "leaflet": "^1.9.4",
     "lodash": "^4.17.21",
     "lucide-react": "^0.475.0",
     "moment": "^2.30.1",
