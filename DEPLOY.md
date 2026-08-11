@@ -53,6 +53,9 @@ Your project uses **Workers Builds** (not classic Pages). That means:
 
 The `wrangler.toml` in the repo tells Cloudflare where your built files are (`dist/`) and how to serve the SPA + `/api/*` routes.
 
+**Your live URL** will look like: `https://youneekproradarbaby.<your-subdomain>.workers.dev`  
+It is **not** `youneekproradarbaby.workers.dev`. Find the exact URL in Cloudflare → Workers & Pages → youneekproradarbaby → **Triggers** or the project overview.
+
 ---
 
 ## Cloudflare Pages setup (if you switch later)

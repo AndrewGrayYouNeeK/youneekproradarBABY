@@ -54,14 +54,14 @@ function App() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
-        <NavigationStackProvider>
-          <Router>
+        <Router>
+          <NavigationStackProvider>
             <div className="mx-auto h-screen w-full max-w-4xl overflow-hidden bg-slate-950">
               <AppRoutes />
             </div>
-          </Router>
-          <Toaster />
-        </NavigationStackProvider>
+            <Toaster />
+          </NavigationStackProvider>
+        </Router>
       </QueryClientProvider>
     </AuthProvider>
   );
