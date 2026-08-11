@@ -10,7 +10,7 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
     "preview": "vite preview",
-    "deploy": "wrangler pages deploy --project-name=youneekproradarbaby",
+    "deploy": "wrangler deploy",
     "pages:deploy": "npm run build && npm run deploy"
   },
   "dependencies": {

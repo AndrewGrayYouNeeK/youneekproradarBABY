@@ -30,7 +30,34 @@ If alert layers are missing on the map, confirm the `functions/` folder is in th
 
 ---
 
-## Cloudflare Pages setup
+## Cloudflare setup (Workers Builds)
+
+Your project uses **Workers Builds** (not classic Pages). That means:
+
+- There is **no "build output directory" field** in the dashboard — it lives in `wrangler.toml` as `[assets] directory = "./dist"`.
+- The default **deploy command** `npx wrangler deploy` is correct. Do not change it to `wrangler pages deploy`.
+
+### Dashboard settings for `youneekproradarbaby`
+
+1. Cloudflare → **Workers & Pages** → **youneekproradarbaby**
+2. **Settings → Builds**
+3. Set:
+
+| Setting | Value |
+|---|---|
+| Production branch | `app` |
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy` |
+
+4. Save, then **Retry deployment**
+
+The `wrangler.toml` in the repo tells Cloudflare where your built files are (`dist/`) and how to serve the SPA + `/api/*` routes.
+
+---
+
+## Cloudflare Pages setup (if you switch later)
+
+If you ever migrate to classic Pages Git instead of Workers Builds:
 
 ### 1. Landing site (`youneek-pro-radarynk222`)
 
@@ -44,22 +71,7 @@ If alert layers are missing on the map, confirm the `functions/` folder is in th
 
 ### 2. Radar app (`youneekproradarbaby`)
 
-1. Cloudflare → **Workers & Pages** → `youneekproradarbaby`
-2. **Connect to Git** → repo: `AndrewGrayYouNeeK/youneekproradarBABY`
-3. **Production branch:** `app` ← important, not main
-4. **Build command:** `npm run build`
-5. **Build output directory:** `dist`
-
-**Deploy command (important):** use one of these — **not** `npx wrangler deploy`:
-
-| Setup type | Deploy command |
-|---|---|
-| **Pages (recommended)** | Leave deploy command **empty** — Cloudflare publishes `dist` automatically after build |
-| **Workers Builds** | `npm run deploy` |
-
-`npx wrangler deploy` is for standalone Workers, not Pages. It will fail with "Missing entry-point to Worker script".
-
-6. Save and redeploy
+Use Workers Builds settings above instead — this project is a Worker, not Pages.
 
 ---
 
