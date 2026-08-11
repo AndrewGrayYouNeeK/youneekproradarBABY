@@ -34,23 +34,32 @@ If alert layers are missing on the map, confirm the `functions/` folder is in th
 
 ### 1. Landing site (`youneek-pro-radarynk222`)
 
-1. Cloudflare → **Workers & Pages** → your landing project (or create one)
+1. Cloudflare → **Workers & Pages** → `youneek-pro-radarynk222`
 2. **Connect to Git** → repo: `AndrewGrayYouNeeK/youneekproradarBABY`
 3. **Production branch:** `main`
-4. Build command: `npm run build`
-5. Build output: `dist`
-6. Save and deploy
+4. **Build command:** `npm run build`
+5. **Build output directory:** `dist`
+6. **Deploy command:** leave empty (Pages auto-publishes `dist` after build)
+7. Save and deploy
 
 ### 2. Radar app (`youneekproradarbaby`)
 
-1. Cloudflare → **Workers & Pages** → your app project (or create one)
-2. **Connect to Git** → same repo: `AndrewGrayYouNeeK/youneekproradarBABY`
+1. Cloudflare → **Workers & Pages** → `youneekproradarbaby`
+2. **Connect to Git** → repo: `AndrewGrayYouNeeK/youneekproradarBABY`
 3. **Production branch:** `app` ← important, not main
-4. Build command: `npm run build`
-5. Build output: `dist`
-6. Save and deploy
+4. **Build command:** `npm run build`
+5. **Build output directory:** `dist`
 
-Same repo, different branches. No second GitHub repo needed.
+**Deploy command (important):** use one of these — **not** `npx wrangler deploy`:
+
+| Setup type | Deploy command |
+|---|---|
+| **Pages (recommended)** | Leave deploy command **empty** — Cloudflare publishes `dist` automatically after build |
+| **Workers Builds** | `npm run deploy` |
+
+`npx wrangler deploy` is for standalone Workers, not Pages. It will fail with "Missing entry-point to Worker script".
+
+6. Save and redeploy
 
 ---
 
