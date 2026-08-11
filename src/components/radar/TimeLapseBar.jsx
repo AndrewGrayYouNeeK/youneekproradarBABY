@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Play, Pause, Rewind, FastForward, Clock } from "lucide-react";
 
 export default function TimeLapseBar({ enabled, setEnabled, playing, setPlaying, speed, setSpeed }) {

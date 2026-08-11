@@ -18,7 +18,6 @@ import {
 import { fetchActiveAlerts } from "@/lib/weather/api";
 import { evaluateTornadoWindow } from "@/lib/safety/tornadoWindow";
 import {
-  MessageSquare,
   Users,
   MapPin,
   Edit3,
