@@ -1,3 +1,7 @@
-name = "youneek-pro-radarynk222"
+name = "youneekproradarbaby"
 compatibility_date = "2024-09-23"
 pages_build_output_dir = "dist"
+
+[vars]
+# Non-secret defaults can go here. Secrets are set in the Cloudflare dashboard
+# or via: npx wrangler pages secret put WEATHERKIT_TEAM_ID

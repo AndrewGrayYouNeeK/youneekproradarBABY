@@ -10,7 +10,7 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
     "preview": "vite preview",
-    "pages:deploy": "npm run build && wrangler pages deploy dist --project-name=youneek-pro-radarynk222"
+    "pages:deploy": "npm run build && wrangler pages deploy dist --project-name=youneekproradarbaby"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

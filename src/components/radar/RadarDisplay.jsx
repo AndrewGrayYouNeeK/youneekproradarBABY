@@ -16,8 +16,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-const WORKER_BASE = "https://youneek-radar-worker.youneekartifacts.workers.dev";
-
 const STATION_COORDS = {
   KOKX: [40.866, -72.864], KBOX: [41.956, -71.137], KBGM: [42.2, -75.985],
   KBUF: [42.949, -78.737], KENX: [42.586, -74.064], KPBZ: [40.532, -80.218],
@@ -56,7 +54,7 @@ const STATION_COORDS = {
   KMSX: [47.041, -113.986], KTFX: [47.46, -111.385], KCBX: [43.491, -116.236],
 };
 
-const getAlertUrl = (type) => `${WORKER_BASE}/alerts?type=${type}`;
+const getAlertUrl = (type) => `/api/alerts?type=${type}`;
 
 const AERIS_CLIENT_ID = import.meta.env.VITE_AERIS_CLIENT_ID;
 const AERIS_CLIENT_SECRET = import.meta.env.VITE_AERIS_CLIENT_SECRET;

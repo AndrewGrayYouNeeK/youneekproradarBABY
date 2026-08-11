@@ -11,6 +11,25 @@ Both are **Base44-free**.
 
 ---
 
+## Pages Functions (Workers)
+
+The radar app (`youneekproradarbaby`) uses **Cloudflare Pages Functions** in the `functions/` folder:
+
+| Route | Purpose |
+|---|---|
+| `/api/alerts?type=tornado` | NWS alert polygons for the radar map |
+| `/api/alerts?type=tornado_watch` | Tornado watch polygons |
+| `/api/alerts?type=thunderstorm` | Severe thunderstorm warnings |
+| `/api/alerts?type=flood` | Flood / flash flood alerts |
+| `/api/alerts?type=winter` | Winter weather alerts |
+| `/api/getActiveStorms` | Hurricane data proxy (NHC) |
+
+These deploy automatically with the Pages project — no separate Worker needed.
+
+If alert layers are missing on the map, confirm the `functions/` folder is in the deployed branch and retry the deployment.
+
+---
+
 ## Cloudflare Pages setup
 
 ### 1. Landing site (`youneek-pro-radarynk222`)
