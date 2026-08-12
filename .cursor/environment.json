@@ -1,11 +1,11 @@
 {
-  "name": "YouNeeK Pro Radar (local)",
-  "install": "npm install",
+  "name": "YouNeeK Pro Radar",
+  "install": "npm ci",
   "terminals": [
     {
-      "name": "vite",
+      "name": "dev",
       "command": "npm run dev",
-      "description": "Vite dev server for the web app on port 5173"
+      "description": "Vite dev server for the YouNeeK Pro Radar web app, served on port 5173."
     }
   ],
   "ports": [
