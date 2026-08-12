@@ -85,7 +85,6 @@ export default function Radio() {
       <audio
         ref={audioRef}
         preload="none"
-        playsInline
         crossOrigin="anonymous"
         onPlaying={() => { setLoadingAudio(false); setPlaying(true); }}
         onWaiting={() => setLoadingAudio(true)}

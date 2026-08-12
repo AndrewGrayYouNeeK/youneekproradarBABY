@@ -4,7 +4,7 @@
   "terminals": [
     {
       "name": "dev",
-      "command": "npm run dev -- --host 0.0.0.0 --port 5173",
+      "command": "npm run dev",
       "description": "Vite dev server for the YouNeeK Pro Radar web app, served on port 5173."
     }
   ],
