@@ -14,6 +14,10 @@ export default defineConfig({
     host: true,
     port: 5173,
     strictPort: true,
+    headers: {
+      "X-Frame-Options": "DENY",
+      "Content-Security-Policy": "frame-ancestors 'none'",
+    },
     proxy: {
       "/api/getActiveStorms": {
         target: "https://www.nhc.noaa.gov",
@@ -27,6 +31,10 @@ export default defineConfig({
     host: true,
     port: 4173,
     strictPort: true,
+    headers: {
+      "X-Frame-Options": "DENY",
+      "Content-Security-Policy": "frame-ancestors 'none'",
+    },
     proxy: {
       "/api/getActiveStorms": {
         target: "https://www.nhc.noaa.gov",
