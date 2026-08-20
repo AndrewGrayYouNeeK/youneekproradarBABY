@@ -55,9 +55,7 @@ export default function AccountActions() {
             </button>
           ) : (
             <div className="space-y-3 rounded-xl border border-red-500/30 bg-red-950/30 p-4">
-              <p className="text-sm text-red-100">
-                This removes all saved locations, contacts, and preferences from this device. Are you sure?
-              </p>
+              <p className="text-sm text-red-100">This removes all data stored on this device. Are you sure?</p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setConfirmingClear(false)}

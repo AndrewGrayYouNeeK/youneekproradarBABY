@@ -9,29 +9,74 @@ You have **two apps** in this single GitHub repo (`youneekproradarBABY`):
 
 Both are **Base44-free**.
 
+Same repo, different branches. No second GitHub repo needed.
+
 ---
 
-## Cloudflare Pages setup
+## Pages Functions (Workers)
+
+The radar app (`youneekproradarbaby`) uses **Cloudflare Pages Functions** in the `functions/` folder:
+
+| Route | Purpose |
+|---|---|
+| `/api/alerts?type=tornado` | NWS alert polygons for the radar map |
+| `/api/alerts?type=tornado_watch` | Tornado watch polygons |
+| `/api/alerts?type=thunderstorm` | Severe thunderstorm warnings |
+| `/api/alerts?type=flood` | Flood / flash flood alerts |
+| `/api/alerts?type=winter` | Winter weather alerts |
+| `/api/getActiveStorms` | Hurricane data proxy (NHC) |
+
+These deploy automatically with the Pages project — no separate Worker needed.
+
+If alert layers are missing on the map, confirm the `functions/` folder is in the deployed branch and retry the deployment.
+
+---
+
+## Cloudflare setup (Workers Builds)
+
+Your project uses **Workers Builds** (not classic Pages). That means:
+
+- There is **no "build output directory" field** in the dashboard — it lives in `wrangler.toml` as `[assets] directory = "./dist"`.
+- The default **deploy command** `npx wrangler deploy` is correct. Do not change it to `wrangler pages deploy`.
+
+### Dashboard settings for `youneekproradarbaby`
+
+1. Cloudflare → **Workers & Pages** → **youneekproradarbaby**
+2. **Settings → Builds**
+3. Set:
+
+| Setting | Value |
+|---|---|
+| Production branch | `app` |
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy` |
+
+4. Save, then **Retry deployment**
+
+The `wrangler.toml` in the repo tells Cloudflare where your built files are (`dist/`) and how to serve the SPA + `/api/*` routes.
+
+**Your live URL** will look like: `https://youneekproradarbaby.<your-subdomain>.workers.dev`  
+It is **not** `youneekproradarbaby.workers.dev`. Find the exact URL in Cloudflare → Workers & Pages → youneekproradarbaby → **Triggers** or the project overview.
+
+---
+
+## Cloudflare Pages setup (if you switch later)
+
+If you ever migrate to classic Pages Git instead of Workers Builds:
 
 ### 1. Landing site (`youneek-pro-radarynk222`)
 
-1. Cloudflare → **Workers & Pages** → your landing project (or create one)
+1. Cloudflare → **Workers & Pages** → `youneek-pro-radarynk222`
 2. **Connect to Git** → repo: `AndrewGrayYouNeeK/youneekproradarBABY`
 3. **Production branch:** `main`
-4. Build command: `npm run build`
-5. Build output: `dist`
-6. Save and deploy
+4. **Build command:** `npm run build`
+5. **Build output directory:** `dist`
+6. **Deploy command:** leave empty (Pages auto-publishes `dist` after build)
+7. Save and deploy
 
 ### 2. Radar app (`youneekproradarbaby`)
 
-1. Cloudflare → **Workers & Pages** → your app project (or create one)
-2. **Connect to Git** → same repo: `AndrewGrayYouNeeK/youneekproradarBABY`
-3. **Production branch:** `app` ← important, not main
-4. Build command: `npm run build`
-5. Build output: `dist`
-6. Save and deploy
-
-Same repo, different branches. No second GitHub repo needed.
+Use Workers Builds settings above instead — this project is a Worker, not Pages.
 
 ---
 
