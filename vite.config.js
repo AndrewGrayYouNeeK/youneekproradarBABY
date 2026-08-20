@@ -84,6 +84,22 @@ export default defineConfig({
     },
   },
   server: {
+    host: true,
+    port: 5173,
+    strictPort: true,
+    proxy: {
+      "/api/getActiveStorms": {
+        target: "https://www.nhc.noaa.gov",
+        changeOrigin: true,
+        rewrite: () => "/CurrentStorms.json",
+        headers: { "User-Agent": "YouNeeKProRadar/1.0" },
+      },
+    },
+  },
+  preview: {
+    host: true,
+    port: 4173,
+    strictPort: true,
     proxy: {
       "/api/getActiveStorms": {
         target: "https://www.nhc.noaa.gov",

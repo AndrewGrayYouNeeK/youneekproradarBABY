@@ -9,6 +9,8 @@ You have **two apps** in this single GitHub repo (`youneekproradarBABY`):
 
 Both are **Base44-free**.
 
+Same repo, different branches. No second GitHub repo needed.
+
 ---
 
 ## Pages Functions (Workers)
