@@ -25,8 +25,11 @@ The radar app (`youneekproradarbaby`) uses **Cloudflare Pages Functions** in the
 | `/api/alerts?type=flood` | Flood / flash flood alerts |
 | `/api/alerts?type=winter` | Winter weather alerts |
 | `/api/getActiveStorms` | Hurricane data proxy (NHC) |
+| `/api/weather?lat=&lon=` | Apple WeatherKit forecasts (requires Apple Developer credentials) |
 
 These deploy automatically with the Pages project — no separate Worker needed.
+
+**WeatherKit:** See [WEATHERKIT.md](./WEATHERKIT.md) to connect your Apple Developer account and set `WEATHERKIT_*` secrets in Cloudflare.
 
 If alert layers are missing on the map, confirm the `functions/` folder is in the deployed branch and retry the deployment.
 
