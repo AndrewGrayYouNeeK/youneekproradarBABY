@@ -12,6 +12,7 @@ import OnboardingModal from "@/components/radar/OnboardingModal";
 const Radar = lazy(() => import("./pages/Radar"));
 const Contacts = lazy(() => import("./pages/Contacts"));
 const Settings = lazy(() => import("./pages/Settings"));
+const Landing = lazy(() => import("./pages/Landing"));
 
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center bg-slate-950">
@@ -37,7 +38,8 @@ const AppRoutes = () => {
         >
           <Suspense fallback={<Spinner />}>
             <Routes location={location}>
-              <Route path="/" element={<Navigate to="/Radar" replace />} />
+              <Route path="/" element={<Navigate to="/landing" replace />} />
+              <Route path="/landing" element={<Landing />} />
               <Route path="/Radar" element={<Radar />} />
               <Route path="/Contacts" element={<Contacts />} />
               <Route path="/Settings" element={<Settings />} />
