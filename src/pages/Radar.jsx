@@ -6,6 +6,7 @@ import TargetDialog from "../components/radar/TargetDialog";
 import BottomTab from "../components/radar/BottomTab";
 import AppHeader from "@/components/mobile/AppHeader";
 import RainArrivalAlert from "@/components/radar/RainArrivalAlert";
+import WeatherKitStrip from "@/components/radar/WeatherKitStrip";
 import { useNavigationStack } from "@/lib/NavigationStack";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 
@@ -136,7 +137,8 @@ export default function Radar() {
   return (
     <div className="safe-screen h-screen bg-gray-950 overflow-hidden pb-24">
       <AppHeader title="Radar" />
-      <div className="relative h-[calc(100%-3.5rem-env(safe-area-inset-top))] w-full overflow-hidden">
+      <WeatherKitStrip />
+      <div className="relative h-[calc(100%-7rem-env(safe-area-inset-top))] w-full overflow-hidden">
         <RainArrivalAlert />
         <Suspense
           fallback={(

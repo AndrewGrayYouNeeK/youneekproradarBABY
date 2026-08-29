@@ -1,9 +1,10 @@
-import { Activity, Settings, Users, Layers } from "lucide-react";
+import { Activity, CloudSun, Settings, Users, Layers } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useNavigationStack } from "@/lib/NavigationStack";
 
 const TABS = [
   { label: "Radar", path: "/Radar", icon: Activity },
+  { label: "Forecast", path: "/Forecast", icon: CloudSun },
   { label: "Contacts", path: "/Contacts", icon: Users },
   { label: "Settings", path: "/Settings", icon: Settings },
 ];
