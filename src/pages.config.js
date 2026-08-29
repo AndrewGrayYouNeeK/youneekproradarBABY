@@ -1,9 +1,11 @@
 import Radar from './pages/Radar';
+import Forecast from './pages/Forecast';
 import Contacts from './pages/Contacts';
 import Settings from './pages/Settings';
 
 export const PAGES = {
     "Radar": Radar,
+    "Forecast": Forecast,
     "Contacts": Contacts,
     "Settings": Settings,
 }
