@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { fetchWeatherKit, WeatherKitNotConfiguredError } from "@/lib/api/weatherkit";
 import {
   adaptWeatherKitCurrent,
-  adaptWeatherKitDaily,
   adaptWeatherKitHourly,
 } from "@/lib/weather/weatherkit-adapters";
 import { describeWeatherCode } from "@/lib/weather/conditions";
