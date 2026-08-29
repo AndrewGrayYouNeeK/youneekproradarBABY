@@ -5,6 +5,7 @@ import BottomTab from "@/components/radar/BottomTab";
 import CurrentConditionsCard from "@/components/forecast/CurrentConditionsCard";
 import DailyList from "@/components/forecast/DailyList";
 import HourlyStrip from "@/components/forecast/HourlyStrip";
+import EnvironmentCards from "@/components/forecast/EnvironmentCards";
 import WeatherKitSetupNotice from "@/components/forecast/WeatherKitSetupNotice";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 import useWeatherLocation from "@/hooks/useWeatherLocation";
@@ -76,6 +77,7 @@ export default function Forecast() {
           {!showLoading && !locationError && !error && data && (
             <>
               <CurrentConditionsCard data={adaptWeatherKitCurrent(data)} />
+              <EnvironmentCards coords={coords} />
               <HourlyStrip hours={adaptWeatherKitHourly(data)} />
               <DailyList days={adaptWeatherKitDaily(data)} />
             </>

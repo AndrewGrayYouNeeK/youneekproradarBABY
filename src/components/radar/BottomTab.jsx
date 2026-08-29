@@ -1,10 +1,11 @@
-import { Activity, CloudSun, Settings, Users, Layers } from "lucide-react";
+import { Activity, CloudSun, Globe2, Settings, Users, Layers } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useNavigationStack } from "@/lib/NavigationStack";
 
 const TABS = [
   { label: "Radar", path: "/Radar", icon: Activity },
   { label: "Forecast", path: "/Forecast", icon: CloudSun },
+  { label: "Globe", path: "/Globe", icon: Globe2 },
   { label: "Contacts", path: "/Contacts", icon: Users },
   { label: "Settings", path: "/Settings", icon: Settings },
 ];
@@ -34,7 +35,7 @@ export default function BottomTab({ onToolsClick, showTools }) {
                 }
               }}
               aria-label={`Open ${label}`}
-              className={`flex min-w-20 flex-col items-center gap-1 rounded-xl px-3 py-2 text-xs font-medium transition-colors ${
+              className={`flex min-w-0 flex-1 flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium transition-colors ${
                 active ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"
               }`}
             >
@@ -48,7 +49,7 @@ export default function BottomTab({ onToolsClick, showTools }) {
             type="button"
             onClick={onToolsClick}
             aria-label="Open radar tools"
-            className={`flex min-w-20 flex-col items-center gap-1 rounded-xl px-3 py-2 text-xs font-medium transition-colors ${
+            className={`flex min-w-0 flex-1 flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-medium transition-colors ${
               showTools ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"
             }`}
           >

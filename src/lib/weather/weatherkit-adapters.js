@@ -74,7 +74,7 @@ export function adaptWeatherKitCurrent(data) {
 export function adaptWeatherKitHourly(data) {
   const hours = data?.forecastHourly?.hours || [];
 
-  return hours.slice(0, 24).map((hour) => ({
+  return hours.slice(0, 48).map((hour) => ({
     time: hour.forecastStart,
     temperature: Math.round(hour.temperature ?? 0),
     pop: popPercent(hour.precipitationChance),
@@ -86,7 +86,7 @@ export function adaptWeatherKitHourly(data) {
 export function adaptWeatherKitDaily(data) {
   const days = data?.forecastDaily?.days || [];
 
-  return days.slice(0, 7).map((day) => ({
+  return days.slice(0, 10).map((day) => ({
     date: day.forecastStart,
     high: Math.round(day.temperatureMax ?? 0),
     low: Math.round(day.temperatureMin ?? 0),

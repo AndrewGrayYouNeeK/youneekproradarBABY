@@ -2,6 +2,7 @@ import react from "@vitejs/plugin-react";
 import path from "node:path";
 import { defineConfig, loadEnv } from "vite";
 import { onRequestGet as getWeather } from "./functions/api/weather.js";
+import { onRequestGet as getLightning } from "./functions/api/lightning.js";
 
 const NWS_HEADERS = { Accept: "application/geo+json", "User-Agent": "YouNeeKProRadar/1.0 (alerts)" };
 
@@ -105,9 +106,29 @@ function weatherDevProxy(mode) {
   };
 }
 
+function lightningDevProxy() {
+  return {
+    name: "lightning-dev-proxy",
+    configureServer(server) {
+      server.middlewares.use("/api/lightning", async (_req, res) => {
+        try {
+          const response = await getLightning();
+          res.statusCode = response.status;
+          response.headers.forEach((value, key) => res.setHeader(key, value));
+          res.end(await response.text());
+        } catch {
+          res.statusCode = 502;
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ strikes: [] }));
+        }
+      });
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => ({
   logLevel: "error",
-  plugins: [react(), alertsDevProxy(), weatherDevProxy(mode)],
+  plugins: [react(), alertsDevProxy(), weatherDevProxy(mode), lightningDevProxy()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

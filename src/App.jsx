@@ -13,6 +13,7 @@ const Radar = lazy(() => import("./pages/Radar"));
 const Contacts = lazy(() => import("./pages/Contacts"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Forecast = lazy(() => import("./pages/Forecast"));
+const Globe = lazy(() => import("./pages/Globe"));
 const Landing = lazy(() => import("./pages/Landing"));
 
 const Spinner = () => (
@@ -43,6 +44,7 @@ const AppRoutes = () => {
               <Route path="/landing" element={<Landing />} />
               <Route path="/Radar" element={<Radar />} />
               <Route path="/Forecast" element={<Forecast />} />
+              <Route path="/Globe" element={<Globe />} />
               <Route path="/Contacts" element={<Contacts />} />
               <Route path="/Settings" element={<Settings />} />
               <Route path="*" element={<PageNotFound />} />

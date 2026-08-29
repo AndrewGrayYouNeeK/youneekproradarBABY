@@ -6,7 +6,7 @@ export default function DailyList({ days = [] }) {
   return (
     <section>
       <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-        7-Day Outlook
+        10-Day Outlook
       </h2>
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
         {days.map((day, index) => {

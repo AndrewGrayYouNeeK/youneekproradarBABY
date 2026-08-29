@@ -5,6 +5,7 @@ import { useNavigationStack } from "@/lib/NavigationStack";
 const TITLES = {
   "/Radar": "Radar",
   "/Forecast": "Forecast",
+  "/Globe": "Globe",
   "/Contacts": "Contacts",
   "/Settings": "Settings",
 };
