@@ -6,7 +6,7 @@ export default function HourlyStrip({ hours = [] }) {
   return (
     <section>
       <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-        Next 24 Hours
+        Next 48 Hours
       </h2>
       <div className="flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {hours.map((hour) => {

@@ -18,9 +18,15 @@ export default function RadarLayersMenu({
   onToggle,
   showNexrad,
   showRadio,
+  showLightning,
+  showHurricanes,
+  showSatellite,
   alertToggles,
   onShowNexradChange,
   onShowRadioChange,
+  onShowLightningChange,
+  onShowHurricanesChange,
+  onShowSatelliteChange,
   onAlertToggleChange,
 }) {
   const [showAlerts, setShowAlerts] = useState(false);
@@ -69,7 +75,25 @@ export default function RadarLayersMenu({
                 onCheckedChange={onShowNexradChange}
                 ariaLabel="Toggle live NEXRAD radar layer"
               />
-              <div className="text-[11px] text-slate-500">Reflectivity only</div>
+              <ToggleRow
+                label="🛰️ Satellite"
+                checked={showSatellite}
+                onCheckedChange={onShowSatelliteChange}
+                ariaLabel="Toggle satellite layer"
+              />
+              <ToggleRow
+                label="⚡ Lightning reports"
+                checked={showLightning}
+                onCheckedChange={onShowLightningChange}
+                ariaLabel="Toggle lightning reports"
+              />
+              <ToggleRow
+                label="🌀 Tropical cyclones"
+                checked={showHurricanes}
+                onCheckedChange={onShowHurricanesChange}
+                ariaLabel="Toggle tropical cyclone markers"
+              />
+              <div className="text-[11px] text-slate-500">Loop control sits on the map. NOAA radio is below.</div>
             </div>
 
             <div className="rounded-xl border border-white/10 bg-white/5 p-3">
