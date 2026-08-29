@@ -19,10 +19,10 @@ export default function RadarQuickActions({
   onConus,
   onToggleLayers,
   onClose,
+  extra,
 }) {
   const menuRef = useRef(null);
 
-  // Close menu when clicking outside
   useEffect(() => {
     if (!show) return;
 
@@ -32,7 +32,6 @@ export default function RadarQuickActions({
       }
     };
 
-    // Add slight delay to prevent immediate closing when opening
     const timer = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("touchstart", handleClickOutside);
@@ -48,12 +47,8 @@ export default function RadarQuickActions({
   if (!show) return null;
 
   return (
-    <div
-      ref={menuRef}
-      className="absolute z-[1000]"
-      style={{ bottom: 'calc(5.5rem + env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)' }}
-    >
-      <div className="w-[min(16rem,calc(100vw-3rem))] space-y-2 rounded-2xl border border-white/10 bg-slate-950/90 p-2 shadow-2xl backdrop-blur-xl">
+    <div ref={menuRef} className="pointer-events-auto w-full max-w-md">
+      <div className="max-h-[42vh] space-y-2 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950/90 p-2 shadow-2xl backdrop-blur-xl">
         <button
           type="button"
           onClick={onClose}
@@ -65,6 +60,7 @@ export default function RadarQuickActions({
         </button>
         <ActionButton icon={Layers} label="Radar Layers" onClick={onToggleLayers} />
         <ActionButton icon={Map} label="Reset View" onClick={onConus} />
+        {extra}
       </div>
     </div>
   );

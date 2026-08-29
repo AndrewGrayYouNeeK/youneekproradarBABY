@@ -6,13 +6,17 @@ const TAB_STATE_STORAGE_KEY = "navigation-tab-state";
 
 const DEFAULT_TABS = {
   Radar: { path: "/Radar", search: "", scrollY: 0 },
+  Forecast: { path: "/Forecast", search: "", scrollY: 0 },
+  Globe: { path: "/Globe", search: "", scrollY: 0 },
   Contacts: { path: "/Contacts", search: "", scrollY: 0 },
   Settings: { path: "/Settings", search: "", scrollY: 0 },
 };
 
 function getTabKey(pathname) {
+  if (pathname.startsWith("/Forecast")) return "Forecast";
+  if (pathname.startsWith("/Globe")) return "Globe";
   if (pathname.startsWith("/Contacts")) return "Contacts";
-  if (pathname.startsWith("/Settings")) return "Settings";
+  if (pathname.startsWith("/Settings") || pathname.startsWith("/Privacy")) return "Settings";
   return "Radar";
 }
 

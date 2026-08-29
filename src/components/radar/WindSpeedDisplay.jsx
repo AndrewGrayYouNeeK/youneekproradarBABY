@@ -17,7 +17,7 @@ export default function WindSpeedDisplay({ windData }) {
   return (
     <div
       className="pointer-events-none absolute z-[1000]"
-      style={{ top: "calc(0.75rem + env(safe-area-inset-top))", right: "calc(0.75rem + env(safe-area-inset-right))" }}
+      style={{ top: "0.75rem", left: "0.75rem" }}
     >
       <div className="pointer-events-auto rounded-2xl border border-cyan-400/15 bg-slate-950/82 px-3.5 py-2.5 shadow-[0_10px_30px_rgba(2,6,23,0.45)] backdrop-blur-md">
         <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-200/65">

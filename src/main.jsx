@@ -5,8 +5,10 @@ import AppErrorBoundary from '@/components/AppErrorBoundary.jsx'
 import '@/index.css'
 import '@/lib/platform' // applies platform-* class to <body>
 
-// Ensure page title displays correctly in browser tab
-document.title = 'YouNeeK Pro Radar'
+// Override stale cached HTML titles from the old Base44 deployment.
+document.documentElement.classList.add("dark")
+document.body.classList.add("dark")
+document.title = "YouNeeK Pro Radar"
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <AppErrorBoundary>

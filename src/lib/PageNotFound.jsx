@@ -1,31 +1,28 @@
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function PageNotFound() {
   const location = useLocation();
-  const pageName = location.pathname.substring(1);
+  const pageName = location.pathname.substring(1) || "this page";
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
-      <div className="max-w-md w-full">
-        <div className="text-center space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-7xl font-light text-slate-300">404</h1>
-            <div className="h-0.5 w-16 bg-slate-200 mx-auto"></div>
-          </div>
-          <div className="space-y-3">
-            <h2 className="text-2xl font-medium text-slate-800">Page Not Found</h2>
-            <p className="text-slate-600 leading-relaxed">
-              The page <span className="font-medium text-slate-700">"{pageName}"</span> could not be found.
-            </p>
-          </div>
-          <div className="pt-6">
-            <button
-              onClick={() => (window.location.href = "/")}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50"
-            >
-              Go Home
-            </button>
-          </div>
+    <div className="flex min-h-screen items-center justify-center bg-slate-950 p-6 text-white">
+      <div className="w-full max-w-md text-center">
+        <p className="text-7xl font-light text-slate-600">404</p>
+        <div className="mx-auto mt-2 h-0.5 w-16 bg-white/10" />
+        <h1 className="mt-6 text-2xl font-medium text-white">Page not found</h1>
+        <p className="mt-3 text-sm leading-relaxed text-slate-400">
+          <span className="font-medium text-slate-200">{pageName}</span> is not a route in YouNeeK Pro Radar.
+        </p>
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <Link
+            to="/Radar"
+            className="inline-flex h-12 items-center justify-center rounded-2xl bg-cyan-400 px-5 text-sm font-semibold text-slate-950"
+          >
+            Open Radar
+          </Link>
+          <Link to="/landing" className="text-sm text-slate-400 hover:text-white">
+            Back to welcome
+          </Link>
         </div>
       </div>
     </div>

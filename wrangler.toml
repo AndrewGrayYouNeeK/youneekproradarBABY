@@ -11,3 +11,5 @@ run_worker_first = ["/api/*"]
 [vars]
 # Non-secret defaults can go here. Secrets are set in the Cloudflare dashboard
 # or via: npx wrangler secret put WEATHERKIT_TEAM_ID
+# WeatherKit secrets: WEATHERKIT_TEAM_ID, WEATHERKIT_KEY_ID, WEATHERKIT_SERVICE_ID, WEATHERKIT_PRIVATE_KEY
+# See WEATHERKIT.md for Apple Developer setup.

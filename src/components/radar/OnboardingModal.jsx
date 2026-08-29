@@ -6,7 +6,12 @@ const SLIDES = [
   {
     icon: "🌩️",
     title: "Live NEXRAD Radar",
-    body: "See real-time storm reflectivity and velocity mosaics across the US. Tap 🗂️ to toggle radar layers, zoom into your area, or replay recent frames.",
+    body: "See live NEXRAD, play a radar loop, overlay lightning reports, tropical cyclones, and satellite. Everything ships with the app — no extra paywall.",
+  },
+  {
+    icon: "☀️",
+    title: "Apple WeatherKit",
+    body: "Current conditions, next-hour precipitation, hourly and 10-day forecasts, and official WeatherKit alerts — all in the Forecast tab.",
   },
   {
     icon: "🚨",
@@ -16,12 +21,12 @@ const SLIDES = [
   {
     icon: "📻",
     title: "NOAA Weather Radio",
-    body: "Tap the radio bar at the bottom of the map to stream your nearest NOAA station. It auto-tunes to the closest one using your location.",
+    body: "Open Tools, then Layers, to stream your nearest NOAA Weather Radio station. Auto-tune can be turned off in Settings.",
   },
   {
     icon: "🏠",
     title: "Shelter Notifications",
-    body: "Add contacts in the Contacts tab. During a tornado warning, one tap sends them your GPS location and a safety message via text.",
+    body: "Add contacts, then send an Emergency text or an I'm Safe text with your GPS location. Drafts open in Messages so you stay in control.",
   },
 ];
 
