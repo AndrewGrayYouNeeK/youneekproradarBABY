@@ -6,14 +6,18 @@ import CurrentConditionsCard from "@/components/forecast/CurrentConditionsCard";
 import DailyList from "@/components/forecast/DailyList";
 import HourlyStrip from "@/components/forecast/HourlyStrip";
 import EnvironmentCards from "@/components/forecast/EnvironmentCards";
+import MinutePrecipitation from "@/components/forecast/MinutePrecipitation";
+import WeatherAlertsCard from "@/components/forecast/WeatherAlertsCard";
 import WeatherKitSetupNotice from "@/components/forecast/WeatherKitSetupNotice";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 import useWeatherLocation from "@/hooks/useWeatherLocation";
 import { fetchWeatherKit, WeatherKitNotConfiguredError } from "@/lib/api/weatherkit";
 import {
+  adaptWeatherKitAlerts,
   adaptWeatherKitCurrent,
   adaptWeatherKitDaily,
   adaptWeatherKitHourly,
+  adaptWeatherKitNextHour,
 } from "@/lib/weather/weatherkit-adapters";
 
 export default function Forecast() {
@@ -37,10 +41,10 @@ export default function Forecast() {
   const showLoading = locationLoading || (Boolean(coords) && isLoading && !data);
 
   return (
-    <div className="safe-screen flex h-screen flex-col bg-gray-950 pb-24">
+    <div className="flex h-[100dvh] flex-col bg-slate-950">
       <AppHeader title="Forecast" />
 
-      <div className="flex-1 overflow-y-auto px-4 py-4">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 pb-28">
         <div className="mx-auto flex max-w-md flex-col gap-5">
           <div className="flex items-center justify-between">
             <p className="text-xs text-slate-500">Powered by Apple WeatherKit</p>
@@ -76,7 +80,9 @@ export default function Forecast() {
 
           {!showLoading && !locationError && !error && data && (
             <>
+              <WeatherAlertsCard alerts={adaptWeatherKitAlerts(data)} />
               <CurrentConditionsCard data={adaptWeatherKitCurrent(data)} />
+              <MinutePrecipitation minutes={adaptWeatherKitNextHour(data)} />
               <EnvironmentCards coords={coords} />
               <HourlyStrip hours={adaptWeatherKitHourly(data)} />
               <DailyList days={adaptWeatherKitDaily(data)} />

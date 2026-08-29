@@ -59,7 +59,7 @@ export default function RadarLayersMenu({
     <div
       ref={menuRef}
       className="absolute z-[1000]"
-      style={{ top: 'calc(0.75rem + env(safe-area-inset-top))', right: 'calc(0.75rem + env(safe-area-inset-right))' }}
+      style={{ top: "0.75rem", right: "0.75rem" }}
     >
       {isOpen && (
         <div className="w-[min(18rem,calc(100vw-1.5rem))] max-h-[calc(100vh-7.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] overflow-y-auto rounded-2xl border border-white/10 bg-slate-950/85 p-3 shadow-2xl backdrop-blur-md">

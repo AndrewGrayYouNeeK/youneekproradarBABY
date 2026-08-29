@@ -3,6 +3,7 @@ import { Radio, Play, Pause, LocateFixed, LoaderCircle } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { LOCAL_STATIONS } from "./radioStations";
 import MobileSelect from "@/components/mobile/MobileSelect";
+import { getPref } from "@/lib/prefs";
 
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -33,6 +34,10 @@ export default function RadioControls({ showRadio, onShowRadioChange }) {
   );
 
   useEffect(() => {
+    if (!getPref("pref_autoTune", true)) {
+      setIsLocating(false);
+      return;
+    }
     if (!navigator.geolocation) {
       setIsLocating(false);
       return;

@@ -138,9 +138,9 @@ export default function Globe() {
   }, []);
 
   return (
-    <div className="safe-screen flex h-screen flex-col bg-slate-950 pb-24">
+    <div className="flex h-[100dvh] flex-col bg-slate-950 pb-0">
       <AppHeader title="Globe" />
-      <div className="relative min-h-0 flex-1">
+      <div className="relative min-h-0 flex-1 pb-16">
         <div ref={mountRef} className="h-full w-full" />
         <div className="pointer-events-none absolute left-4 top-4 max-w-xs rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-xs text-slate-300">
           Drag to rotate. Lightning reports and active tropical cyclones plot on a night-side Earth — not a clone of another app’s globe.

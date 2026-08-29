@@ -1,6 +1,8 @@
 import { SignJWT, importPKCS8 } from "jose";
 
 const WEATHERKIT_BASE = "https://weatherkit.apple.com/api/v1/weather";
+const DEFAULT_DATASETS =
+  "currentWeather,forecastHourly,forecastDaily,forecastNextHour,weatherAlerts";
 
 export function isWeatherKitConfigured(env) {
   return Boolean(
@@ -34,7 +36,7 @@ export async function createWeatherKitToken(env) {
     .sign(privateKey);
 }
 
-export async function fetchWeatherKit(env, lat, lon, dataSets = "currentWeather,forecastHourly,forecastDaily") {
+export async function fetchWeatherKit(env, lat, lon, dataSets = DEFAULT_DATASETS) {
   if (!isWeatherKitConfigured(env)) {
     throw new Error("WeatherKit is not configured");
   }
@@ -50,6 +52,7 @@ export async function fetchWeatherKit(env, lat, lon, dataSets = "currentWeather,
   url.searchParams.set("dataSets", dataSets);
   url.searchParams.set("units", "us");
   url.searchParams.set("timezone", "auto");
+  url.searchParams.set("country", "US");
 
   const response = await fetch(url.toString(), {
     headers: {

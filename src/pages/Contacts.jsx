@@ -126,9 +126,10 @@ export default function Contacts() {
   };
 
   return (
-    <div className="safe-screen min-h-screen bg-slate-950 pb-28 text-white">
+    <div className="flex h-[100dvh] flex-col bg-slate-950 text-white">
       <AppHeader title="Contacts" />
-      <div className="mx-auto max-w-md space-y-5 px-4 pt-5">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-28 pt-5">
+      <div className="mx-auto max-w-md space-y-5">
 
         {/* Header */}
         <div>
@@ -263,6 +264,7 @@ export default function Contacts() {
           </p>
         </div>
 
+      </div>
       </div>
       <BottomTab />
     </div>

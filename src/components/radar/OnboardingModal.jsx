@@ -9,6 +9,11 @@ const SLIDES = [
     body: "See live NEXRAD, play a radar loop, overlay lightning reports, tropical cyclones, and satellite. Everything ships with the app — no extra paywall.",
   },
   {
+    icon: "☀️",
+    title: "Apple WeatherKit",
+    body: "Current conditions, next-hour precipitation, hourly and 10-day forecasts, and official WeatherKit alerts — all in the Forecast tab.",
+  },
+  {
     icon: "🚨",
     title: "Severe Weather Alerts",
     body: "Tornado, thunderstorm, flood, and winter alerts are pulled live from the National Weather Service and drawn directly on your map.",
@@ -16,7 +21,7 @@ const SLIDES = [
   {
     icon: "📻",
     title: "NOAA Weather Radio",
-    body: "Open Layers on the radar map to stream your nearest NOAA Weather Radio station. It auto-tunes from your location.",
+    body: "Open Tools, then Layers, to stream your nearest NOAA Weather Radio station. Auto-tune can be turned off in Settings.",
   },
   {
     icon: "🏠",

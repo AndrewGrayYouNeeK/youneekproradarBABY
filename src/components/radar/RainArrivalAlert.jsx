@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CloudRain, LoaderCircle, MapPin, X } from "lucide-react";
+import { getPref } from "@/lib/prefs";
 import { fetchRainAlert } from "@/lib/api/rainAlert";
 
 function getAlertCopy(data) {
@@ -39,8 +40,10 @@ export default function RainArrivalAlert() {
   const [coords, setCoords] = useState(null);
   const [locationError, setLocationError] = useState("");
   const [dismissed, setDismissed] = useState(false);
+  const enabled = getPref("pref_notifyRain", true);
 
   useEffect(() => {
+    if (!enabled) return;
     if (!navigator.geolocation) {
       setLocationError("Turn on location services to get rain timing alerts.");
       return;
@@ -60,7 +63,7 @@ export default function RainArrivalAlert() {
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["rainArrivalAlert", coords?.latitude, coords?.longitude],
-    enabled: Boolean(coords),
+    enabled: enabled && Boolean(coords),
     refetchInterval: 120000,
     staleTime: 90000,
     queryFn: () => fetchRainAlert(coords),
@@ -71,6 +74,10 @@ export default function RainArrivalAlert() {
   useEffect(() => {
     setDismissed(false);
   }, [data?.status, data?.minutesUntilRain]);
+
+  if (!enabled) {
+    return null;
+  }
 
   if (!locationError && data?.status === "dry") {
     return null;

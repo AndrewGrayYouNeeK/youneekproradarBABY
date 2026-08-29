@@ -8,27 +8,27 @@ const TITLES = {
   "/Globe": "Globe",
   "/Contacts": "Contacts",
   "/Settings": "Settings",
+  "/Privacy": "Privacy",
 };
 
 export default function AppHeader({ title }) {
   const location = useLocation();
   const { goBack } = useNavigationStack();
   const resolvedTitle = title || TITLES[location.pathname] || "YouNeeK Pro Radar";
-  const showBack = location.pathname !== "/Radar" && location.pathname !== "/";
+  const showBack = location.pathname !== "/Radar";
 
   return (
-    <div
-      className="sticky top-0 z-[1700] border-b border-white/10 bg-slate-950/90 backdrop-blur-xl"
-      style={{ paddingTop: "env(safe-area-inset-top)" }}
-    >
-      <div className="mx-auto flex h-14 max-w-md items-center justify-between px-4">
+    <header className="sticky top-0 z-[1700] shrink-0 border-b border-white/10 bg-slate-950/95 backdrop-blur-xl">
+      <div
+        className="mx-auto flex h-14 max-w-lg items-center justify-between px-4"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
+      >
         <div className="flex min-w-0 items-center gap-2">
           {showBack ? (
             <button
               type="button"
               onClick={() => goBack()}
               aria-label="Go back"
-              aria-hidden="false"
               className="flex h-11 w-11 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
             >
               <ChevronLeft className="h-5 w-5" aria-hidden="true" />
@@ -40,6 +40,6 @@ export default function AppHeader({ title }) {
         </div>
         <div className="h-11 w-11" />
       </div>
-    </div>
+    </header>
   );
 }

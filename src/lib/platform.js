@@ -21,5 +21,6 @@ export const PLATFORM = detect();
 
 // Apply once on import.
 if (typeof document !== "undefined") {
-  document.body.classList.add(`platform-${PLATFORM}`);
+  document.documentElement.classList.add("dark");
+  document.body.classList.add("dark", `platform-${PLATFORM}`);
 }

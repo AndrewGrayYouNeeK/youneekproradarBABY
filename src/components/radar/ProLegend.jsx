@@ -10,21 +10,12 @@ const REFLECTIVITY_SCALE = [
   { label: "5 dBZ",   color: "#38bdf8", bg: "bg-sky-400" },
 ];
 
-function LegendItem({ icon: Icon, label, tone }) {
-  return (
-    <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/70 px-3 py-2 backdrop-blur-md">
-      <Icon className={`h-3.5 w-3.5 ${tone}`} aria-hidden="true" />
-      <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-200">{label}</span>
-    </div>
-  );
-}
-
 export default function ProLegend({ productLabel }) {
   const isReflectivity = !productLabel || productLabel === "Reflectivity";
   return (
     <div
       className="pointer-events-none absolute z-[1000] flex flex-col gap-0.5"
-      style={{ bottom: "calc(14.5rem + env(safe-area-inset-bottom))", right: "0.75rem" }}
+      style={{ top: "5.5rem", left: "0.75rem" }}
       aria-label="Radar color legend"
     >
       <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">

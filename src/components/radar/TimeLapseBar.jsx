@@ -10,10 +10,7 @@ export default function TimeLapseBar({
   onSpeedChange,
 }) {
   return (
-    <div
-      className="pointer-events-auto absolute z-[1100] flex items-center gap-2 rounded-2xl border border-white/10 bg-slate-950/90 px-3 py-2 shadow-xl backdrop-blur-md"
-      style={{ bottom: "calc(5.5rem + env(safe-area-inset-bottom))", left: "50%", transform: "translateX(-50%)" }}
-    >
+    <div className="pointer-events-auto flex items-center gap-2 rounded-2xl border border-white/10 bg-slate-950/90 px-3 py-2 shadow-xl backdrop-blur-md">
       <button
         type="button"
         onClick={onToggleEnabled}
