@@ -16,7 +16,7 @@ function getTabKey(pathname) {
   if (pathname.startsWith("/Forecast")) return "Forecast";
   if (pathname.startsWith("/Globe")) return "Globe";
   if (pathname.startsWith("/Contacts")) return "Contacts";
-  if (pathname.startsWith("/Settings")) return "Settings";
+  if (pathname.startsWith("/Settings") || pathname.startsWith("/Privacy")) return "Settings";
   return "Radar";
 }
 

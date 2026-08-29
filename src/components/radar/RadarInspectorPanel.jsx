@@ -16,11 +16,7 @@ function InspectorRow({ icon: Icon, label, value, accent = "text-cyan-300" }) {
 export default function RadarInspectorPanel({ inspector, productLabel }) {
   if (!inspector?.active) return null;
   return (
-    <div
-      className="pointer-events-none absolute left-3 z-[1000] grid grid-cols-2 gap-2"
-      style={{ bottom: "calc(6.5rem + env(safe-area-inset-bottom))" }}
-      aria-label={`Inspector: ${productLabel}`}
-    >
+    <div className="grid grid-cols-2 gap-2" aria-label={`Inspector: ${productLabel}`}>
       <InspectorRow icon={MapPin} label="Latitude"  value={`${inspector.lat}°`}          accent="text-sky-400" />
       <InspectorRow icon={MapPin} label="Longitude" value={`${inspector.lon}°`}          accent="text-sky-400" />
       <InspectorRow icon={Compass} label="Bearing"  value={`${inspector.bearing}°`}      accent="text-amber-300" />

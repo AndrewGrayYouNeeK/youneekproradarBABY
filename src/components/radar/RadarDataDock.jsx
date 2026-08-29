@@ -13,13 +13,10 @@ function DockItem({ icon: Icon, label, value, accent = "text-cyan-300" }) {
   );
 }
 
-export default function RadarDataDock({ metrics, productLabel, station }) {
+export default function RadarDataDock({ metrics, station }) {
   if (!metrics) return null;
   return (
-    <div
-      className="pointer-events-none absolute left-3 z-[1000] grid grid-cols-2 gap-1.5"
-      style={{ bottom: "calc(11rem + env(safe-area-inset-bottom))" }}
-    >
+    <div className="grid grid-cols-2 gap-1.5">
       <DockItem
         icon={MapPin}
         label="Lat/Lon"

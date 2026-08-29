@@ -44,14 +44,6 @@ export default function Radar() {
     : null;
   const selectedTarget = targets.find((target) => target.id === selectedTargetId) || null;
 
-  const handleRadarClick = useCallback((clickData) => {
-    const params = new URLSearchParams();
-    params.set("dialog", "create");
-    params.set("bearing", String(clickData?.bearing ?? 0));
-    params.set("range", String(clickData?.range ?? 0));
-    navigate(`${location.pathname}?${params.toString()}`);
-  }, [navigate, location.pathname]);
-
   const handleTargetClick = useCallback((target) => {
     const params = new URLSearchParams();
     params.set("dialog", "inspect");
@@ -135,15 +127,15 @@ export default function Radar() {
   }, []);
 
   return (
-    <div className="safe-screen h-screen bg-gray-950 overflow-hidden pb-24">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-slate-950">
       <AppHeader title="Radar" />
       <WeatherKitStrip />
-      <div className="relative h-[calc(100%-7rem-env(safe-area-inset-top))] w-full overflow-hidden">
+      <div className="relative min-h-0 flex-1 overflow-hidden">
         <RainArrivalAlert />
         <Suspense
           fallback={(
-            <div className="flex h-full items-center justify-center">
-              <div className="h-8 w-8 rounded-full border-4 border-slate-200 border-t-slate-800 animate-spin"></div>
+            <div className="flex h-full items-center justify-center bg-slate-950">
+              <div className="h-8 w-8 rounded-full border-4 border-slate-700 border-t-sky-400 animate-spin" />
             </div>
           )}
         >
@@ -155,6 +147,9 @@ export default function Radar() {
             onToggleRadio={setShowRadio}
             showTools={showTools}
             onToolsToggle={handleToolsToggle}
+            targets={targets}
+            onTargetClick={handleTargetClick}
+            onDeleteTarget={handleDeleteTarget}
           />
         </Suspense>
       </div>

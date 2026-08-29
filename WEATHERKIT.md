@@ -88,14 +88,14 @@ After saving secrets, redeploy (push a commit or **Retry deployment** in Builds)
 ## API usage
 
 ```
-GET /api/weather?lat=37.77&lon=-122.42&dataSets=currentWeather,forecastHourly,forecastDaily
+GET /api/weather?lat=37.77&lon=-122.42
 ```
 
 | Parameter | Required | Description |
 |---|---|---|
 | `lat` | Yes | Latitude |
 | `lon` | Yes | Longitude |
-| `dataSets` | No | Comma-separated WeatherKit data sets (default: current + hourly + daily) |
+| `dataSets` | No | Comma-separated WeatherKit data sets. Default: `currentWeather,forecastHourly,forecastDaily,forecastNextHour,weatherAlerts`. The Worker always sends `country=US` so Apple weather alerts can return. |
 
 ## Troubleshooting
 

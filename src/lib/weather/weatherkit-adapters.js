@@ -52,6 +52,7 @@ export function adaptWeatherKitCurrent(data) {
     current: {
       temperature_2m: current?.temperature,
       apparent_temperature: current?.temperatureApparent,
+      dew_point: current?.temperatureDewPoint,
       relative_humidity_2m: (current?.humidity ?? 0) * 100,
       wind_speed_10m: current?.windSpeed,
       wind_direction_10m: current?.windDirection,
@@ -59,8 +60,14 @@ export function adaptWeatherKitCurrent(data) {
       weather_code: conditionToWmo(current?.conditionCode),
       condition_label: formatConditionCode(current?.conditionCode),
       pressure_msl: current?.pressure,
+      pressure_trend: current?.pressureTrend,
       visibility: current?.visibility,
+      visibility_mi: current?.visibility != null ? current.visibility / 1609.344 : null,
       uv_index: current?.uvIndex,
+      cloud_cover: current?.cloudCover != null ? Math.round(current.cloudCover * 100) : null,
+      precipitation_intensity: current?.precipitationIntensity,
+      daylight: current?.daylight,
+      as_of: current?.asOf,
     },
     daily: {
       temperature_2m_max: [today?.temperatureMax],
@@ -93,5 +100,32 @@ export function adaptWeatherKitDaily(data) {
     pop: popPercent(day.precipitationChance),
     label: formatConditionCode(day.conditionCode),
     weather_code: conditionToWmo(day.conditionCode),
+  }));
+}
+
+export function adaptWeatherKitNextHour(data) {
+  const minutes = data?.forecastNextHour?.minutes || [];
+  return minutes.map((minute) => ({
+    time: minute.startTime,
+    chance: popPercent(minute.precipitationChance),
+    intensity: minute.precipitationIntensity ?? 0,
+  }));
+}
+
+export function adaptWeatherKitAlerts(data) {
+  const alerts = data?.weatherAlerts?.alerts || data?.weatherAlerts || [];
+  if (!Array.isArray(alerts)) return [];
+
+  return alerts.map((alert) => ({
+    id: alert.id || alert.detailsUrl || `${alert.name}-${alert.issuedTime}`,
+    name: alert.name || alert.event || "Weather alert",
+    description: alert.description || alert.summary || "",
+    source: alert.source || "Apple Weather",
+    severity: alert.severity || alert.priority || "",
+    urgency: alert.urgency || "",
+    certainty: alert.certainty || "",
+    issued: alert.issuedTime || alert.effectiveTime,
+    expires: alert.expireTime || alert.expiresTime,
+    url: alert.detailsUrl,
   }));
 }

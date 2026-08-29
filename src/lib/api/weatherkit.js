@@ -1,3 +1,5 @@
+import { WEATHERKIT_DATASETS } from "@/lib/weather/weatherkit-datasets";
+
 export class WeatherKitNotConfiguredError extends Error {
   constructor(hint) {
     super("WeatherKit is not configured");
@@ -6,7 +8,7 @@ export class WeatherKitNotConfiguredError extends Error {
   }
 }
 
-export async function fetchWeatherKit(lat, lon, dataSets = "currentWeather,forecastHourly,forecastDaily") {
+export async function fetchWeatherKit(lat, lon, dataSets = WEATHERKIT_DATASETS) {
   const params = new URLSearchParams({
     lat: String(lat),
     lon: String(lon),

@@ -17,7 +17,7 @@ export default function TargetList({ targets, settings, onTargetClick, onDeleteT
   const textColor = THEME_TEXT[settings.theme] || "text-green-400";
 
   return (
-    <div className="flex-1 overflow-y-auto border-t border-gray-700">
+    <div className="max-h-36 overflow-y-auto rounded-xl border border-white/10">
       <div className={`px-3 py-2 text-xs font-mono font-bold tracking-widest ${textColor} border-b border-gray-700`}>
         CONTACTS ({targets.length})
       </div>
