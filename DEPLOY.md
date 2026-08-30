@@ -1,15 +1,12 @@
-# Deploy guide — two apps, one repo
+# Deploy guide — one codebase
 
-You have **two apps** in this single GitHub repo (`youneekproradarBABY`):
+Landing, radar, Forecast, and Globe now live in the **same branch** (`main` after this merge). You can still point two Cloudflare projects at this repo if you want separate marketing and app URLs.
 
-| App | Git branch | Cloudflare project | What it is |
-|---|---|---|---|
-| **Landing site** | `main` | `youneek-pro-radarynk222` | Marketing site, About, FAQ, full feature pages |
-| **Actual radar app** | `app` | `youneekproradarbaby` | Streamlined radar tool (Radar, Contacts, Settings) |
+| App | Cloudflare project | What it is |
+|---|---|---|
+| **Landing + radar** | `youneek-pro-radarynk222` and/or `youneekproradarbaby` | Welcome screen, Radar, WeatherKit Forecast, Globe, Contacts, Settings |
 
-Both are **Base44-free**.
-
-Same repo, different branches. No second GitHub repo needed.
+Both projects are **Base44-free**. If `youneekproradarbaby` is still set to production branch `app`, change it to `main` after this merge lands.
 
 ---
 
@@ -25,8 +22,11 @@ The radar app (`youneekproradarbaby`) uses **Cloudflare Pages Functions** in the
 | `/api/alerts?type=flood` | Flood / flash flood alerts |
 | `/api/alerts?type=winter` | Winter weather alerts |
 | `/api/getActiveStorms` | Hurricane data proxy (NHC) |
+| `/api/weather?lat=&lon=` | Apple WeatherKit forecasts (requires Apple Developer credentials) |
 
 These deploy automatically with the Pages project — no separate Worker needed.
+
+**WeatherKit:** See [WEATHERKIT.md](./WEATHERKIT.md) to connect your Apple Developer account and set `WEATHERKIT_*` secrets in Cloudflare.
 
 If alert layers are missing on the map, confirm the `functions/` folder is in the deployed branch and retry the deployment.
 
@@ -47,7 +47,7 @@ Your project uses **Workers Builds** (not classic Pages). That means:
 
 | Setting | Value |
 |---|---|
-| Production branch | `app` |
+| Production branch | `main` |
 | Build command | `npm run build` |
 | Deploy command | `npx wrangler deploy` |
 
@@ -100,9 +100,9 @@ The old Base44 build shipped HTML with `<title>Base44 APP</title>`. If the tab s
 ## Local dev
 
 ```bash
-# Landing site
-git checkout main && npm install && npm run dev
-
-# Radar app
-git checkout app && npm install && npm run dev
+git checkout main
+npm install
+npm run dev
 ```
+
+Open `/landing` for the welcome screen, then Radar / Forecast / Globe from there.

@@ -12,11 +12,14 @@ import OnboardingModal from "@/components/radar/OnboardingModal";
 const Radar = lazy(() => import("./pages/Radar"));
 const Contacts = lazy(() => import("./pages/Contacts"));
 const Settings = lazy(() => import("./pages/Settings"));
+const Forecast = lazy(() => import("./pages/Forecast"));
+const Globe = lazy(() => import("./pages/Globe"));
 const Landing = lazy(() => import("./pages/Landing"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center bg-slate-950">
-    <div className="w-8 h-8 border-4 border-slate-200 border-t-sky-400 rounded-full animate-spin" />
+    <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-sky-400" />
   </div>
 );
 
@@ -30,10 +33,10 @@ const AppRoutes = () => {
       <AnimatePresence mode="wait">
         <motion.div
           key={location.pathname}
-          initial={{ opacity: 0, x: 18 }}
+          initial={{ opacity: 0, x: 12 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -18 }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
+          exit={{ opacity: 0, x: -12 }}
+          transition={{ duration: 0.18, ease: "easeOut" }}
           className="h-full"
         >
           <Suspense fallback={<Spinner />}>
@@ -41,8 +44,11 @@ const AppRoutes = () => {
               <Route path="/" element={<Navigate to="/landing" replace />} />
               <Route path="/landing" element={<Landing />} />
               <Route path="/Radar" element={<Radar />} />
+              <Route path="/Forecast" element={<Forecast />} />
+              <Route path="/Globe" element={<Globe />} />
               <Route path="/Contacts" element={<Contacts />} />
               <Route path="/Settings" element={<Settings />} />
+              <Route path="/Privacy" element={<Privacy />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>
@@ -58,7 +64,7 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <NavigationStackProvider>
-            <div className="mx-auto h-screen w-full max-w-4xl overflow-hidden bg-slate-950">
+            <div className="mx-auto h-[100dvh] w-full max-w-4xl overflow-hidden bg-slate-950 text-white">
               <AppRoutes />
             </div>
             <Toaster />

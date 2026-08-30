@@ -29,12 +29,7 @@ export default function StormToolsPanel({ stormData, onClose }) {
       : `${(etaMinutes / 60).toFixed(1)} hr`;
 
   return (
-    <div
-      className="absolute left-3 right-3 z-[1050]"
-      style={{ bottom: "calc(11rem + env(safe-area-inset-bottom))" }}
-      role="dialog"
-      aria-label="Storm tracking panel"
-    >
+    <div className="pointer-events-auto w-full" role="dialog" aria-label="Storm tracking panel">
       <div className="rounded-3xl border border-cyan-400/20 bg-slate-950/88 p-3 shadow-2xl backdrop-blur-xl">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-300/80">

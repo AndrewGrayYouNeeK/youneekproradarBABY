@@ -4,6 +4,7 @@ import BottomTab from "@/components/radar/BottomTab";
 import AppHeader from "@/components/mobile/AppHeader";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 import { UserPlus, Trash2, Download, Upload, Phone, User, Shield, AlertTriangle } from "lucide-react";
+import SafetyTextActions from "@/components/safety/SafetyTextActions";
 
 // ── Storage helpers ────────────────────────────────────────────────────────
 const STORAGE_KEY = "shelterContacts_v2";
@@ -125,15 +126,16 @@ export default function Contacts() {
   };
 
   return (
-    <div className="safe-screen min-h-screen bg-slate-950 pb-28 text-white">
+    <div className="flex h-[100dvh] flex-col bg-slate-950 text-white">
       <AppHeader title="Contacts" />
-      <div className="mx-auto max-w-md space-y-5 px-4 pt-5">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-28 pt-5">
+      <div className="mx-auto max-w-md space-y-5">
 
         {/* Header */}
         <div>
           <h1 className="text-xl font-bold">Shelter Contacts</h1>
           <p className="mt-1 text-sm text-slate-400">
-            These people get a text with your GPS location when you tap the shelter button during a tornado warning.
+            These people get Emergency and I&apos;m Safe texts with your GPS location. Drafts open in Messages — nothing sends until you tap Send.
           </p>
         </div>
 
@@ -226,7 +228,12 @@ export default function Contacts() {
           )}
         </div>
 
-        {/* Backup / Restore */}
+        {contacts.length > 0 && (
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Send a text</div>
+            <SafetyTextActions />
+          </div>
+        )}
         {contacts.length > 0 && (
           <div className="flex gap-2">
             <button
@@ -253,10 +260,11 @@ export default function Contacts() {
         <div className="flex items-start gap-2 rounded-xl border border-white/5 bg-white/[0.02] px-3 py-3">
           <Shield className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
           <p className="text-xs leading-relaxed text-slate-500">
-            Contacts are stored only on this device. Your location is only shared when <em>you</em> tap the shelter button — it's never sent automatically.
+            Contacts are stored only on this device. Emergency and I&apos;m Safe texts only go out when you tap a button, then Send in Messages.
           </p>
         </div>
 
+      </div>
       </div>
       <BottomTab />
     </div>
