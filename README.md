@@ -8,6 +8,7 @@ YouNeeK Pro Radar is a professional-grade weather radar application featuring li
 
 ## Features
 
+- **Apple WeatherKit Forecasts** — Current conditions, next-hour precipitation, hourly, and 10-day outlook
 - **Live NEXRAD Radar** — Iowa Mesonet base reflectivity mosaics, auto-refreshing every 5 minutes
 - **NWS Alert Overlays** — Real-time GeoJSON polygons for:
   - 🔴 Tornado Warnings
@@ -27,11 +28,12 @@ npm install
 npm run dev
 ```
 
-No API keys required — uses Iowa Mesonet public tiles and NWS public GeoJSON endpoints.
+No API keys required for radar and NWS alerts. Apple WeatherKit forecasts need Developer credentials — see [WEATHERKIT.md](WEATHERKIT.md).
 
 ## Data Sources
 
 - **Radar:** [Iowa Environmental Mesonet](https://mesonet.agron.iastate.edu) — NEXRAD mosaics
+- **Forecasts:** [Apple WeatherKit](https://developer.apple.com/weatherkit/) — current, hourly, daily (optional)
 - **Alerts:** [NWS Weather API](https://api.weather.gov) — Active polygon warnings
 - **Radio:** NOAA Weather Radio station list (130 stations)
 

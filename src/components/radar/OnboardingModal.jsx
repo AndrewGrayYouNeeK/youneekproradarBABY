@@ -14,6 +14,11 @@ const SLIDES = [
     body: "Tornado, thunderstorm, flood, and winter alerts are pulled live from the National Weather Service and drawn directly on your map.",
   },
   {
+    icon: "☀️",
+    title: "Apple WeatherKit Forecasts",
+    body: "The Forecast tab shows current conditions, next-hour rain, hourly, and 10-day outlook from Apple WeatherKit. Tap the strip above the radar to jump in.",
+  },
+  {
     icon: "📻",
     title: "NOAA Weather Radio",
     body: "Tap the radio bar at the bottom of the map to stream your nearest NOAA station. It auto-tunes to the closest one using your location.",

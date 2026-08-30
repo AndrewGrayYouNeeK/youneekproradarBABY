@@ -129,8 +129,8 @@ export default function Settings() {
           />
           {showAbout && (
             <div className="px-4 pb-4 pt-1 text-xs leading-relaxed text-slate-400 space-y-2">
-              <p>Real-time NEXRAD radar mosaics from Iowa Environmental Mesonet. NWS active weather alerts. NOAA Weather Radio with automatic nearest-station tuning. One-tap shelter notification to your emergency contacts.</p>
-              <p className="text-slate-500">Data sources: Iowa Mesonet · api.weather.gov · open-meteo.com</p>
+              <p>Real-time NEXRAD radar mosaics from Iowa Environmental Mesonet. NWS active weather alerts. Apple WeatherKit forecasts. NOAA Weather Radio with automatic nearest-station tuning. One-tap shelter notification to your emergency contacts.</p>
+              <p className="text-slate-500">Data sources: Iowa Mesonet · api.weather.gov · Apple WeatherKit · open-meteo.com</p>
               <p className="text-slate-500">© 2026 Andrew Gray · YouNeeK</p>
             </div>
           )}

@@ -10,6 +10,7 @@ import { NavigationStackProvider } from "@/lib/NavigationStack";
 import OnboardingModal from "@/components/radar/OnboardingModal";
 
 const Radar = lazy(() => import("./pages/Radar"));
+const Forecast = lazy(() => import("./pages/Forecast"));
 const Contacts = lazy(() => import("./pages/Contacts"));
 const Settings = lazy(() => import("./pages/Settings"));
 
@@ -39,6 +40,7 @@ const AppRoutes = () => {
             <Routes location={location}>
               <Route path="/" element={<Navigate to="/Radar" replace />} />
               <Route path="/Radar" element={<Radar />} />
+              <Route path="/Forecast" element={<Forecast />} />
               <Route path="/Contacts" element={<Contacts />} />
               <Route path="/Settings" element={<Settings />} />
               <Route path="*" element={<PageNotFound />} />
@@ -54,14 +56,14 @@ function App() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
-        <NavigationStackProvider>
-          <Router>
+        <Router>
+          <NavigationStackProvider>
             <div className="mx-auto h-screen w-full max-w-4xl overflow-hidden bg-slate-950">
               <AppRoutes />
             </div>
-          </Router>
-          <Toaster />
-        </NavigationStackProvider>
+            <Toaster />
+          </NavigationStackProvider>
+        </Router>
       </QueryClientProvider>
     </AuthProvider>
   );

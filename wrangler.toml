@@ -1,3 +1,10 @@
 name = "youneek-pro-radarynk222"
 compatibility_date = "2024-09-23"
 pages_build_output_dir = "dist"
+
+# WeatherKit secrets (never commit these):
+#   npx wrangler pages secret put WEATHERKIT_TEAM_ID --project-name=youneek-pro-radarynk222
+#   npx wrangler pages secret put WEATHERKIT_KEY_ID --project-name=youneek-pro-radarynk222
+#   npx wrangler pages secret put WEATHERKIT_SERVICE_ID --project-name=youneek-pro-radarynk222
+#   npx wrangler pages secret put WEATHERKIT_PRIVATE_KEY --project-name=youneek-pro-radarynk222
+# See WEATHERKIT.md for Apple Developer setup.
