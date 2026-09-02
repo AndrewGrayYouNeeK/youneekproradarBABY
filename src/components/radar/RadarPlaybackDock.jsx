@@ -45,8 +45,8 @@ export default function RadarPlaybackDock({
   productLabel,
 }) {
   return (
-    <div className="pointer-events-auto mx-auto w-full max-w-lg overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#10151c]/94 shadow-[0_18px_50px_rgba(0,0,0,0.55)] backdrop-blur-xl">
-        <div className="flex gap-2 overflow-x-auto px-3 pt-3 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="pointer-events-auto mx-auto w-full max-w-xl overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#10151c]/94 shadow-[0_18px_50px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+      <div className="flex gap-2 overflow-x-auto px-3 pt-3 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {LAYER_CHIPS.map(({ id, label, icon }) => (
             <LayerChip
               key={id}

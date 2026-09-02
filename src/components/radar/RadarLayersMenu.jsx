@@ -10,7 +10,12 @@ function ToggleRow({ label, checked, onCheckedChange, ariaLabel }) {
   return (
     <div className="flex items-center justify-between gap-2 py-1">
       <span className="text-[13px] leading-tight text-white">{label}</span>
-      <Switch checked={checked} onCheckedChange={onCheckedChange} aria-label={ariaLabel || label} />
+      <Switch
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+        aria-label={ariaLabel || label}
+        className="data-[state=checked]:bg-lime-400"
+      />
     </div>
   );
 }

@@ -86,7 +86,7 @@
   }
 
   .leaflet-control-attribution {
-    display: none;
+    display: none !important;
   }
 
   .radar-timeline {

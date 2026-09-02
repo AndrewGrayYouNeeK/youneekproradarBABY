@@ -174,7 +174,7 @@ export default function RadarDisplay({
     const coords = STATION_COORDS[settings.station] || [39.5, -98.35]; // US center fallback
     leafletMap.current = L.map(mapRef.current, {
       zoomControl: false,
-      attributionControl: true,
+      attributionControl: false,
       zoomSnap: 0.5,
       zoomDelta: 0.5,
       touchZoom: true,

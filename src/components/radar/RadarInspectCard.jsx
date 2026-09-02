@@ -33,7 +33,7 @@ export default function RadarInspectCard({ inspector, stormData, onClose }) {
 
   return (
     <div
-      className="pointer-events-auto mx-auto w-full max-w-lg"
+      className="pointer-events-auto mx-auto w-full max-w-xl"
       role="dialog"
       aria-label="Selected radar point"
     >
