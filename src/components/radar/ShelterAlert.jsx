@@ -18,7 +18,7 @@ export default function ShelterAlert({ activeTornadoWarning, activeTornadoWatch 
         initial={{ opacity: 0, scale: 0.95, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 8 }}
-        className="pointer-events-auto w-full max-w-md rounded-2xl border border-red-500/30 bg-slate-950/95 p-3 shadow-2xl backdrop-blur-xl"
+        className="pointer-events-auto mx-auto mb-2 w-full max-w-md rounded-2xl border border-red-500/30 bg-[#10151c]/95 p-3 shadow-2xl backdrop-blur-xl"
       >
         <div className="mb-2 flex items-center justify-between">
           <div className="inline-flex items-center gap-1.5 rounded-full border border-red-500/30 bg-red-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-red-300">

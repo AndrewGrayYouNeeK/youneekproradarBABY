@@ -88,8 +88,11 @@ export default function RainArrivalAlert() {
   }
 
   return (
-    <div className="pointer-events-none absolute left-3 right-3 top-3 z-[1100] flex justify-center">
-      <div className={`pointer-events-auto w-full max-w-md rounded-2xl border px-4 py-3 shadow-xl backdrop-blur-md ${copy.tone}`}>
+    <div
+      className="pointer-events-none absolute inset-x-3 z-[1250] flex justify-start"
+      style={{ top: "calc(5.35rem + env(safe-area-inset-top))" }}
+    >
+      <div className={`pointer-events-auto w-full max-w-[16.75rem] rounded-2xl border px-4 py-3 shadow-xl backdrop-blur-md ${copy.tone}`}>
         <div className="flex items-start gap-3">
           <div className="mt-0.5 rounded-full bg-white/10 p-2">
             {isLoading && !data ? (

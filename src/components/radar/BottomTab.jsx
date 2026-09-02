@@ -1,4 +1,4 @@
-import { Activity, CloudSun, Globe2, Settings, Users, Layers } from "lucide-react";
+import { Activity, CloudSun, Globe2, Settings, Users } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useNavigationStack } from "@/lib/NavigationStack";
 
@@ -10,14 +10,13 @@ const TABS = [
   { label: "Settings", path: "/Settings", icon: Settings },
 ];
 
-export default function BottomTab({ onToolsClick, showTools }) {
+export default function BottomTab() {
   const location = useLocation();
   const { navigateToTab, resetTab } = useNavigationStack();
-  const isRadarPage = location.pathname === "/Radar";
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-[1800] select-none border-t border-white/10 bg-slate-950/95 backdrop-blur-xl"
+      className="fixed inset-x-0 bottom-0 z-[1800] select-none border-t border-white/10 bg-[#0c1016]/96 backdrop-blur-xl"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="mx-auto flex max-w-lg items-center justify-around px-2 py-1.5">
@@ -35,28 +34,15 @@ export default function BottomTab({ onToolsClick, showTools }) {
                 }
               }}
               aria-label={`Open ${label}`}
-              className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl px-1 py-1.5 text-[10px] font-medium transition-colors ${
-                active ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"
+              className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl px-1 py-1.5 text-[10px] font-semibold transition-colors ${
+                active ? "text-lime-400" : "text-slate-400 hover:text-white"
               }`}
             >
-              <Icon className="h-5 w-5" aria-hidden="true" />
+              <Icon className={`h-5 w-5 ${active ? "text-lime-400" : ""}`} aria-hidden="true" />
               <span>{label}</span>
             </button>
           );
         })}
-        {isRadarPage && (
-          <button
-            type="button"
-            onClick={onToolsClick}
-            aria-label="Open radar tools"
-            className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl px-1 py-1.5 text-[10px] font-medium transition-colors ${
-              showTools ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"
-            }`}
-          >
-            <Layers className="h-5 w-5" aria-hidden="true" />
-            <span>Tools</span>
-          </button>
-        )}
       </div>
     </div>
   );

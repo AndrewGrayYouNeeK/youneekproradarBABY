@@ -64,7 +64,7 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <NavigationStackProvider>
-            <div className="mx-auto h-[100dvh] w-full max-w-4xl overflow-hidden bg-slate-950 text-white">
+            <div className="mx-auto h-[100dvh] w-full max-w-4xl overflow-hidden bg-[#0a0d12] text-white">
               <AppRoutes />
             </div>
             <Toaster />

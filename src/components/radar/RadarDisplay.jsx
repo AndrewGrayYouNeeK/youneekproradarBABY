@@ -1,19 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import L from "leaflet";
-import { LocateFixed } from "lucide-react";
 import RadarLayersMenu from "./RadarLayersMenu";
 import ShelterAlert from "./ShelterAlert";
-import RadarQuickActions from "./RadarQuickActions";
-import WindSpeedDisplay from "./WindSpeedDisplay";
-import TimeLapseBar from "./TimeLapseBar";
+import WeatherKitStrip from "./WeatherKitStrip";
 import LightningLayer from "./LightningLayer";
 import HurricaneLayer from "./HurricaneLayer";
-import ProLegend from "./ProLegend";
-import RadarDataDock from "./RadarDataDock";
-import RadarInspectorPanel from "./RadarInspectorPanel";
-import RadarStatusBar from "./RadarStatusBar";
-import StormToolsPanel from "./StormToolsPanel";
-import TargetList from "./TargetList";
+import RadarControlStack from "./RadarControlStack";
+import RadarPlaybackDock from "./RadarPlaybackDock";
+import RadarInspectCard from "./RadarInspectCard";
 import { getRadarProduct } from "./radarProducts";
 import usePullToRefresh from "@/hooks/usePullToRefresh";
 import "leaflet/dist/leaflet.css";
@@ -106,8 +100,6 @@ export default function RadarDisplay({
   onSettingsChange,
   showRadio,
   onToggleRadio,
-  showTools,
-  onToolsToggle,
   targets = [],
   onMapClick,
   onTargetClick,
@@ -548,21 +540,73 @@ export default function RadarDisplay({
     setIsLayersMenuOpen((prev) => !prev);
   };
 
+  const handleLayerChipChange = (id, value) => {
+    if (id === "radar") handleShowNexradChange(value);
+    if (id === "lightning") setShowLightning(value);
+    if (id === "satellite") setShowSatellite(value);
+    if (id === "hurricanes") setShowHurricanes(value);
+    if (id === "alerts") {
+      setShowTornado(value);
+      setShowThunderstorm(value);
+      if (!value) {
+        setShowFlood(false);
+        setShowWinter(false);
+      }
+    }
+  };
+
+  const handleZoomIn = () => leafletMap.current?.zoomIn();
+  const handleZoomOut = () => leafletMap.current?.zoomOut();
+  const handleToggleLoop = () => {
+    setLoopEnabled((value) => {
+      const next = !value;
+      setLoopPlaying(next);
+      return next;
+    });
+  };
+  const handleCloseInspect = () => {
+    setInspector(null);
+    setStormData(null);
+  };
+
+  const alertsActive = showTornado || showThunderstorm || showFlood || showWinter;
+  const frameLabel = loopEnabled && loopFrames[loopIndex]?.time
+    ? new Date(loopFrames[loopIndex].time * 1000).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+    : "Live";
+
   return (
     <div className="relative h-full min-h-[400px] w-full select-none overscroll-none" {...pullToRefreshHandlers}>
       {!isMapReady && (
-        <div className="absolute inset-0 z-[900] flex items-center justify-center bg-slate-950">
+        <div className="absolute inset-0 z-[900] flex items-center justify-center bg-[#0a0d12]">
           <div className="flex flex-col items-center gap-3 text-white/80">
-            <div className="h-10 w-10 rounded-full border-4 border-white/15 border-t-white/80 animate-spin"></div>
+            <div className="h-10 w-10 rounded-full border-4 border-white/15 border-t-lime-400 animate-spin"></div>
             <div className="text-xs font-medium tracking-[0.2em] text-white/60 uppercase">Loading Radar</div>
           </div>
         </div>
       )}
       {isRefreshing && (
-        <div className="absolute left-1/2 z-[1200] -translate-x-1/2 rounded-full bg-slate-900/85 px-4 py-2 text-xs font-medium text-white shadow-lg backdrop-blur-sm" style={{ top: "calc(1rem + env(safe-area-inset-top))" }}>
+        <div className="absolute left-1/2 z-[1200] -translate-x-1/2 rounded-full bg-[#10151c]/90 px-4 py-2 text-xs font-medium text-white shadow-lg backdrop-blur-sm" style={{ top: "calc(1rem + env(safe-area-inset-top))" }}>
           Refreshing radar...
         </div>
       )}
+      <LightningLayer map={leafletMap.current} enabled={showLightning && isMapReady} />
+      <HurricaneLayer map={leafletMap.current} enabled={showHurricanes && isMapReady} />
+
+      <div
+        className="pointer-events-none absolute left-3 z-[1200]"
+        style={{ top: "calc(0.6rem + env(safe-area-inset-top))" }}
+      >
+        <WeatherKitStrip windData={windData} />
+      </div>
+
+      <RadarControlStack
+        onToggleLayers={handleLayersMenuToggle}
+        layersOpen={isLayersMenuOpen}
+        onLocate={handleLocateMe}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+      />
+
       <RadarLayersMenu
         isOpen={isLayersMenuOpen}
         onToggle={handleLayersMenuToggle}
@@ -578,98 +622,61 @@ export default function RadarDisplay({
         onShowHurricanesChange={setShowHurricanes}
         onShowSatelliteChange={setShowSatellite}
         onAlertToggleChange={handleAlertToggleChange}
-      />
-      <LightningLayer map={leafletMap.current} enabled={showLightning && isMapReady} />
-      <HurricaneLayer map={leafletMap.current} enabled={showHurricanes && isMapReady} />
-      <WindSpeedDisplay windData={windData} />
-      <ProLegend productLabel={ACTIVE_PRODUCT.label} />
-      <RadarStatusBar
-        productLabel={ACTIVE_PRODUCT.label}
-        isLooping={loopEnabled && loopPlaying}
-        frameLabel={
-          loopEnabled && loopFrames[loopIndex]?.time
-            ? new Date(loopFrames[loopIndex].time * 1000).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
-            : "Live"
+        onResetView={handleConusView}
+        metrics={
+          mapCenter
+            ? {
+                latitude: Math.abs(mapCenter.lat).toFixed(2),
+                latHemisphere: mapCenter.lat >= 0 ? "N" : "S",
+                longitude: Math.abs(mapCenter.lng).toFixed(2),
+                lonHemisphere: mapCenter.lng >= 0 ? "E" : "W",
+                zoom: leafletMap.current?.getZoom?.() ?? "—",
+                warnings: activeWarningsCount,
+              }
+            : null
         }
-        warnings={activeWarningsCount}
+        station={settings.station}
+        targets={targets}
+        onTargetClick={onTargetClick}
+        onDeleteTarget={onDeleteTarget}
       />
-      <div className="pointer-events-none absolute inset-x-0 bottom-3 z-[1200] flex flex-col items-center gap-2 px-3">
+
+      <div
+        className="pointer-events-none absolute inset-x-0 z-[1200] flex flex-col items-stretch gap-2 px-3"
+        style={{ bottom: "calc(4.35rem + env(safe-area-inset-bottom))" }}
+      >
         <ShelterAlert activeTornadoWarning={activeTornadoWarning} activeTornadoWatch={activeTornadoWatch} />
-        {stormData && (
-          <StormToolsPanel stormData={stormData} onClose={() => setStormData(null)} />
-        )}
-        {inspector?.active && <RadarInspectorPanel inspector={inspector} productLabel={ACTIVE_PRODUCT.label} />}
-        <RadarQuickActions
-          show={showTools}
-          onConus={handleConusView}
-          onToggleLayers={handleLayersMenuToggle}
-          onClose={onToolsToggle}
-          extra={
-            <>
-              <RadarDataDock
-                metrics={
-                  mapCenter
-                    ? {
-                        latitude: Math.abs(mapCenter.lat).toFixed(2),
-                        latHemisphere: mapCenter.lat >= 0 ? "N" : "S",
-                        longitude: Math.abs(mapCenter.lng).toFixed(2),
-                        lonHemisphere: mapCenter.lng >= 0 ? "E" : "W",
-                        zoom: leafletMap.current?.getZoom?.() ?? "—",
-                        warnings: activeWarningsCount,
-                      }
-                    : null
-                }
-                productLabel={ACTIVE_PRODUCT.label}
-                station={settings.station}
-              />
-              <TargetList
-                targets={targets}
-                settings={settings}
-                onTargetClick={onTargetClick}
-                onDeleteTarget={onDeleteTarget}
-              />
-            </>
-          }
-        />
-        <div className="flex w-full max-w-md items-end justify-between gap-2">
-          <TimeLapseBar
-            enabled={loopEnabled}
-            playing={loopPlaying}
-            frameLabel={
-              loopEnabled && loopFrames[loopIndex]?.time
-                ? new Date(loopFrames[loopIndex].time * 1000).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
-                : "Live"
-            }
-            speed={loopSpeed}
-            onToggleEnabled={() => {
-              setLoopEnabled((value) => {
-                const next = !value;
-                setLoopPlaying(next);
-                return next;
-              });
-            }}
-            onTogglePlaying={() => setLoopPlaying((value) => !value)}
-            onSpeedChange={setLoopSpeed}
-          />
-          <button
-            type="button"
-            onClick={handleLocateMe}
-            className="pointer-events-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600/80 text-white shadow-md"
-            aria-label="Center radar on my location"
-          >
-            <LocateFixed size={18} aria-hidden="true" />
-          </button>
-        </div>
+        <RadarInspectCard inspector={inspector} stormData={stormData} onClose={handleCloseInspect} />
         {locationError && (
-          <div className="pointer-events-auto rounded-xl bg-red-900/90 px-3 py-1.5 text-xs font-medium text-red-200">
+          <div className="pointer-events-auto self-center rounded-xl bg-red-900/90 px-3 py-1.5 text-xs font-medium text-red-200">
             {locationError}
           </div>
         )}
+        <RadarPlaybackDock
+          layers={{
+            radar: showNexrad,
+            lightning: showLightning,
+            satellite: showSatellite,
+            hurricanes: showHurricanes,
+            alerts: alertsActive,
+          }}
+          onLayerChange={handleLayerChipChange}
+          onOpenMore={handleLayersMenuToggle}
+          loopEnabled={loopEnabled}
+          loopPlaying={loopPlaying}
+          loopSpeed={loopSpeed}
+          loopIndex={loopIndex}
+          loopFrames={loopFrames}
+          frameLabel={frameLabel}
+          onToggleLoop={handleToggleLoop}
+          onTogglePlaying={() => setLoopPlaying((value) => !value)}
+          onSpeedChange={setLoopSpeed}
+          onSeek={setLoopIndex}
+          productLabel={ACTIVE_PRODUCT.label}
+        />
       </div>
-      <div ref={mapRef} className="absolute inset-0 h-full min-h-[400px] w-full" role="application" aria-label="Interactive weather radar" />
-      <div className="pointer-events-none absolute bottom-1 left-3 z-[999] text-[11px] font-semibold tracking-wide text-white/30">
-        YouNeeK Pro Radar — by Andrew Gray
-      </div>
+
+      <div ref={mapRef} className="absolute inset-0 z-0 h-full min-h-[400px] w-full" role="application" aria-label="Interactive weather radar" />
     </div>
   );
 }
