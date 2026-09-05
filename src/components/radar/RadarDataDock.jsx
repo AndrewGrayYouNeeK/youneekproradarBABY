@@ -1,7 +1,7 @@
 
 import { MapPin, Navigation, Radar, ShieldAlert } from "lucide-react";
 
-function DockItem({ icon: Icon, label, value, accent = "text-cyan-300" }) {
+function DockItem({ icon: Icon, label, value, accent = "text-lime-400" }) {
   return (
     <div className="rounded-xl border border-white/10 bg-slate-950/75 px-2 py-1.5 shadow-md backdrop-blur-md">
       <div className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-400">

@@ -21,7 +21,7 @@ const SLIDES = [
   {
     icon: "📻",
     title: "NOAA Weather Radio",
-    body: "Open Tools, then Layers, to stream your nearest NOAA Weather Radio station. Auto-tune can be turned off in Settings.",
+    body: "Tap More on the radar dock to stream your nearest NOAA Weather Radio station. Auto-tune can be turned off in Settings.",
   },
   {
     icon: "🏠",

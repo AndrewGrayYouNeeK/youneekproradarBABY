@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ChevronRight, LoaderCircle } from "lucide-react";
+import { ChevronRight, LoaderCircle, Wind } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { fetchWeatherKit, WeatherKitNotConfiguredError } from "@/lib/api/weatherkit";
 import {
@@ -9,7 +9,14 @@ import {
 import { describeWeatherCode } from "@/lib/weather/conditions";
 import useWeatherLocation from "@/hooks/useWeatherLocation";
 
-export default function WeatherKitStrip() {
+const CARDINAL_DIRS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+
+function degreesToCardinal(deg) {
+  if (deg === null || deg === undefined || Number.isNaN(deg)) return "";
+  return CARDINAL_DIRS[Math.round((((deg % 360) + 360) % 360) / 22.5) % 16];
+}
+
+export default function WeatherKitStrip({ windData }) {
   const navigate = useNavigate();
   const { coords, error: locationError, loading: locationLoading } = useWeatherLocation();
 
@@ -21,12 +28,15 @@ export default function WeatherKitStrip() {
     queryFn: () => fetchWeatherKit(coords.latitude, coords.longitude),
   });
 
+  const cardClass =
+    "pointer-events-auto max-w-[16.75rem] rounded-2xl border border-white/10 bg-[#10151c]/92 px-3 py-2 text-left shadow-[0_10px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl";
+
   if (locationLoading || (isLoading && coords)) {
     return (
-      <div className="border-b border-white/10 bg-slate-950/95 px-4 py-2">
-        <div className="mx-auto flex max-w-md items-center gap-2 text-xs text-slate-400">
+      <div className={cardClass}>
+        <div className="flex items-center gap-2 text-xs text-slate-400">
           <LoaderCircle className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
-          Loading Apple WeatherKit…
+          Loading conditions…
         </div>
       </div>
     );
@@ -38,23 +48,29 @@ export default function WeatherKitStrip() {
 
   if (error instanceof WeatherKitNotConfiguredError) {
     return (
-      <button
-        type="button"
-        onClick={() => navigate("/Forecast")}
-        className="w-full border-b border-amber-400/20 bg-amber-950/40 px-4 py-2 text-left transition-colors hover:bg-amber-950/55"
-      >
-        <div className="mx-auto flex max-w-md items-center justify-between gap-3">
-          <div className="min-w-0">
-            <div className="text-xs font-semibold text-amber-100">Connect Apple WeatherKit</div>
-            <div className="truncate text-[11px] text-amber-100/70">Tap to set up forecasts</div>
-          </div>
-          <ChevronRight className="h-4 w-4 shrink-0 text-amber-100/70" aria-hidden="true" />
-        </div>
+      <button type="button" onClick={() => navigate("/Forecast")} className={cardClass}>
+        <div className="text-xs font-semibold text-amber-100">Connect WeatherKit</div>
+        <div className="text-[11px] text-amber-100/70">Tap to set up forecasts</div>
       </button>
     );
   }
 
   if (error || !data) {
+    if (windData) {
+      const cardinal = degreesToCardinal(windData.directionDeg);
+      const speedLabel = windData.speedMph != null ? `${Math.round(windData.speedMph)} mph` : "--";
+      return (
+        <div className={cardClass}>
+          <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+            <Wind className="h-3.5 w-3.5 text-lime-400" aria-hidden="true" />
+            Wind
+          </div>
+          <div className="mt-0.5 text-sm font-bold text-white">
+            {speedLabel} {cardinal}
+          </div>
+        </div>
+      );
+    }
     return null;
   }
 
@@ -62,35 +78,32 @@ export default function WeatherKitStrip() {
   const nextHour = adaptWeatherKitHourly(data)[0];
   const code = describeWeatherCode(current.current.weather_code);
   const Icon = code.icon;
+  const cardinal = windData ? degreesToCardinal(windData.directionDeg) : "";
+  const windLabel = windData?.speedMph != null
+    ? `${Math.round(windData.speedMph)} mph ${cardinal}`.trim()
+    : null;
 
   return (
-    <button
-      type="button"
-      onClick={() => navigate("/Forecast")}
-      className="w-full border-b border-white/10 bg-slate-950/95 px-4 py-2 text-left transition-colors hover:bg-white/5"
-    >
-      <div className="mx-auto flex max-w-md items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <Icon className="h-5 w-5 shrink-0 text-sky-300" aria-hidden="true" />
-          <div className="min-w-0">
-            <div className="flex items-baseline gap-2">
-              <span className="text-lg font-semibold tabular-nums text-white">
-                {Math.round(current.current.temperature_2m ?? 0)}°
-              </span>
-              <span className="truncate text-xs text-slate-400">
-                {current.current.condition_label || code.label}
-              </span>
-            </div>
-            {nextHour && (
-              <div className="text-[11px] text-slate-500">
-                Next hour {nextHour.temperature}° · {nextHour.pop}% rain
-              </div>
-            )}
-          </div>
+    <button type="button" onClick={() => navigate("/Forecast")} className={cardClass}>
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lime-400/15 text-lime-300">
+          <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
-        <div className="flex shrink-0 items-center gap-1 text-[11px] font-medium text-sky-300">
-          Forecast
-          <ChevronRight className="h-4 w-4" aria-hidden="true" />
+        <div className="min-w-0">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-[22px] font-bold leading-none tabular-nums text-white">
+              {Math.round(current.current.temperature_2m ?? 0)}°
+            </span>
+            <span className="truncate text-xs text-slate-300">
+              {current.current.condition_label || code.label}
+            </span>
+          </div>
+          <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-slate-400">
+            {windLabel && <span>{windLabel}</span>}
+            {windLabel && nextHour && <span className="text-white/20">·</span>}
+            {nextHour && <span>{nextHour.pop}% rain</span>}
+            <ChevronRight className="ml-auto h-3.5 w-3.5 shrink-0 text-lime-400" aria-hidden="true" />
+          </div>
         </div>
       </div>
     </button>

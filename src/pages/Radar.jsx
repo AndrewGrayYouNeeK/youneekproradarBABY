@@ -4,9 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const RadarDisplay = lazy(() => import("../components/radar/RadarDisplay"));
 import TargetDialog from "../components/radar/TargetDialog";
 import BottomTab from "../components/radar/BottomTab";
-import AppHeader from "@/components/mobile/AppHeader";
 import RainArrivalAlert from "@/components/radar/RainArrivalAlert";
-import WeatherKitStrip from "@/components/radar/WeatherKitStrip";
 import { useNavigationStack } from "@/lib/NavigationStack";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 
@@ -31,7 +29,6 @@ export default function Radar() {
   });
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [showRadio, setShowRadio] = useState(true);
-  const [showTools, setShowTools] = useState(false);
 
   const urlParams = new URLSearchParams(location.search);
   const dialogMode = urlParams.get("dialog");
@@ -122,20 +119,14 @@ export default function Radar() {
     }
   }, [goBack, navigate, location.pathname, location.search]);
 
-  const handleToolsToggle = useCallback(() => {
-    setShowTools((prev) => !prev);
-  }, []);
-
   return (
-    <div className="flex h-[100dvh] flex-col overflow-hidden bg-slate-950">
-      <AppHeader title="Radar" />
-      <WeatherKitStrip />
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-[#0a0d12]">
       <div className="relative min-h-0 flex-1 overflow-hidden">
         <RainArrivalAlert />
         <Suspense
           fallback={(
-            <div className="flex h-full items-center justify-center bg-slate-950">
-              <div className="h-8 w-8 rounded-full border-4 border-slate-700 border-t-sky-400 animate-spin" />
+            <div className="flex h-full items-center justify-center bg-[#0a0d12]">
+              <div className="h-8 w-8 rounded-full border-4 border-white/10 border-t-lime-400 animate-spin" />
             </div>
           )}
         >
@@ -145,8 +136,6 @@ export default function Radar() {
             onSettingsChange={setSettings}
             showRadio={showRadio}
             onToggleRadio={setShowRadio}
-            showTools={showTools}
-            onToolsToggle={handleToolsToggle}
             targets={targets}
             onTargetClick={handleTargetClick}
             onDeleteTarget={handleDeleteTarget}
@@ -154,7 +143,7 @@ export default function Radar() {
         </Suspense>
       </div>
 
-      <BottomTab onToolsClick={handleToolsToggle} showTools={showTools} />
+      <BottomTab />
 
       {/* Dialogs */}
       {dialogMode === "create" && pendingClick && (

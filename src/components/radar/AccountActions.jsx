@@ -9,7 +9,44 @@ import {
 } from "@/components/ui/drawer";
 import { clearLocalData } from "@/lib/clearLocalData";
 
-export default function AccountActions() {
+function ClearDataPanel({ confirmingClear, setConfirmingClear, clearDataMutation }) {
+  if (!confirmingClear) {
+    return (
+      <button
+        onClick={() => setConfirmingClear(true)}
+        aria-label="Clear all local data"
+        className="w-full rounded-lg border border-red-500/50 bg-red-950/40 px-3 py-3 text-sm font-medium text-red-300 transition-colors hover:bg-red-950/70"
+      >
+        Clear All Data
+      </button>
+    );
+  }
+
+  return (
+    <div className="space-y-3 rounded-xl border border-red-500/30 bg-red-950/30 p-4">
+      <p className="text-sm text-red-100">This removes all data stored on this device. Are you sure?</p>
+      <div className="flex gap-2">
+        <button
+          onClick={() => setConfirmingClear(false)}
+          aria-label="Cancel data clear"
+          className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => clearDataMutation.mutate()}
+          aria-label="Confirm data clear"
+          disabled={clearDataMutation.isPending}
+          className="flex-1 rounded-lg border border-red-500 bg-red-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
+        >
+          Confirm Clear
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function AccountActions({ variant = "drawer" }) {
   const [open, setOpen] = useState(false);
   const [confirmingClear, setConfirmingClear] = useState(false);
 
@@ -23,6 +60,19 @@ export default function AccountActions() {
       setOpen(false);
     },
   });
+
+  if (variant === "inline") {
+    return (
+      <div className="space-y-2">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Data</div>
+        <ClearDataPanel
+          confirmingClear={confirmingClear}
+          setConfirmingClear={setConfirmingClear}
+          clearDataMutation={clearDataMutation}
+        />
+      </div>
+    );
+  }
 
   return (
     <Drawer
@@ -45,36 +95,11 @@ export default function AccountActions() {
           <DrawerTitle>Local Data</DrawerTitle>
         </DrawerHeader>
         <div className="space-y-3 px-4 pb-6">
-          {!confirmingClear ? (
-            <button
-              onClick={() => setConfirmingClear(true)}
-              aria-label="Clear all local data"
-              className="w-full rounded-lg border border-red-500/50 bg-red-950/40 px-3 py-3 text-sm font-medium text-red-300 transition-colors hover:bg-red-950/70"
-            >
-              Clear All Data
-            </button>
-          ) : (
-            <div className="space-y-3 rounded-xl border border-red-500/30 bg-red-950/30 p-4">
-              <p className="text-sm text-red-100">This removes all data stored on this device. Are you sure?</p>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setConfirmingClear(false)}
-                  aria-label="Cancel data clear"
-                  className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => clearDataMutation.mutate()}
-                  aria-label="Confirm data clear"
-                  disabled={clearDataMutation.isPending}
-                  className="flex-1 rounded-lg border border-red-500 bg-red-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-                >
-                  Confirm Clear
-                </button>
-              </div>
-            </div>
-          )}
+          <ClearDataPanel
+            confirmingClear={confirmingClear}
+            setConfirmingClear={setConfirmingClear}
+            clearDataMutation={clearDataMutation}
+          />
         </div>
       </DrawerContent>
     </Drawer>

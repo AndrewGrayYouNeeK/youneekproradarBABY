@@ -79,6 +79,52 @@
   }
 }
 
+@layer components {
+  .leaflet-container {
+    background: #0a0d12;
+    font-family: inherit;
+  }
+
+  .leaflet-control-attribution {
+    display: none !important;
+  }
+
+  .radar-timeline {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #38bdf8 0%, #22c55e 40%, #eab308 70%, #ef4444 100%);
+    outline: none;
+    min-height: 4px !important;
+    cursor: pointer;
+  }
+
+  .radar-timeline:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  .radar-timeline::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 2px solid #a3e635;
+    box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.18);
+  }
+
+  .radar-timeline::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 2px solid #a3e635;
+  }
+}
+
 @layer utilities {
   /* Storm landing backdrop */
   .storm-bg__sky {
