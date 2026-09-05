@@ -3,8 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const RadarDisplay = lazy(() => import("../components/radar/RadarDisplay"));
 import TargetDialog from "../components/radar/TargetDialog";
-import BottomTab from "../components/radar/BottomTab";
 import RainArrivalAlert from "@/components/radar/RainArrivalAlert";
+import WeatherShell from "@/components/weather/WeatherShell";
 import { useNavigationStack } from "@/lib/NavigationStack";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 
@@ -28,7 +28,6 @@ export default function Radar() {
     initialData: [],
   });
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
-  const [showRadio, setShowRadio] = useState(true);
 
   const urlParams = new URLSearchParams(location.search);
   const dialogMode = urlParams.get("dialog");
@@ -120,8 +119,8 @@ export default function Radar() {
   }, [goBack, navigate, location.pathname, location.search]);
 
   return (
-    <div className="flex h-[100dvh] flex-col overflow-hidden bg-[#0a0d12]">
-      <div className="relative min-h-0 flex-1 overflow-hidden">
+    <WeatherShell variant="map">
+      <div className="absolute inset-0 overflow-hidden">
         <RainArrivalAlert />
         <Suspense
           fallback={(
@@ -134,8 +133,6 @@ export default function Radar() {
             settings={settings}
             showNexrad={settings.showNexrad}
             onSettingsChange={setSettings}
-            showRadio={showRadio}
-            onToggleRadio={setShowRadio}
             targets={targets}
             onTargetClick={handleTargetClick}
             onDeleteTarget={handleDeleteTarget}
@@ -143,9 +140,6 @@ export default function Radar() {
         </Suspense>
       </div>
 
-      <BottomTab />
-
-      {/* Dialogs */}
       {dialogMode === "create" && pendingClick && (
         <TargetDialog
           mode="create"
@@ -162,6 +156,6 @@ export default function Radar() {
           onClose={handleCloseDialog}
         />
       )}
-    </div>
+    </WeatherShell>
   );
 }

@@ -13,63 +13,70 @@ export function uniqueContactPhones(contacts) {
   return [...new Set((contacts || []).map((contact) => contact.phone).filter(Boolean))];
 }
 
-export function buildSmsUrl(phone, body) {
-  const separator = /iPad|iPhone|iPod/.test(navigator.userAgent) ? "&" : "?";
-  return `sms:${phone}${separator}body=${encodeURIComponent(body)}`;
+function isAppleMobile() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+export function buildSmsUrl(phones, body) {
+  const list = (Array.isArray(phones) ? phones : [phones]).filter(Boolean);
+  const encodedBody = encodeURIComponent(body);
+
+  if (list.length === 0) return "";
+
+  if (isAppleMobile()) {
+    if (list.length === 1) {
+      return `sms:${list[0]}&body=${encodedBody}`;
+    }
+    return `sms:/open?addresses=${list.map(encodeURIComponent).join(",")}&body=${encodedBody}`;
+  }
+
+  const recipients = list.join(",");
+  return `sms:${recipients}?body=${encodedBody}`;
 }
 
 export function buildEmergencyBody({ locationLine }) {
   return [
-    "EMERGENCY — I need help. I am taking shelter now.",
+    "HELP ME — Emergency. I need help right now and I am taking shelter.",
     locationLine,
-    "Sent from YouNeeK Pro Radar",
+    "Sent from YouNeeK Pro Radar. One-tap Help Me.",
   ].join("\n");
 }
 
 export function buildImSafeBody({ locationLine, context }) {
   return [
-    context || "I'M SAFE — I am OK and accounted for.",
+    context || "I'M SAFE — I am OK, accounted for, and do not need help.",
     locationLine,
-    "Sent from YouNeeK Pro Radar",
+    "Sent from YouNeeK Pro Radar. One-tap I'm Safe.",
   ].join("\n");
 }
 
-export async function openSmsDrafts({ phones, body, onProgress }) {
-  for (let index = 0; index < phones.length; index += 1) {
-    window.open(buildSmsUrl(phones[index], body), "_blank");
-    onProgress?.(index + 1, phones.length);
-    if (index < phones.length - 1) {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-    }
+export function openSmsDraft(url) {
+  if (!url) return;
+  if (typeof window !== "undefined") {
+    window.__youneekSmsDrafts = window.__youneekSmsDrafts || [];
+    window.__youneekSmsDrafts.push(url);
   }
+  window.location.href = url;
 }
 
-export async function sendContactTexts({ kind, context } = {}) {
+export function sendContactTexts({ kind, context, coords } = {}) {
   const contacts = loadShelterContacts();
   const phones = uniqueContactPhones(contacts);
   if (!phones.length) {
-    throw new Error("Add at least one shelter contact first.");
+    const error = new Error("Add at least one shelter contact first.");
+    error.code = "NO_CONTACTS";
+    throw error;
   }
 
-  const locationLine = await new Promise((resolve) => {
-    if (!navigator.geolocation) {
-      resolve("(Location unavailable)");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        resolve(`My location: https://maps.google.com/?q=${position.coords.latitude},${position.coords.longitude}`);
-      },
-      () => resolve("(Location unavailable)"),
-      { timeout: 8000 }
-    );
-  });
+  const maps = coords?.latitude && coords?.longitude
+    ? `My location: https://maps.google.com/?q=${coords.latitude},${coords.longitude}`
+    : "(Location unavailable — GPS pin will be added next time location is on.)";
 
   const body =
     kind === "emergency"
-      ? buildEmergencyBody({ locationLine })
-      : buildImSafeBody({ locationLine, context });
+      ? buildEmergencyBody({ locationLine: maps })
+      : buildImSafeBody({ locationLine: maps, context });
 
-  await openSmsDrafts({ phones, body });
+  openSmsDraft(buildSmsUrl(phones, body));
   return { count: phones.length };
 }

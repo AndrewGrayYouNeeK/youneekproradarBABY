@@ -7,12 +7,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider } from "@/lib/AuthContext";
 import { NavigationStackProvider } from "@/lib/NavigationStack";
+import { RadioProvider } from "@/lib/RadioContext";
 import OnboardingModal from "@/components/radar/OnboardingModal";
 
 const Radar = lazy(() => import("./pages/Radar"));
 const Contacts = lazy(() => import("./pages/Contacts"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Forecast = lazy(() => import("./pages/Forecast"));
+const Hourly = lazy(() => import("./pages/Hourly"));
+const Daily = lazy(() => import("./pages/Daily"));
+const RadioPage = lazy(() => import("./pages/Radio"));
 const Globe = lazy(() => import("./pages/Globe"));
 const Landing = lazy(() => import("./pages/Landing"));
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -45,6 +49,9 @@ const AppRoutes = () => {
               <Route path="/landing" element={<Landing />} />
               <Route path="/Radar" element={<Radar />} />
               <Route path="/Forecast" element={<Forecast />} />
+              <Route path="/Hourly" element={<Hourly />} />
+              <Route path="/Daily" element={<Daily />} />
+              <Route path="/Radio" element={<RadioPage />} />
               <Route path="/Globe" element={<Globe />} />
               <Route path="/Contacts" element={<Contacts />} />
               <Route path="/Settings" element={<Settings />} />
@@ -64,10 +71,12 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <NavigationStackProvider>
+            <RadioProvider>
             <div className="mx-auto h-[100dvh] w-full max-w-4xl overflow-hidden bg-[#0a0d12] text-white">
               <AppRoutes />
             </div>
             <Toaster />
+            </RadioProvider>
           </NavigationStackProvider>
         </Router>
       </QueryClientProvider>

@@ -3,6 +3,7 @@ import path from "node:path";
 import { defineConfig, loadEnv } from "vite";
 import { onRequestGet as getWeather } from "./functions/api/weather.js";
 import { onRequestGet as getLightning } from "./functions/api/lightning.js";
+import { onRequestGet as getPointAlerts } from "./functions/api/point-alerts.js";
 
 const NWS_HEADERS = { Accept: "application/geo+json", "User-Agent": "YouNeeKProRadar/1.0 (alerts)" };
 
@@ -106,6 +107,27 @@ function weatherDevProxy(mode) {
   };
 }
 
+function pointAlertsDevProxy() {
+  return {
+    name: "point-alerts-dev-proxy",
+    configureServer(server) {
+      server.middlewares.use("/api/point-alerts", async (req, res) => {
+        try {
+          const request = new Request(`http://localhost${req.url}`, { method: req.method });
+          const response = await getPointAlerts({ request });
+          res.statusCode = response.status;
+          response.headers.forEach((value, key) => res.setHeader(key, value));
+          res.end(await response.text());
+        } catch {
+          res.statusCode = 502;
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ alerts: [] }));
+        }
+      });
+    },
+  };
+}
+
 function lightningDevProxy() {
   return {
     name: "lightning-dev-proxy",
@@ -128,7 +150,7 @@ function lightningDevProxy() {
 
 export default defineConfig(({ mode }) => ({
   logLevel: "error",
-  plugins: [react(), alertsDevProxy(), weatherDevProxy(mode), lightningDevProxy()],
+  plugins: [react(), alertsDevProxy(), weatherDevProxy(mode), pointAlertsDevProxy(), lightningDevProxy()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

@@ -1,30 +1,37 @@
 import { useCallback, useEffect, useState } from "react";
+import { readCachedGps, writeCachedGps } from "@/lib/locationCache";
 
 export default function useWeatherLocation() {
-  const [coords, setCoords] = useState(null);
+  const [coords, setCoords] = useState(() => readCachedGps());
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !readCachedGps());
 
   const requestLocation = useCallback(() => {
-    setLoading(true);
+    setLoading(!readCachedGps());
     setError("");
 
     if (!navigator.geolocation) {
-      setError("Location services are not available on this device.");
+      if (!readCachedGps()) {
+        setError("Location services are not available on this device.");
+      }
       setLoading(false);
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setCoords({
+        const next = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-        });
+        };
+        writeCachedGps(next);
+        setCoords(next);
         setLoading(false);
       },
       () => {
-        setError("Allow location access to load WeatherKit forecasts for your area.");
+        if (!readCachedGps()) {
+          setError("Allow location access to load forecasts for your area.");
+        }
         setLoading(false);
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }

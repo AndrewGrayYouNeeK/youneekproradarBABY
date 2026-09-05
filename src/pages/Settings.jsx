@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { clearLocalData } from "@/lib/clearLocalData";
-import BottomTab from "@/components/radar/BottomTab";
-import AppHeader from "@/components/mobile/AppHeader";
+import WeatherShell from "@/components/weather/WeatherShell";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 import { Switch } from "@/components/ui/switch";
 import { ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle } from "lucide-react";
@@ -73,10 +72,30 @@ export default function Settings() {
   });
 
   return (
-    <div className="flex h-[100dvh] flex-col bg-slate-950 text-white">
-      <AppHeader title="Settings" />
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-28 pt-5">
+    <WeatherShell>
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-5">
         <div className="mx-auto max-w-md space-y-4">
+          <Section title="App">
+            <SettingRow
+              icon={Shield}
+              label="Shelter contacts"
+              sublabel="People who get Help Me and I'm Safe texts"
+              onClick={() => navigate("/Contacts")}
+            />
+            <SettingRow
+              icon={Radio}
+              label="NOAA Weather Radio"
+              sublabel="Open the live radio player"
+              onClick={() => navigate("/Radio")}
+            />
+            <SettingRow
+              icon={Shield}
+              label="3D globe"
+              sublabel="Lightning and tropical cyclones on a globe"
+              onClick={() => navigate("/Globe")}
+            />
+          </Section>
+
           <Section title="Notifications">
             <SettingRow
               icon={Bell}
@@ -193,7 +212,6 @@ export default function Settings() {
           </Section>
         </div>
       </div>
-      <BottomTab />
-    </div>
+    </WeatherShell>
   );
 }

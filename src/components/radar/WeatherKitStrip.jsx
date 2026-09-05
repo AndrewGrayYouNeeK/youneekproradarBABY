@@ -1,11 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, LoaderCircle, Wind } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { fetchWeatherKit, WeatherKitNotConfiguredError } from "@/lib/api/weatherkit";
-import {
-  adaptWeatherKitCurrent,
-  adaptWeatherKitHourly,
-} from "@/lib/weather/weatherkit-adapters";
+import { fetchForecastBundle } from "@/lib/api/forecast";
 import { describeWeatherCode } from "@/lib/weather/conditions";
 import useWeatherLocation from "@/hooks/useWeatherLocation";
 
@@ -18,14 +14,14 @@ function degreesToCardinal(deg) {
 
 export default function WeatherKitStrip({ windData }) {
   const navigate = useNavigate();
-  const { coords, error: locationError, loading: locationLoading } = useWeatherLocation();
+  const { coords, loading: locationLoading } = useWeatherLocation();
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["weatherkit", coords?.latitude, coords?.longitude],
+  const { data, isLoading } = useQuery({
+    queryKey: ["forecast-bundle", coords?.latitude, coords?.longitude],
     enabled: Boolean(coords),
     staleTime: 300000,
     refetchInterval: 600000,
-    queryFn: () => fetchWeatherKit(coords.latitude, coords.longitude),
+    queryFn: () => fetchForecastBundle(coords.latitude, coords.longitude),
   });
 
   const cardClass =
@@ -42,20 +38,8 @@ export default function WeatherKitStrip({ windData }) {
     );
   }
 
-  if (locationError) {
-    return null;
-  }
-
-  if (error instanceof WeatherKitNotConfiguredError) {
-    return (
-      <button type="button" onClick={() => navigate("/Forecast")} className={cardClass}>
-        <div className="text-xs font-semibold text-amber-100">Connect WeatherKit</div>
-        <div className="text-[11px] text-amber-100/70">Tap to set up forecasts</div>
-      </button>
-    );
-  }
-
-  if (error || !data) {
+  const current = data?.current?.current;
+  if (!current) {
     if (windData) {
       const cardinal = degreesToCardinal(windData.directionDeg);
       const speedLabel = windData.speedMph != null ? `${Math.round(windData.speedMph)} mph` : "--";
@@ -74,9 +58,8 @@ export default function WeatherKitStrip({ windData }) {
     return null;
   }
 
-  const current = adaptWeatherKitCurrent(data);
-  const nextHour = adaptWeatherKitHourly(data)[0];
-  const code = describeWeatherCode(current.current.weather_code);
+  const nextHour = data.hourly?.[0];
+  const code = describeWeatherCode(current.weather_code);
   const Icon = code.icon;
   const cardinal = windData ? degreesToCardinal(windData.directionDeg) : "";
   const windLabel = windData?.speedMph != null
@@ -92,10 +75,10 @@ export default function WeatherKitStrip({ windData }) {
         <div className="min-w-0">
           <div className="flex items-baseline gap-1.5">
             <span className="text-[22px] font-bold leading-none tabular-nums text-white">
-              {Math.round(current.current.temperature_2m ?? 0)}°
+              {Math.round(current.temperature_2m ?? 0)}°
             </span>
             <span className="truncate text-xs text-slate-300">
-              {current.current.condition_label || code.label}
+              {current.condition_label || code.label}
             </span>
           </div>
           <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-slate-400">

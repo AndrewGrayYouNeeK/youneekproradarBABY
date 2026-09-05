@@ -4,29 +4,24 @@ import { ChevronRight } from "lucide-react";
 
 const SLIDES = [
   {
+    icon: "☀️",
+    title: "Now, Hourly, 10 Day, Maps",
+    body: "The app is laid out like a weather briefing: current conditions, hour-by-hour, a 10-day outlook, and live radar maps.",
+  },
+  {
     icon: "🌩️",
     title: "Live NEXRAD Radar",
-    body: "See live NEXRAD, play a radar loop, overlay lightning reports, tropical cyclones, and satellite. Everything ships with the app — no extra paywall.",
-  },
-  {
-    icon: "☀️",
-    title: "Apple WeatherKit",
-    body: "Current conditions, next-hour precipitation, hourly and 10-day forecasts, and official WeatherKit alerts — all in the Forecast tab.",
-  },
-  {
-    icon: "🚨",
-    title: "Severe Weather Alerts",
-    body: "Tornado, thunderstorm, flood, and winter alerts are pulled live from the National Weather Service and drawn directly on your map.",
+    body: "Play a radar loop, overlay lightning, storms, satellite, and alerts. Tap More on the map dock for every layer.",
   },
   {
     icon: "📻",
     title: "NOAA Weather Radio",
-    body: "Tap More on the radar dock to stream your nearest NOAA Weather Radio station. Auto-tune can be turned off in Settings.",
+    body: "The Radio tab plays your nearest NOAA station with one tap. It keeps playing while you look at radar or forecasts.",
   },
   {
-    icon: "🏠",
-    title: "Shelter Notifications",
-    body: "Add contacts, then send an Emergency text or an I'm Safe text with your GPS location. Drafts open in Messages so you stay in control.",
+    icon: "🆘",
+    title: "Help Me / I'm Safe",
+    body: "One tap opens a GPS text to your shelter contacts. Help Me means you need assistance. I'm Safe means you are accounted for.",
   },
 ];
 

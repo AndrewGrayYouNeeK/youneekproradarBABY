@@ -24,17 +24,17 @@ export default function RadarLayersMenu({
   isOpen,
   onToggle,
   showNexrad,
-  showRadio,
   showLightning,
   showHurricanes,
   showSatellite,
   alertToggles,
   onShowNexradChange,
-  onShowRadioChange,
   onShowLightningChange,
   onShowHurricanesChange,
   onShowSatelliteChange,
   onAlertToggleChange,
+  radarOpacity = 0.8,
+  onRadarOpacityChange,
   onResetView,
   metrics,
   station,
@@ -101,12 +101,27 @@ export default function RadarLayersMenu({
               onCheckedChange={onShowLightningChange}
               ariaLabel="Toggle lightning reports"
             />
-            <ToggleRow
-              label="Tropical cyclones"
-              checked={showHurricanes}
-              onCheckedChange={onShowHurricanesChange}
-              ariaLabel="Toggle tropical cyclone markers"
-            />
+              <ToggleRow
+                label="Tropical cyclones"
+                checked={showHurricanes}
+                onCheckedChange={onShowHurricanesChange}
+                ariaLabel="Toggle tropical cyclone markers"
+              />
+              <div className="pt-1">
+                <div className="mb-1 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>Layer opacity</span>
+                  <span>{Math.round(radarOpacity * 100)}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={20}
+                  max={100}
+                  value={Math.round(radarOpacity * 100)}
+                  onChange={(event) => onRadarOpacityChange?.(Number(event.target.value) / 100)}
+                  aria-label="Radar layer opacity"
+                  className="radar-timeline w-full"
+                />
+              </div>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
@@ -150,7 +165,7 @@ export default function RadarLayersMenu({
             )}
           </div>
 
-          <RadioControls showRadio={showRadio} onShowRadioChange={onShowRadioChange} />
+            <RadioControls />
 
           <div className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Tools</div>

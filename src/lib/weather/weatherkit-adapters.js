@@ -81,7 +81,7 @@ export function adaptWeatherKitCurrent(data) {
 export function adaptWeatherKitHourly(data) {
   const hours = data?.forecastHourly?.hours || [];
 
-  return hours.slice(0, 48).map((hour) => ({
+  return hours.slice(0, 240).map((hour) => ({
     time: hour.forecastStart,
     temperature: Math.round(hour.temperature ?? 0),
     pop: popPercent(hour.precipitationChance),

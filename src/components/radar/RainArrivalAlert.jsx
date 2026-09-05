@@ -90,7 +90,7 @@ export default function RainArrivalAlert() {
   return (
     <div
       className="pointer-events-none absolute inset-x-3 z-[1250] flex justify-start"
-      style={{ top: "calc(5.35rem + env(safe-area-inset-top))" }}
+      style={{ top: "calc(var(--weather-chrome-top, 6.7rem) + 4.5rem + env(safe-area-inset-top))" }}
     >
       <div className={`pointer-events-auto w-full max-w-[16.75rem] rounded-2xl border px-4 py-3 shadow-xl backdrop-blur-md ${copy.tone}`}>
         <div className="flex items-start gap-3">
