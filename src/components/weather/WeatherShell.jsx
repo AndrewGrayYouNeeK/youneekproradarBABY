@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, ChevronDown, Settings } from "lucide-react";
+import { AlertTriangle, ChevronDown, MapPin, Settings } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { RadioMiniButton, SafetyActionBar } from "@/components/weather/SafetyActionBar";
 import useWeatherLocation from "@/hooks/useWeatherLocation";
-import { fetchWeatherKit } from "@/lib/api/weatherkit";
-import { adaptWeatherKitAlerts } from "@/lib/weather/weatherkit-adapters";
+import { fetchForecastBundle } from "@/lib/api/forecast";
 import { reverseGeocode } from "@/lib/locationCache";
 
 const TABS = [
@@ -33,29 +32,33 @@ export default function WeatherShell({ children, variant = "page", alerts: alert
     queryFn: () => reverseGeocode(coords),
   });
 
-  const { data } = useQuery({
-    queryKey: ["weatherkit", coords?.latitude, coords?.longitude],
+  const { data: forecast } = useQuery({
+    queryKey: ["forecast-bundle", coords?.latitude, coords?.longitude],
     enabled: Boolean(coords) && alertsProp == null,
     staleTime: 300000,
-    queryFn: () => fetchWeatherKit(coords.latitude, coords.longitude),
+    queryFn: () => fetchForecastBundle(coords.latitude, coords.longitude),
   });
 
-  const alerts = alertsProp ?? (data ? adaptWeatherKitAlerts(data) : []);
+  const alerts = alertsProp ?? forecast?.alerts ?? [];
   const alertCount = alerts.length;
 
   return (
-    <div className={`flex h-[100dvh] flex-col overflow-hidden ${overlay ? "bg-[#0a0d12]" : "bg-[#07101c]"}`}>
+    <div
+      className={`flex h-[100dvh] flex-col overflow-hidden ${overlay ? "bg-[#0a0d12]" : "bg-[#07101c]"}`}
+      style={overlay ? { "--weather-chrome-top": "8.85rem" } : undefined}
+    >
       <header
-        className={`z-[1700] shrink-0 ${overlay ? "absolute inset-x-0 top-0 bg-gradient-to-b from-[#07101c] via-[#07101c]/90 to-transparent" : "bg-[#07101c]"}`}
+        className={`z-[1700] shrink-0 ${overlay ? "absolute inset-x-0 top-0 bg-gradient-to-b from-[#07101c] via-[#07101c]/92 to-transparent" : "bg-[#07101c]"}`}
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         <div className="flex items-center gap-2 px-3 py-2">
           <button
             type="button"
             onClick={() => navigate("/Settings")}
-            className="flex min-h-0 min-w-0 items-center gap-1 text-left"
+            className="flex min-h-0 min-w-0 items-center gap-1.5 text-left"
             aria-label="Open settings"
           >
+            <MapPin className="h-4 w-4 shrink-0 text-lime-400" aria-hidden="true" />
             <div className="min-w-0">
               <div className="flex items-center gap-1 text-[15px] font-semibold text-white">
                 <span className="truncate">{placeName || "My location"}</span>
@@ -64,7 +67,6 @@ export default function WeatherShell({ children, variant = "page", alerts: alert
             </div>
           </button>
           <div className="ml-auto flex items-center gap-1.5">
-            {overlay && <SafetyActionBar compact />}
             <RadioMiniButton />
             <button
               type="button"
@@ -107,6 +109,11 @@ export default function WeatherShell({ children, variant = "page", alerts: alert
             );
           })}
         </nav>
+        {overlay && (
+          <div className="px-3 pb-2">
+            <SafetyActionBar compact />
+          </div>
+        )}
       </header>
 
       <div className={`min-h-0 flex-1 ${overlay ? "relative" : "flex flex-col overflow-hidden"}`}>

@@ -5,13 +5,13 @@ export default function WeatherKitSetupNotice({ type = "not-configured", message
     type === "location"
       ? {
           title: "Location needed",
-          detail: message || "Allow location access to load Apple WeatherKit forecasts.",
+          detail: message || "Allow location access to load forecasts for your area.",
           icon: MapPin,
         }
       : type === "error"
         ? {
             title: "Forecast unavailable",
-            detail: message || "WeatherKit could not load right now.",
+            detail: message || "Live weather could not load right now.",
             icon: CloudOff,
           }
         : {

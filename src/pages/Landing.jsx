@@ -19,7 +19,7 @@ export default function Landing() {
           Making It Rain Accuracy
         </h1>
         <p className="mb-8 text-sm leading-relaxed text-slate-300">
-          Live radar, hour-by-hour forecasts, NOAA radio, and one-tap Help Me / I&apos;m Safe texts — storm-ready without the clutter.
+          Now, Hourly, 10 Day, Maps, and live NOAA radio — plus one-tap Help Me / I&apos;m Safe texts when it counts.
         </p>
 
         <Link

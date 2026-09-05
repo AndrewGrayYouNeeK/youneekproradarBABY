@@ -5,7 +5,7 @@ export default function WeatherAlertsCard({ alerts = [] }) {
         <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
           Alerts
         </h2>
-        <p className="mt-2 text-sm text-slate-300">No official WeatherKit alerts for this location.</p>
+        <p className="mt-2 text-sm text-slate-300">No active weather alerts for this location.</p>
       </section>
     );
   }

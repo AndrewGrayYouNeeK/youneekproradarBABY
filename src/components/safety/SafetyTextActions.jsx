@@ -5,22 +5,16 @@ import { readCachedGps } from "@/lib/locationCache";
 
 export default function SafetyTextActions({ compact = false }) {
   const [status, setStatus] = useState("");
-  const [busy, setBusy] = useState(false);
 
-  const send = async (kind) => {
-    if (busy) return;
-    setBusy(true);
-    setStatus("");
+  const send = (kind) => {
     try {
-      const result = await sendContactTexts({
+      const result = sendContactTexts({
         kind,
         coords: readCachedGps(),
       });
       setStatus(`Opened Messages for ${result.count} contact${result.count === 1 ? "" : "s"} — tap Send.`);
     } catch (error) {
       setStatus(error.message);
-    } finally {
-      setBusy(false);
     }
   };
 
@@ -30,8 +24,7 @@ export default function SafetyTextActions({ compact = false }) {
         <button
           type="button"
           onClick={() => send("emergency")}
-          disabled={busy}
-          className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-red-600 px-3 py-3 text-sm font-bold text-white hover:bg-red-500 disabled:opacity-50"
+          className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-red-600 px-3 py-3 text-sm font-bold text-white hover:bg-red-500"
         >
           <ShieldAlert className="h-4 w-4" aria-hidden="true" />
           Help Me
@@ -39,14 +32,15 @@ export default function SafetyTextActions({ compact = false }) {
         <button
           type="button"
           onClick={() => send("safe")}
-          disabled={busy}
-          className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-lime-400 px-3 py-3 text-sm font-bold text-zinc-950 hover:bg-lime-300 disabled:opacity-50"
+          className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-lime-400 px-3 py-3 text-sm font-bold text-zinc-950 hover:bg-lime-300"
         >
           <ShieldCheck className="h-4 w-4" aria-hidden="true" />
           I&apos;m Safe
         </button>
       </div>
-      {status && <p className="text-xs text-slate-400">{status}</p>}
+      <p className="text-xs text-slate-400">
+        {status || "One tap opens a text with your location. You still tap Send."}
+      </p>
     </div>
   );
 }

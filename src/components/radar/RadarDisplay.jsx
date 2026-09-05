@@ -593,7 +593,7 @@ export default function RadarDisplay({
 
       <div
         className="pointer-events-none absolute left-3 z-[1200]"
-        style={{ top: "calc(6.7rem + env(safe-area-inset-top))" }}
+        style={{ top: "calc(var(--weather-chrome-top, 6.7rem) + env(safe-area-inset-top))" }}
       >
         <WeatherKitStrip windData={windData} />
       </div>

@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import WeatherShell from "@/components/weather/WeatherShell";
 import NowHero from "@/components/forecast/NowHero";
@@ -7,32 +6,22 @@ import MinutePrecipitation from "@/components/forecast/MinutePrecipitation";
 import WeatherAlertsCard from "@/components/forecast/WeatherAlertsCard";
 import WeatherKitSetupNotice from "@/components/forecast/WeatherKitSetupNotice";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
-import useWeatherLocation from "@/hooks/useWeatherLocation";
-import { fetchWeatherKit, WeatherKitNotConfiguredError } from "@/lib/api/weatherkit";
+import useForecastWeather from "@/hooks/useForecastWeather";
 import { fetchEnvironment } from "@/lib/api/environment";
-import {
-  adaptWeatherKitAlerts,
-  adaptWeatherKitCurrent,
-  adaptWeatherKitNextHour,
-} from "@/lib/weather/weatherkit-adapters";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Forecast() {
   useTabPageMemory("Forecast");
-  const { coords, error: locationError, loading: locationLoading, retry } = useWeatherLocation();
-
   const {
+    coords,
+    locationError,
+    retry,
+    showLoading,
     data,
-    isLoading,
     error,
-    refetch,
     isFetching,
-  } = useQuery({
-    queryKey: ["weatherkit", coords?.latitude, coords?.longitude],
-    enabled: Boolean(coords),
-    staleTime: 300000,
-    refetchInterval: 600000,
-    queryFn: () => fetchWeatherKit(coords.latitude, coords.longitude),
-  });
+    refetch,
+  } = useForecastWeather();
 
   const { data: environment } = useQuery({
     queryKey: ["environment", coords?.latitude, coords?.longitude],
@@ -41,8 +30,7 @@ export default function Forecast() {
     queryFn: () => fetchEnvironment(coords),
   });
 
-  const showLoading = locationLoading || (Boolean(coords) && isLoading && !data);
-  const alerts = data ? adaptWeatherKitAlerts(data) : [];
+  const alerts = data?.alerts || [];
 
   return (
     <WeatherShell alerts={alerts}>
@@ -65,11 +53,7 @@ export default function Forecast() {
             <WeatherKitSetupNotice type="location" message={locationError} onRetry={retry} />
           )}
 
-          {!showLoading && !locationError && error instanceof WeatherKitNotConfiguredError && (
-            <WeatherKitSetupNotice type="not-configured" message={error.hint} />
-          )}
-
-          {!showLoading && !locationError && error && !(error instanceof WeatherKitNotConfiguredError) && (
+          {!showLoading && !locationError && error && (
             <WeatherKitSetupNotice
               type="error"
               message={error.message}
@@ -80,8 +64,8 @@ export default function Forecast() {
           {!showLoading && !locationError && !error && data && (
             <>
               <WeatherAlertsCard alerts={alerts} />
-              <NowHero data={adaptWeatherKitCurrent(data)} />
-              <MinutePrecipitation minutes={adaptWeatherKitNextHour(data)} />
+              <NowHero data={data.current} />
+              <MinutePrecipitation minutes={data.nextHour} />
               <EnvironmentCards data={environment} />
             </>
           )}

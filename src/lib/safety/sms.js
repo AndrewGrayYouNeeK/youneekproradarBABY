@@ -55,7 +55,7 @@ export function openSmsDraft(url) {
   window.location.href = url;
 }
 
-export async function sendContactTexts({ kind, context, coords } = {}) {
+export function sendContactTexts({ kind, context, coords } = {}) {
   const contacts = loadShelterContacts();
   const phones = uniqueContactPhones(contacts);
   if (!phones.length) {
