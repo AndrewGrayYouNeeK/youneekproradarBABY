@@ -27,7 +27,7 @@ export default function RadarControlStack({
   return (
     <div
       className="pointer-events-none absolute right-3 z-[1200] flex flex-col gap-2"
-      style={{ top: "calc(0.6rem + env(safe-area-inset-top))" }}
+      style={{ top: "calc(6.7rem + env(safe-area-inset-top))" }}
     >
       <div className="pointer-events-auto flex flex-col gap-2">
         <MapFab icon={Layers} label="Open map layers" onClick={onToggleLayers} active={layersOpen} />

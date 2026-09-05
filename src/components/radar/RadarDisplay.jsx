@@ -98,8 +98,6 @@ export default function RadarDisplay({
   settings,
   showNexrad,
   onSettingsChange,
-  showRadio,
-  onToggleRadio,
   targets = [],
   onMapClick,
   onTargetClick,
@@ -141,6 +139,7 @@ export default function RadarDisplay({
   const [initialLocationSet, setInitialLocationSet] = useState(false);
   const [inspector, setInspector] = useState(null);
   const [stormData, setStormData] = useState(null);
+  const [radarOpacity, setRadarOpacity] = useState(ACTIVE_PRODUCT.opacity);
   const clickContextRef = useRef({ userLocation: null, windData: null, onMapClick: null });
 
   useEffect(() => {
@@ -291,7 +290,7 @@ export default function RadarDisplay({
 
     radarLayerRef.current = L.tileLayer(tileUrl, {
       attribution: loopEnabled ? "Radar loop via RainViewer" : "NEXRAD data from Iowa Environmental Mesonet",
-      opacity: ACTIVE_PRODUCT.opacity,
+      opacity: radarOpacity,
       minZoom: 4,
       maxZoom: 12,
       maxNativeZoom: 12,
@@ -304,7 +303,7 @@ export default function RadarDisplay({
         radarLayerRef.current = null;
       }
     };
-  }, [showNexrad, isMapReady, loopEnabled, loopIndex, loopFrames]);
+  }, [showNexrad, isMapReady, loopEnabled, loopIndex, loopFrames, radarOpacity]);
 
   useEffect(() => {
     if (!loopEnabled) return undefined;
@@ -499,7 +498,7 @@ export default function RadarDisplay({
       const tileUrl = 'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/ridge::USCOMP-N0Q-0/{z}/{x}/{y}.png';
       radarLayerRef.current = L.tileLayer(tileUrl, {
         attribution: "NEXRAD data from Iowa Environmental Mesonet",
-        opacity: ACTIVE_PRODUCT.opacity,
+        opacity: radarOpacity,
         minZoom: 4,
         maxZoom: 12,
         maxNativeZoom: 12,
@@ -594,7 +593,7 @@ export default function RadarDisplay({
 
       <div
         className="pointer-events-none absolute left-3 z-[1200]"
-        style={{ top: "calc(0.6rem + env(safe-area-inset-top))" }}
+        style={{ top: "calc(6.7rem + env(safe-area-inset-top))" }}
       >
         <WeatherKitStrip windData={windData} />
       </div>
@@ -611,17 +610,17 @@ export default function RadarDisplay({
         isOpen={isLayersMenuOpen}
         onToggle={handleLayersMenuToggle}
         showNexrad={showNexrad}
-        showRadio={showRadio}
         showLightning={showLightning}
         showHurricanes={showHurricanes}
         showSatellite={showSatellite}
         alertToggles={alertToggles}
         onShowNexradChange={handleShowNexradChange}
-        onShowRadioChange={onToggleRadio}
         onShowLightningChange={setShowLightning}
         onShowHurricanesChange={setShowHurricanes}
         onShowSatelliteChange={setShowSatellite}
         onAlertToggleChange={handleAlertToggleChange}
+        radarOpacity={radarOpacity}
+        onRadarOpacityChange={setRadarOpacity}
         onResetView={handleConusView}
         metrics={
           mapCenter
@@ -643,7 +642,7 @@ export default function RadarDisplay({
 
       <div
         className="pointer-events-none absolute inset-x-0 z-[1200] flex flex-col items-stretch gap-2 px-3"
-        style={{ bottom: "calc(4.35rem + env(safe-area-inset-bottom))" }}
+        style={{ bottom: "calc(0.85rem + env(safe-area-inset-bottom))" }}
       >
         <ShelterAlert activeTornadoWarning={activeTornadoWarning} activeTornadoWatch={activeTornadoWatch} />
         <RadarInspectCard inspector={inspector} stormData={stormData} onClose={handleCloseInspect} />

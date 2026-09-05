@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import BottomTab from "@/components/radar/BottomTab";
-import AppHeader from "@/components/mobile/AppHeader";
+import WeatherShell from "@/components/weather/WeatherShell";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 import { UserPlus, Trash2, Download, Upload, Phone, User, Shield, AlertTriangle } from "lucide-react";
 import SafetyTextActions from "@/components/safety/SafetyTextActions";
@@ -126,16 +125,15 @@ export default function Contacts() {
   };
 
   return (
-    <div className="flex h-[100dvh] flex-col bg-slate-950 text-white">
-      <AppHeader title="Contacts" />
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-28 pt-5">
+    <WeatherShell>
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-5">
       <div className="mx-auto max-w-md space-y-5">
 
         {/* Header */}
         <div>
           <h1 className="text-xl font-bold">Shelter Contacts</h1>
           <p className="mt-1 text-sm text-slate-400">
-            These people get Emergency and I&apos;m Safe texts with your GPS location. Drafts open in Messages — nothing sends until you tap Send.
+            These people get one-tap Help Me and I&apos;m Safe texts with your GPS location. Messages opens immediately — you still tap Send.
           </p>
         </div>
 
@@ -260,13 +258,12 @@ export default function Contacts() {
         <div className="flex items-start gap-2 rounded-xl border border-white/5 bg-white/[0.02] px-3 py-3">
           <Shield className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
           <p className="text-xs leading-relaxed text-slate-500">
-            Contacts are stored only on this device. Emergency and I&apos;m Safe texts only go out when you tap a button, then Send in Messages.
+            Emergency and I&apos;m Safe texts only go out when you tap Help Me or I&apos;m Safe, then Send in Messages.
           </p>
         </div>
 
       </div>
       </div>
-      <BottomTab />
-    </div>
+    </WeatherShell>
   );
 }

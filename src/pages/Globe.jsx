@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import AppHeader from "@/components/mobile/AppHeader";
-import BottomTab from "@/components/radar/BottomTab";
+import WeatherShell from "@/components/weather/WeatherShell";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 
 function latLonToVector3(lat, lon, radius) {
@@ -138,15 +137,13 @@ export default function Globe() {
   }, []);
 
   return (
-    <div className="flex h-[100dvh] flex-col bg-slate-950 pb-0">
-      <AppHeader title="Globe" />
-      <div className="relative min-h-0 flex-1 pb-16">
+    <WeatherShell variant="map">
+      <div className="absolute inset-0 pt-[7.25rem]">
         <div ref={mountRef} className="h-full w-full" />
         <div className="pointer-events-none absolute left-4 top-4 max-w-xs rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-xs text-slate-300">
-          Drag to rotate. Lightning reports and active tropical cyclones plot on a night-side Earth — not a clone of another app’s globe.
+          Drag to rotate. Lightning reports and active tropical cyclones plot on a night-side Earth.
         </div>
       </div>
-      <BottomTab />
-    </div>
+    </WeatherShell>
   );
 }

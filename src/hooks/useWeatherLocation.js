@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
+import { readCachedGps, writeCachedGps } from "@/lib/locationCache";
 
 export default function useWeatherLocation() {
-  const [coords, setCoords] = useState(null);
+  const [coords, setCoords] = useState(() => readCachedGps());
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -17,10 +18,12 @@ export default function useWeatherLocation() {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setCoords({
+        const next = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-        });
+        };
+        writeCachedGps(next);
+        setCoords(next);
         setLoading(false);
       },
       () => {
