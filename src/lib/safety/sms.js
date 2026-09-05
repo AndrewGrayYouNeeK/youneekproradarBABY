@@ -52,6 +52,10 @@ export function buildImSafeBody({ locationLine, context }) {
 
 export function openSmsDraft(url) {
   if (!url) return;
+  if (typeof window !== "undefined") {
+    window.__youneekSmsDrafts = window.__youneekSmsDrafts || [];
+    window.__youneekSmsDrafts.push(url);
+  }
   window.location.href = url;
 }
 

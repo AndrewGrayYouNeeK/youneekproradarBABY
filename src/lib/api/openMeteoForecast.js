@@ -4,6 +4,16 @@ function round(value) {
   return Number.isFinite(Number(value)) ? Math.round(Number(value)) : 0;
 }
 
+function localNoon(dateStr) {
+  return new Date(`${dateStr}T12:00:00`);
+}
+
+function startOfToday() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+}
+
 export async function fetchOpenMeteoForecast(lat, lon) {
   const url = new URL("https://api.open-meteo.com/v1/forecast");
   url.searchParams.set("latitude", String(lat));
@@ -70,14 +80,17 @@ export async function fetchOpenMeteoForecast(lat, lon) {
       }))
       .filter((hour) => new Date(hour.time).getTime() >= Date.now() - 45 * 60 * 1000)
       .slice(0, 168),
-    daily: (daily.time || []).slice(0, 10).map((date, index) => ({
-      date,
-      high: round(daily.temperature_2m_max?.[index]),
-      low: round(daily.temperature_2m_min?.[index]),
-      pop: round(daily.precipitation_probability_max?.[index]),
-      label: describeWeatherCode(daily.weather_code?.[index]).label,
-      weather_code: daily.weather_code?.[index] ?? 0,
-    })),
+    daily: (daily.time || [])
+      .map((date, index) => ({
+        date,
+        high: round(daily.temperature_2m_max?.[index]),
+        low: round(daily.temperature_2m_min?.[index]),
+        pop: round(daily.precipitation_probability_max?.[index]),
+        label: describeWeatherCode(daily.weather_code?.[index]).label,
+        weather_code: daily.weather_code?.[index] ?? 0,
+      }))
+      .filter((day) => localNoon(day.date).getTime() >= startOfToday().getTime())
+      .slice(0, 10),
     nextHour: [],
   };
 }

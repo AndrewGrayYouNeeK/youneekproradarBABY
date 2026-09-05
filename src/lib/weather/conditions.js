@@ -59,5 +59,11 @@ export function formatHourTime(iso) {
 
 export function formatDayLabel(iso) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+  return parseLocalDate(iso).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+}
+
+export function parseLocalDate(iso) {
+  if (!iso) return new Date(NaN);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return new Date(`${iso}T12:00:00`);
+  return new Date(iso);
 }

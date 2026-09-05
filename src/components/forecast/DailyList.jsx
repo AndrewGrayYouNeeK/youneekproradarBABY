@@ -1,10 +1,10 @@
-import { describeWeatherCode } from "@/lib/weather/conditions";
+import { describeWeatherCode, parseLocalDate } from "@/lib/weather/conditions";
 
 export default function DailyList({ days = [] }) {
   if (!days.length) return null;
 
-  const start = new Date(days[0].date).toLocaleDateString([], { month: "long", day: "numeric" });
-  const end = new Date(days[days.length - 1].date).toLocaleDateString([], { month: "long", day: "numeric", year: "numeric" });
+  const start = parseLocalDate(days[0].date).toLocaleDateString([], { month: "long", day: "numeric" });
+  const end = parseLocalDate(days[days.length - 1].date).toLocaleDateString([], { month: "long", day: "numeric", year: "numeric" });
 
   return (
     <section>
@@ -15,8 +15,10 @@ export default function DailyList({ days = [] }) {
         {days.map((day, index) => {
           const code = describeWeatherCode(day.weather_code);
           const Icon = code.icon;
-          const weekday = new Date(day.date).toLocaleDateString([], { weekday: "short" });
-          const precip = day.pop > 0 ? `${day.pop}% chance of ${day.label.toLowerCase()}` : day.label;
+          const weekday = parseLocalDate(day.date).toLocaleDateString([], { weekday: "short" });
+          const precip = day.pop >= 20
+            ? `${day.pop}% chance of ${day.label.toLowerCase()}`
+            : day.label;
           return (
             <div
               key={day.date}
