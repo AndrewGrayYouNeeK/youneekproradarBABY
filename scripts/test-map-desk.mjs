@@ -28,7 +28,7 @@ function assert(condition, message) {
 assert(getMapFeature("hourly")?.path === "/Hourly", "Hourly should open from the map desk");
 assert(getMapFeature("settings")?.path === "/Settings", "Settings should be reachable from the map");
 assert(getMapFeature("help")?.kind === "action", "Help Me should be a map action");
-assert(DEFAULT_DOCK_IDS.includes("radar") && DEFAULT_DOCK_IDS.includes("radio"), "Default dock should keep radar and radio");
+assert(DEFAULT_DOCK_IDS.includes("radar") && DEFAULT_DOCK_IDS.includes("alerts"), "Default dock should keep radar and alerts");
 
 const saved = saveDockIds(["hourly", "help", "bogus", "radar"]);
 assert(JSON.stringify(saved) === JSON.stringify(["hourly", "help", "radar"]), "Unknown chips should be dropped");

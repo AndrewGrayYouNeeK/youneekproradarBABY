@@ -93,20 +93,22 @@ export default function RadarPlaybackDock({
 }) {
   return (
     <div className="pointer-events-auto mx-auto w-full max-w-xl overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#10151c]/94 shadow-[0_18px_50px_rgba(0,0,0,0.55)] backdrop-blur-xl">
-      <div className="flex gap-2 overflow-x-auto px-3 pt-3 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {dockIds.map((id) => {
-          const feature = getMapFeature(id);
-          if (!feature) return null;
-          return (
-            <LayerChip
-              key={id}
-              id={id}
-              label={feature.label}
-              active={Boolean(layers[id])}
-              onClick={() => onChipClick(id)}
-            />
-          );
-        })}
+      <div className="flex items-center gap-2 px-3 pt-3 pb-2">
+        <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {dockIds.map((id) => {
+            const feature = getMapFeature(id);
+            if (!feature) return null;
+            return (
+              <LayerChip
+                key={id}
+                id={id}
+                label={feature.label}
+                active={Boolean(layers[id])}
+                onClick={() => onChipClick(id)}
+              />
+            );
+          })}
+        </div>
         <LayerChip id="more" label="More" active={false} onClick={onOpenMore} />
       </div>
 
