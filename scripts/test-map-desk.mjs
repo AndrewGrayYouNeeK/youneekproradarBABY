@@ -3,6 +3,7 @@ import {
   MAP_DOCK_STORAGE_KEY,
   MAP_FEATURES,
   MAX_DOCK_CHIPS,
+  featuresOnMap,
   getMapFeature,
   loadDockIds,
   saveDockIds,
@@ -25,22 +26,24 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-assert(getMapFeature("hourly")?.path === "/Hourly", "Hourly should open from the map desk");
-assert(getMapFeature("settings")?.path === "/Settings", "Settings should be reachable from the map");
-assert(getMapFeature("help")?.kind === "action", "Help Me should be a map action");
-assert(DEFAULT_DOCK_IDS.includes("radar") && DEFAULT_DOCK_IDS.includes("alerts"), "Default dock should keep radar and alerts");
+assert(getMapFeature("hourly")?.path === "/Hourly", "Hourly should open from the radar");
+assert(getMapFeature("settings")?.path === "/Settings", "Settings should be on the radar");
+assert(getMapFeature("help")?.kind === "action", "Help Me should be a radar action");
+assert(DEFAULT_DOCK_IDS.length === MAP_FEATURES.length, "Every pro feature should show on the radar by default");
+assert(MAX_DOCK_CHIPS === MAP_FEATURES.length, "The radar can hold the full pro desk");
+
+const groups = featuresOnMap(DEFAULT_DOCK_IDS);
+assert(groups.map((group) => group.id).join(",") === "overlays,warnings,desk,safety", "Radar tools should stay in labeled groups");
+assert(groups.find((group) => group.id === "desk").features.map((feature) => feature.id).join(",") === "now,hourly,daily,radio,globe,settings", "Desk tools should be on the radar");
 
 const saved = saveDockIds(["hourly", "help", "bogus", "radar"]);
-assert(JSON.stringify(saved) === JSON.stringify(["hourly", "help", "radar"]), "Unknown chips should be dropped");
-assert(JSON.parse(localStorage.getItem(MAP_DOCK_STORAGE_KEY)).length === 3, "Dock pins should persist");
-assert(JSON.stringify(loadDockIds()) === JSON.stringify(["hourly", "help", "radar"]), "Pinned dock should reload");
-
-const overflow = saveDockIds(["radar", "lightning", "satellite", "hurricanes", "alerts", "radio", "hourly", "help", "safe"]);
-assert(overflow.length === MAX_DOCK_CHIPS, "Dock should cap at eight shortcuts");
+assert(JSON.stringify(saved) === JSON.stringify(["hourly", "help", "radar"]), "Unknown tools should be dropped");
+assert(JSON.parse(localStorage.getItem(MAP_DOCK_STORAGE_KEY)).length === 3, "Radar layout should persist");
+assert(JSON.stringify(loadDockIds()) === JSON.stringify(["hourly", "help", "radar"]), "Custom radar layout should reload");
 
 const routes = MAP_FEATURES.filter((feature) => feature.kind === "route").map((feature) => feature.path);
 for (const path of ["/Forecast", "/Hourly", "/Daily", "/Radio", "/Globe", "/Settings", "/Contacts"]) {
-  assert(routes.includes(path), `${path} should be organized on the map desk`);
+  assert(routes.includes(path), `${path} should be organized on the radar`);
 }
 
 console.log("map desk tests passed");

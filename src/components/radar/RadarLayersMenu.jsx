@@ -62,7 +62,7 @@ export default function RadarLayersMenu({
 }) {
   const navigate = useNavigate();
   const [showAlerts, setShowAlerts] = useState(true);
-  const [showCustomize, setShowCustomize] = useState(false);
+  const [showCustomize, setShowCustomize] = useState(true);
 
   if (!isOpen) return null;
 
@@ -201,7 +201,7 @@ export default function RadarLayersMenu({
 
           <Section title="Pro desk">
             <p className="text-[11px] leading-relaxed text-slate-500">
-              Every tool opens from this map. Pin favorites to the bottom bar.
+              These same tools sit on the radar. Hide any you do not want, then tap Show all tools to restore them.
             </p>
             <div className="grid grid-cols-2 gap-2">
               {MAP_FEATURES.filter((feature) => feature.kind === "route").map((item) => (
@@ -243,9 +243,9 @@ export default function RadarLayersMenu({
               aria-label={showCustomize ? "Hide map shortcuts" : "Customize map shortcuts"}
             >
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">On the map</div>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">On this radar</div>
                 <div className="mt-0.5 text-xs text-slate-500">
-                  {dockIds.length}/{MAX_DOCK_CHIPS} shortcuts pinned
+                  {dockIds.length}/{MAX_DOCK_CHIPS} tools showing
                 </div>
               </div>
               {showCustomize ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
@@ -287,9 +287,8 @@ export default function RadarLayersMenu({
                             <button
                               type="button"
                               onClick={() => onTogglePin(feature.id)}
-                              disabled={!pinned && dockIds.length >= MAX_DOCK_CHIPS}
-                              aria-label={pinned ? `Unpin ${feature.label}` : `Pin ${feature.label} to map`}
-                              className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-[11px] font-semibold disabled:opacity-30 ${
+                              aria-label={pinned ? `Hide ${feature.label} from radar` : `Show ${feature.label} on radar`}
+                              className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-[11px] font-semibold ${
                                 pinned ? "bg-lime-400 text-zinc-950" : "bg-white/10 text-slate-300"
                               }`}
                             >
@@ -306,7 +305,7 @@ export default function RadarLayersMenu({
                   onClick={onResetDock}
                   className="flex min-h-10 w-full items-center justify-center rounded-xl border border-white/10 text-xs font-semibold text-slate-300"
                 >
-                  Reset shortcuts
+                  Reset to all tools
                 </button>
               </div>
             )}

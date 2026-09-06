@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { DEFAULT_DOCK_IDS, MAX_DOCK_CHIPS, loadDockIds, saveDockIds } from "@/lib/mapDesk";
+import { DEFAULT_DOCK_IDS, MAX_DOCK_CHIPS, getMapFeature, loadDockIds, saveDockIds } from "@/lib/mapDesk";
 
 export default function useMapDesk() {
   const [dockIds, setDockIds] = useState(() => (typeof window === "undefined" ? DEFAULT_DOCK_IDS : loadDockIds()));
@@ -11,7 +11,12 @@ export default function useMapDesk() {
   const pin = useCallback((id) => {
     setDockIds((current) => {
       if (current.includes(id) || current.length >= MAX_DOCK_CHIPS) return current;
-      return saveDockIds([...current, id]);
+      const feature = getMapFeature(id);
+      const lastSame = [...current].reverse().find((item) => getMapFeature(item)?.group === feature?.group);
+      if (!lastSame) return saveDockIds([...current, id]);
+      const next = [...current];
+      next.splice(current.lastIndexOf(lastSame) + 1, 0, id);
+      return saveDockIds(next);
     });
   }, []);
 
@@ -23,7 +28,12 @@ export default function useMapDesk() {
     setDockIds((current) => {
       if (current.includes(id)) return saveDockIds(current.filter((item) => item !== id));
       if (current.length >= MAX_DOCK_CHIPS) return current;
-      return saveDockIds([...current, id]);
+      const feature = getMapFeature(id);
+      const lastSame = [...current].reverse().find((item) => getMapFeature(item)?.group === feature?.group);
+      if (!lastSame) return saveDockIds([...current, id]);
+      const next = [...current];
+      next.splice(current.lastIndexOf(lastSame) + 1, 0, id);
+      return saveDockIds(next);
     });
   }, []);
 

@@ -736,6 +736,8 @@ export default function RadarDisplay({
           }}
           onChipClick={handleChipClick}
           onOpenMore={handleLayersMenuToggle}
+          onTogglePin={togglePin}
+          onResetDock={reset}
           loopEnabled={loopEnabled}
           loopPlaying={loopPlaying}
           loopSpeed={loopSpeed}

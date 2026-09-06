@@ -1,39 +1,49 @@
 export const MAP_FEATURE_GROUPS = [
-  { id: "overlays", label: "Map overlays" },
+  { id: "overlays", label: "Overlays" },
   { id: "warnings", label: "Warnings" },
-  { id: "desk", label: "Pro desk" },
+  { id: "desk", label: "Desk" },
   { id: "safety", label: "Safety" },
 ];
 
 export const MAP_FEATURES = [
   { id: "radar", label: "Radar", group: "overlays", kind: "layer", defaultDock: true },
   { id: "lightning", label: "Lightning", group: "overlays", kind: "layer", defaultDock: true },
-  { id: "satellite", label: "Satellite", group: "overlays", kind: "layer", defaultDock: false },
-  { id: "hurricanes", label: "Storms", group: "overlays", kind: "layer", defaultDock: false },
-  { id: "loop", label: "Loop", group: "overlays", kind: "action", defaultDock: false },
+  { id: "satellite", label: "Satellite", group: "overlays", kind: "layer", defaultDock: true },
+  { id: "hurricanes", label: "Storms", group: "overlays", kind: "layer", defaultDock: true },
+  { id: "loop", label: "Loop", group: "overlays", kind: "action", defaultDock: true },
   { id: "alerts", label: "Alerts", group: "warnings", kind: "layer", defaultDock: true },
-  { id: "tornado", label: "Tornado", group: "warnings", kind: "layer", defaultDock: false },
-  { id: "severe", label: "Severe", group: "warnings", kind: "layer", defaultDock: false },
-  { id: "flood", label: "Flood", group: "warnings", kind: "layer", defaultDock: false },
-  { id: "winter", label: "Winter", group: "warnings", kind: "layer", defaultDock: false },
-  { id: "now", label: "Now", group: "desk", kind: "route", path: "/Forecast", defaultDock: false },
-  { id: "hourly", label: "Hourly", group: "desk", kind: "route", path: "/Hourly", defaultDock: false },
-  { id: "daily", label: "10 Day", group: "desk", kind: "route", path: "/Daily", defaultDock: false },
-  { id: "radio", label: "Radio", group: "desk", kind: "route", path: "/Radio", defaultDock: false },
-  { id: "globe", label: "Globe", group: "desk", kind: "route", path: "/Globe", defaultDock: false },
-  { id: "settings", label: "Settings", group: "desk", kind: "route", path: "/Settings", defaultDock: false },
-  { id: "contacts", label: "Contacts", group: "safety", kind: "route", path: "/Contacts", defaultDock: false },
-  { id: "help", label: "Help Me", group: "safety", kind: "action", defaultDock: false },
-  { id: "safe", label: "I'm Safe", group: "safety", kind: "action", defaultDock: false },
+  { id: "tornado", label: "Tornado", group: "warnings", kind: "layer", defaultDock: true },
+  { id: "severe", label: "Severe", group: "warnings", kind: "layer", defaultDock: true },
+  { id: "flood", label: "Flood", group: "warnings", kind: "layer", defaultDock: true },
+  { id: "winter", label: "Winter", group: "warnings", kind: "layer", defaultDock: true },
+  { id: "now", label: "Now", group: "desk", kind: "route", path: "/Forecast", defaultDock: true },
+  { id: "hourly", label: "Hourly", group: "desk", kind: "route", path: "/Hourly", defaultDock: true },
+  { id: "daily", label: "10 Day", group: "desk", kind: "route", path: "/Daily", defaultDock: true },
+  { id: "radio", label: "Radio", group: "desk", kind: "route", path: "/Radio", defaultDock: true },
+  { id: "globe", label: "Globe", group: "desk", kind: "route", path: "/Globe", defaultDock: true },
+  { id: "settings", label: "Settings", group: "desk", kind: "route", path: "/Settings", defaultDock: true },
+  { id: "contacts", label: "Contacts", group: "safety", kind: "route", path: "/Contacts", defaultDock: true },
+  { id: "help", label: "Help Me", group: "safety", kind: "action", defaultDock: true },
+  { id: "safe", label: "I'm Safe", group: "safety", kind: "action", defaultDock: true },
 ];
 
 export const MAP_FEATURE_IDS = new Set(MAP_FEATURES.map((feature) => feature.id));
 export const DEFAULT_DOCK_IDS = MAP_FEATURES.filter((feature) => feature.defaultDock).map((feature) => feature.id);
-export const MAX_DOCK_CHIPS = 8;
-export const MAP_DOCK_STORAGE_KEY = "mapDock_v1";
+export const MAX_DOCK_CHIPS = MAP_FEATURES.length;
+export const MAP_DOCK_STORAGE_KEY = "mapDesk_v2";
 
 export function getMapFeature(id) {
   return MAP_FEATURES.find((feature) => feature.id === id);
+}
+
+export function featuresOnMap(dockIds) {
+  const order = new Map((dockIds || []).map((id, index) => [id, index]));
+  return MAP_FEATURE_GROUPS.map((group) => ({
+    ...group,
+    features: MAP_FEATURES
+      .filter((feature) => feature.group === group.id && order.has(feature.id))
+      .sort((a, b) => order.get(a.id) - order.get(b.id)),
+  })).filter((group) => group.features.length > 0);
 }
 
 export function loadDockIds() {
