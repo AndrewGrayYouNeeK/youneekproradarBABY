@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import RadarLayersMenu from "./RadarLayersMenu";
 import ShelterAlert from "./ShelterAlert";
@@ -9,7 +10,11 @@ import RadarControlStack from "./RadarControlStack";
 import RadarPlaybackDock from "./RadarPlaybackDock";
 import RadarInspectCard from "./RadarInspectCard";
 import { getRadarProduct } from "./radarProducts";
+import useMapDesk from "@/hooks/useMapDesk";
 import usePullToRefresh from "@/hooks/usePullToRefresh";
+import { getMapFeature } from "@/lib/mapDesk";
+import { readCachedGps } from "@/lib/locationCache";
+import { loadShelterContacts, sendContactTexts } from "@/lib/safety/sms";
 import "leaflet/dist/leaflet.css";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -141,6 +146,8 @@ export default function RadarDisplay({
   const [stormData, setStormData] = useState(null);
   const [radarOpacity, setRadarOpacity] = useState(ACTIVE_PRODUCT.opacity);
   const clickContextRef = useRef({ userLocation: null, windData: null, onMapClick: null });
+  const navigate = useNavigate();
+  const { dockIds, togglePin, move, reset } = useMapDesk();
 
   useEffect(() => {
     clickContextRef.current = { userLocation, windData, onMapClick };
@@ -539,21 +546,6 @@ export default function RadarDisplay({
     setIsLayersMenuOpen((prev) => !prev);
   };
 
-  const handleLayerChipChange = (id, value) => {
-    if (id === "radar") handleShowNexradChange(value);
-    if (id === "lightning") setShowLightning(value);
-    if (id === "satellite") setShowSatellite(value);
-    if (id === "hurricanes") setShowHurricanes(value);
-    if (id === "alerts") {
-      setShowTornado(value);
-      setShowThunderstorm(value);
-      if (!value) {
-        setShowFlood(false);
-        setShowWinter(false);
-      }
-    }
-  };
-
   const handleZoomIn = () => leafletMap.current?.zoomIn();
   const handleZoomOut = () => leafletMap.current?.zoomOut();
   const handleToggleLoop = () => {
@@ -569,6 +561,76 @@ export default function RadarDisplay({
   };
 
   const alertsActive = showTornado || showThunderstorm || showFlood || showWinter;
+
+  const sendSafety = useCallback((kind) => {
+    if (!loadShelterContacts().length) {
+      navigate("/Contacts");
+      return;
+    }
+    try {
+      sendContactTexts({
+        kind,
+        coords: userLocation
+          ? { latitude: userLocation.lat, longitude: userLocation.lon }
+          : readCachedGps(),
+      });
+    } catch (error) {
+      if (error.code === "NO_CONTACTS") {
+        navigate("/Contacts");
+        return;
+      }
+      showLocationError(error.message);
+    }
+  }, [navigate, userLocation]);
+
+  const handleChipClick = useCallback((id) => {
+    const feature = getMapFeature(id);
+    if (!feature) return;
+
+    if (feature.kind === "layer") {
+      if (id === "radar") handleShowNexradChange(!showNexrad);
+      if (id === "lightning") setShowLightning((value) => !value);
+      if (id === "satellite") setShowSatellite((value) => !value);
+      if (id === "hurricanes") setShowHurricanes((value) => !value);
+      if (id === "alerts") {
+        const next = !(showTornado || showThunderstorm || showFlood || showWinter);
+        setShowTornado(next);
+        setShowThunderstorm(next);
+        if (!next) {
+          setShowFlood(false);
+          setShowWinter(false);
+        }
+      }
+      if (id === "tornado") setShowTornado((value) => !value);
+      if (id === "severe") setShowThunderstorm((value) => !value);
+      if (id === "flood") setShowFlood((value) => !value);
+      if (id === "winter") setShowWinter((value) => !value);
+      return;
+    }
+
+    if (feature.kind === "route" && feature.path) {
+      navigate(feature.path);
+      return;
+    }
+
+    if (id === "loop") {
+      handleToggleLoop();
+      return;
+    }
+
+    if (id === "help") sendSafety("emergency");
+    if (id === "safe") sendSafety("safe");
+  }, [
+    navigate,
+    sendSafety,
+    settings,
+    showFlood,
+    showNexrad,
+    showThunderstorm,
+    showTornado,
+    showWinter,
+    onSettingsChange,
+  ]);
   const frameLabel = loopEnabled && loopFrames[loopIndex]?.time
     ? new Date(loopFrames[loopIndex].time * 1000).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
     : "Live";
@@ -613,15 +675,22 @@ export default function RadarDisplay({
         showLightning={showLightning}
         showHurricanes={showHurricanes}
         showSatellite={showSatellite}
+        loopEnabled={loopEnabled}
         alertToggles={alertToggles}
         onShowNexradChange={handleShowNexradChange}
         onShowLightningChange={setShowLightning}
         onShowHurricanesChange={setShowHurricanes}
         onShowSatelliteChange={setShowSatellite}
+        onToggleLoop={handleToggleLoop}
         onAlertToggleChange={handleAlertToggleChange}
         radarOpacity={radarOpacity}
         onRadarOpacityChange={setRadarOpacity}
         onResetView={handleConusView}
+        onFeatureAction={handleChipClick}
+        dockIds={dockIds}
+        onTogglePin={togglePin}
+        onMovePin={move}
+        onResetDock={reset}
         metrics={
           mapCenter
             ? {
@@ -652,15 +721,23 @@ export default function RadarDisplay({
           </div>
         )}
         <RadarPlaybackDock
+          dockIds={dockIds}
           layers={{
             radar: showNexrad,
             lightning: showLightning,
             satellite: showSatellite,
             hurricanes: showHurricanes,
             alerts: alertsActive,
+            tornado: showTornado,
+            severe: showThunderstorm,
+            flood: showFlood,
+            winter: showWinter,
+            loop: loopEnabled,
           }}
-          onLayerChange={handleLayerChipChange}
+          onChipClick={handleChipClick}
           onOpenMore={handleLayersMenuToggle}
+          onTogglePin={togglePin}
+          onResetDock={reset}
           loopEnabled={loopEnabled}
           loopPlaying={loopPlaying}
           loopSpeed={loopSpeed}
