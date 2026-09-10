@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
+import useSavedLocations from "@/hooks/useSavedLocations";
 
 export default function useWeatherLocation() {
-  const [coords, setCoords] = useState(null);
+  const { selected, selectLocation, addLocation, locations, removeLocation, clearSelected } = useSavedLocations();
+  const [gps, setGps] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -10,30 +12,50 @@ export default function useWeatherLocation() {
     setError("");
 
     if (!navigator.geolocation) {
-      setError("Location services are not available on this device.");
+      if (!selected) setError("Location services are not available on this device.");
       setLoading(false);
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setCoords({
+        setGps({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
         setLoading(false);
       },
       () => {
-        setError("Allow location access to load WeatherKit forecasts for your area.");
+        if (!selected) {
+          setError("Allow location access or search for a city to load forecasts.");
+        }
         setLoading(false);
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
     );
-  }, []);
+  }, [selected]);
 
   useEffect(() => {
     requestLocation();
   }, [requestLocation]);
 
-  return { coords, error, loading, retry: requestLocation };
+  const coords = selected
+    ? { latitude: selected.latitude, longitude: selected.longitude, label: selected.name, source: "saved" }
+    : gps
+      ? { latitude: gps.latitude, longitude: gps.longitude, label: "Current location", source: "gps" }
+      : null;
+
+  return {
+    coords,
+    gps,
+    error: coords ? "" : error,
+    loading: loading && !coords,
+    retry: requestLocation,
+    selected,
+    selectLocation,
+    addLocation,
+    removeLocation,
+    clearSelected,
+    locations,
+  };
 }

@@ -19,8 +19,16 @@ export default function DailyList({ days = [] }) {
             >
               <div className="w-24 shrink-0 text-sm font-medium text-white">{formatDayLabel(day.date)}</div>
               <Icon className="h-5 w-5 shrink-0 text-sky-300" aria-hidden="true" />
-              <div className="min-w-0 flex-1 truncate text-xs text-slate-400">{day.label}</div>
-              <div className="shrink-0 text-[11px] text-slate-500">{day.pop}%</div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-xs text-slate-400">{day.label || code.label}</div>
+                {(day.snow > 0 || day.precip > 0.05) && (
+                  <div className="text-[10px] text-slate-500">
+                    {day.precip > 0.05 ? `${Number(day.precip).toFixed(2)}" rain` : ""}
+                    {day.snow > 0 ? ` · ${Number(day.snow).toFixed(1)}" snow` : ""}
+                  </div>
+                )}
+              </div>
+              <div className="shrink-0 text-[11px] text-slate-500">{day.pop}%{day.uv != null ? ` · UV ${day.uv}` : ""}</div>
               <div className="flex shrink-0 items-center gap-2 text-sm tabular-nums">
                 <span className="font-semibold text-white">{day.high}°</span>
                 <span className="text-slate-500">{day.low}°</span>

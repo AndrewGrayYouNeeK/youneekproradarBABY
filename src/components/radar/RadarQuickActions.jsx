@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { ChevronDown, Map, Layers } from "lucide-react";
+import { ChevronDown, Map, Layers, Globe2 } from "lucide-react";
 
 function ActionButton({ icon: IconComponent, label, onClick }) {
   return (
@@ -19,10 +19,11 @@ export default function RadarQuickActions({
   onConus,
   onToggleLayers,
   onClose,
+  viewMode,
+  onViewModeChange,
 }) {
   const menuRef = useRef(null);
 
-  // Close menu when clicking outside
   useEffect(() => {
     if (!show) return;
 
@@ -32,7 +33,6 @@ export default function RadarQuickActions({
       }
     };
 
-    // Add slight delay to prevent immediate closing when opening
     const timer = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("touchstart", handleClickOutside);
@@ -51,7 +51,7 @@ export default function RadarQuickActions({
     <div
       ref={menuRef}
       className="absolute z-[1000]"
-      style={{ bottom: 'calc(5.5rem + env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)' }}
+      style={{ bottom: "calc(5.5rem + env(safe-area-inset-bottom))", left: "50%", transform: "translateX(-50%)" }}
     >
       <div className="w-[min(16rem,calc(100vw-3rem))] space-y-2 rounded-2xl border border-white/10 bg-slate-950/90 p-2 shadow-2xl backdrop-blur-xl">
         <button
@@ -64,6 +64,11 @@ export default function RadarQuickActions({
           <ChevronDown className="h-4 w-4" aria-hidden="true" />
         </button>
         <ActionButton icon={Layers} label="Radar Layers" onClick={onToggleLayers} />
+        <ActionButton
+          icon={Globe2}
+          label={viewMode === "3d" ? "Switch to 2D map" : "3D radar globe"}
+          onClick={() => onViewModeChange(viewMode === "3d" ? "2d" : "3d")}
+        />
         <ActionButton icon={Map} label="Reset View" onClick={onConus} />
       </div>
     </div>

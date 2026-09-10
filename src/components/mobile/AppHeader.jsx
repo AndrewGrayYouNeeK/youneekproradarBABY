@@ -4,7 +4,10 @@ import { useNavigationStack } from "@/lib/NavigationStack";
 
 const TITLES = {
   "/Radar": "Radar",
+  "/Globe": "3D Globe",
   "/Forecast": "Forecast",
+  "/Explore": "Explore",
+  "/Storms": "Storms",
   "/Contacts": "Contacts",
   "/Settings": "Settings",
 };
@@ -13,7 +16,8 @@ export default function AppHeader({ title }) {
   const location = useLocation();
   const { goBack } = useNavigationStack();
   const resolvedTitle = title || TITLES[location.pathname] || "YouNeeK Pro Radar";
-  const showBack = location.pathname !== "/Radar" && location.pathname !== "/";
+  const tabRoots = new Set(["/Radar", "/", "/Globe", "/Forecast", "/Explore", "/Settings"]);
+  const showBack = !tabRoots.has(location.pathname);
 
   return (
     <div

@@ -8,11 +8,21 @@ import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider } from "@/lib/AuthContext";
 import { NavigationStackProvider } from "@/lib/NavigationStack";
 import OnboardingModal from "@/components/radar/OnboardingModal";
+import { UnitsProvider } from "@/lib/UnitsContext";
+import useWeatherWatchdog from "@/hooks/useWeatherWatchdog";
 
 const Radar = lazy(() => import("./pages/Radar"));
 const Forecast = lazy(() => import("./pages/Forecast"));
 const Contacts = lazy(() => import("./pages/Contacts"));
 const Settings = lazy(() => import("./pages/Settings"));
+const Explore = lazy(() => import("./pages/Explore"));
+const Globe = lazy(() => import("./pages/Globe"));
+const Storms = lazy(() => import("./pages/Storms"));
+
+function WeatherWatchdog() {
+  useWeatherWatchdog();
+  return null;
+}
 
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center bg-slate-950">
@@ -40,7 +50,10 @@ const AppRoutes = () => {
             <Routes location={location}>
               <Route path="/" element={<Navigate to="/Radar" replace />} />
               <Route path="/Radar" element={<Radar />} />
+              <Route path="/Globe" element={<Globe />} />
               <Route path="/Forecast" element={<Forecast />} />
+              <Route path="/Explore" element={<Explore />} />
+              <Route path="/Storms" element={<Storms />} />
               <Route path="/Contacts" element={<Contacts />} />
               <Route path="/Settings" element={<Settings />} />
               <Route path="*" element={<PageNotFound />} />
@@ -57,12 +70,15 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
-          <NavigationStackProvider>
-            <div className="mx-auto h-screen w-full max-w-4xl overflow-hidden bg-slate-950">
-              <AppRoutes />
-            </div>
-            <Toaster />
-          </NavigationStackProvider>
+          <UnitsProvider>
+            <NavigationStackProvider>
+              <WeatherWatchdog />
+              <div className="mx-auto h-screen w-full max-w-4xl overflow-hidden bg-slate-950">
+                <AppRoutes />
+              </div>
+              <Toaster />
+            </NavigationStackProvider>
+          </UnitsProvider>
         </Router>
       </QueryClientProvider>
     </AuthProvider>

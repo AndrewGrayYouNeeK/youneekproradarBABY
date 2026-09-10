@@ -2,10 +2,20 @@ const APP_STORAGE_KEYS = [
   "onboarded_v1",
   "pref_notifyRain",
   "pref_notifyTornado",
+  "pref_notifyLightning",
+  "pref_notifyPollen",
+  "pref_notifyAqi",
+  "pref_notifyHurricane",
+  "pref_notifyStormRisk",
+  "pref_notifyDailyPrecip",
   "pref_autoTune",
+  "pref_units_v1",
+  "pref_selectedLocation",
+  "saved_locations_v1",
   "user_location_v1",
   "shelterContacts_v2",
   "shelterContacts",
+  "radarTargets",
 ];
 
 export function clearLocalData() {

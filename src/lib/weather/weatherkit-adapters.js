@@ -81,12 +81,18 @@ export function adaptWeatherKitCurrent(data) {
 export function adaptWeatherKitHourly(data) {
   const hours = data?.forecastHourly?.hours || [];
 
-  return hours.slice(0, 48).map((hour) => ({
+  return hours.slice(0, 168).map((hour) => ({
     time: hour.forecastStart,
     temperature: Math.round(hour.temperature ?? 0),
     pop: popPercent(hour.precipitationChance),
     label: formatConditionCode(hour.conditionCode),
     weather_code: conditionToWmo(hour.conditionCode),
+    uv: hour.uvIndex,
+    wind: hour.windSpeed,
+    gusts: hour.windGust,
+    precip: hour.precipitationAmount,
+    snow: hour.snowfallIntensity,
+    humidity: hour.humidity != null ? hour.humidity * 100 : null,
   }));
 }
 
@@ -100,6 +106,12 @@ export function adaptWeatherKitDaily(data) {
     pop: popPercent(day.precipitationChance),
     label: formatConditionCode(day.conditionCode),
     weather_code: conditionToWmo(day.conditionCode),
+    precip: day.precipitationAmount,
+    snow: day.snowfallAmount,
+    uv: day.maxUvIndex,
+    sunrise: day.sunrise,
+    sunset: day.sunset,
+    moonPhase: day.moonPhase,
   }));
 }
 

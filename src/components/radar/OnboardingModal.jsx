@@ -6,7 +6,12 @@ const SLIDES = [
   {
     icon: "🌩️",
     title: "Live NEXRAD Radar",
-    body: "See real-time storm reflectivity and velocity mosaics across the US. Tap 🗂️ to toggle radar layers, zoom into your area, or replay recent frames.",
+    body: "See real-time storm reflectivity across the US, then spin the 3D globe for global radar. Tap layers for future radar, satellite, lightning, pollen, and more.",
+  },
+  {
+    icon: "🌍",
+    title: "3D Globe & Explore",
+    body: "Hurricane Center, Fire Center, lifestyle forecasts, air quality, and traffic are all unlocked — no premium paywall.",
   },
   {
     icon: "🚨",

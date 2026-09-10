@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import AccountActions from "./AccountActions";
 import RadioControls from "./RadioControls";
+import { MAP_LAYER_GROUPS, MAP_LAYERS } from "@/lib/weather/mapLayers";
 
 function ToggleRow({ label, checked, onCheckedChange, ariaLabel }) {
   return (
@@ -22,11 +23,14 @@ export default function RadarLayersMenu({
   onShowNexradChange,
   onShowRadioChange,
   onAlertToggleChange,
+  activeLayerId,
+  onLayerChange,
+  viewMode,
+  onViewModeChange,
 }) {
   const [showAlerts, setShowAlerts] = useState(false);
   const menuRef = useRef(null);
 
-  // Close menu when clicking outside
   useEffect(() => {
     if (!isOpen) return;
 
@@ -36,7 +40,6 @@ export default function RadarLayersMenu({
       }
     };
 
-    // Add slight delay to prevent immediate closing when opening
     const timer = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("touchstart", handleClickOutside);
@@ -53,24 +56,51 @@ export default function RadarLayersMenu({
     <div
       ref={menuRef}
       className="absolute z-[1000]"
-      style={{ top: 'calc(0.75rem + env(safe-area-inset-top))', right: 'calc(0.75rem + env(safe-area-inset-right))' }}
+      style={{ top: "calc(0.75rem + env(safe-area-inset-top))", right: "calc(0.75rem + env(safe-area-inset-right))" }}
     >
       {isOpen && (
-        <div className="w-[min(18rem,calc(100vw-1.5rem))] max-h-[calc(100vh-7.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] overflow-y-auto rounded-2xl border border-white/10 bg-slate-950/85 p-3 shadow-2xl backdrop-blur-md">
-          <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
-            Layers
+        <div className="w-[min(20rem,calc(100vw-1.5rem))] max-h-[calc(100vh-7.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] overflow-y-auto rounded-2xl border border-white/10 bg-slate-950/90 p-3 shadow-2xl backdrop-blur-md">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">Layers</div>
+            {onViewModeChange && (
+              <button
+                type="button"
+                onClick={() => onViewModeChange(viewMode === "3d" ? "2d" : "3d")}
+                className="rounded-full bg-cyan-500/20 px-2.5 py-1 text-[11px] font-semibold text-cyan-200"
+              >
+                {viewMode === "3d" ? "3D on" : "3D globe"}
+              </button>
+            )}
           </div>
           <div className="space-y-3">
             <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Radar</div>
               <ToggleRow
-                label="📡 Live NEXRAD"
+                label="Live overlay"
                 checked={showNexrad}
                 onCheckedChange={onShowNexradChange}
-                ariaLabel="Toggle live NEXRAD radar layer"
+                ariaLabel="Toggle live weather overlay"
               />
-              <div className="text-[11px] text-slate-500">Reflectivity only</div>
             </div>
+
+            {MAP_LAYER_GROUPS.map((group) => (
+              <div key={group} className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">{group}</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {MAP_LAYERS.filter((layer) => layer.group === group).map((layer) => (
+                    <button
+                      key={layer.id}
+                      type="button"
+                      onClick={() => onLayerChange?.(layer.id)}
+                      className={`rounded-full px-2.5 py-1 text-[11px] ${
+                        activeLayerId === layer.id ? "bg-cyan-400 text-slate-950" : "bg-white/5 text-slate-300"
+                      }`}
+                    >
+                      {layer.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
 
             <div className="rounded-xl border border-white/10 bg-white/5 p-3">
               <button
@@ -82,39 +112,17 @@ export default function RadarLayersMenu({
                 <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Warnings</div>
                 {showAlerts ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
               </button>
-
               {showAlerts && (
                 <div className="mt-2 space-y-2">
-                  <ToggleRow
-                    label="🌪️ Tornado Warnings"
-                    checked={alertToggles.tornado}
-                    onCheckedChange={(value) => onAlertToggleChange("tornado", value)}
-                    ariaLabel="Toggle tornado warnings layer"
-                  />
-                  <ToggleRow
-                    label="⛈️ Severe Thunderstorm"
-                    checked={alertToggles.severe}
-                    onCheckedChange={(value) => onAlertToggleChange("severe", value)}
-                    ariaLabel="Toggle severe thunderstorm warnings layer"
-                  />
-                  <ToggleRow
-                    label="🌊 Flood Warnings"
-                    checked={alertToggles.flood}
-                    onCheckedChange={(value) => onAlertToggleChange("flood", value)}
-                    ariaLabel="Toggle flood warnings layer"
-                  />
-                  <ToggleRow
-                    label="❄️ Winter Advisories"
-                    checked={alertToggles.winter}
-                    onCheckedChange={(value) => onAlertToggleChange("winter", value)}
-                    ariaLabel="Toggle winter advisories layer"
-                  />
+                  <ToggleRow label="Tornado Warnings" checked={alertToggles.tornado} onCheckedChange={(value) => onAlertToggleChange("tornado", value)} />
+                  <ToggleRow label="Severe Thunderstorm" checked={alertToggles.severe} onCheckedChange={(value) => onAlertToggleChange("severe", value)} />
+                  <ToggleRow label="Flood Warnings" checked={alertToggles.flood} onCheckedChange={(value) => onAlertToggleChange("flood", value)} />
+                  <ToggleRow label="Winter Advisories" checked={alertToggles.winter} onCheckedChange={(value) => onAlertToggleChange("winter", value)} />
                 </div>
               )}
             </div>
 
             <RadioControls showRadio={showRadio} onShowRadioChange={onShowRadioChange} />
-
             <AccountActions />
           </div>
         </div>

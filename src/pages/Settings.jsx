@@ -5,7 +5,9 @@ import BottomTab from "@/components/radar/BottomTab";
 import AppHeader from "@/components/mobile/AppHeader";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 import { Switch } from "@/components/ui/switch";
-import { ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle } from "lucide-react";
+import { ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle, Thermometer, Zap, Wind, Leaf, Users } from "lucide-react";
+import { useUnits } from "@/lib/UnitsContext";
+import { useNavigate } from "react-router-dom";
 
 const APP_VERSION = "1.0.0";
 
@@ -50,9 +52,17 @@ function SettingRow({ icon: Icon, label, sublabel, right, onClick, danger }) {
 
 export default function Settings() {
   useTabPageMemory("Settings");
+  const navigate = useNavigate();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const { units, setUnits } = useUnits();
   const [notifyRain, setNotifyRain] = useState(() => localStorage.getItem("pref_notifyRain") !== "false");
   const [notifyTornado, setNotifyTornado] = useState(() => localStorage.getItem("pref_notifyTornado") !== "false");
+  const [notifyLightning, setNotifyLightning] = useState(() => localStorage.getItem("pref_notifyLightning") !== "false");
+  const [notifyPollen, setNotifyPollen] = useState(() => localStorage.getItem("pref_notifyPollen") === "true");
+  const [notifyAqi, setNotifyAqi] = useState(() => localStorage.getItem("pref_notifyAqi") === "true");
+  const [notifyHurricane, setNotifyHurricane] = useState(() => localStorage.getItem("pref_notifyHurricane") !== "false");
+  const [notifyStormRisk, setNotifyStormRisk] = useState(() => localStorage.getItem("pref_notifyStormRisk") === "true");
+  const [notifyDailyPrecip, setNotifyDailyPrecip] = useState(() => localStorage.getItem("pref_notifyDailyPrecip") === "true");
   const [autoTune, setAutoTune] = useState(() => localStorage.getItem("pref_autoTune") !== "false");
   const [showAbout, setShowAbout] = useState(false);
 
@@ -100,6 +110,110 @@ export default function Settings() {
               />
             }
           />
+          <SettingRow
+            icon={Zap}
+            label="Lightning proximity"
+            sublabel="Alert when strikes are reported near you"
+            right={
+              <Switch
+                checked={notifyLightning}
+                onCheckedChange={handleToggle("pref_notifyLightning", setNotifyLightning)}
+                aria-label="Toggle lightning alerts"
+              />
+            }
+          />
+          <SettingRow
+            icon={Wind}
+            label="Hurricane tracker"
+            sublabel="Alert when an NHC storm is in your region"
+            right={
+              <Switch
+                checked={notifyHurricane}
+                onCheckedChange={handleToggle("pref_notifyHurricane", setNotifyHurricane)}
+                aria-label="Toggle hurricane alerts"
+              />
+            }
+          />
+          <SettingRow
+            icon={AlertTriangle}
+            label="Severe storm risk"
+            sublabel="Instability and convective risk nearby"
+            right={
+              <Switch
+                checked={notifyStormRisk}
+                onCheckedChange={handleToggle("pref_notifyStormRisk", setNotifyStormRisk)}
+                aria-label="Toggle storm risk alerts"
+              />
+            }
+          />
+          <SettingRow
+            icon={Bell}
+            label="Daily precipitation"
+            sublabel="Heads-up when rain or snow is likely today"
+            right={
+              <Switch
+                checked={notifyDailyPrecip}
+                onCheckedChange={handleToggle("pref_notifyDailyPrecip", setNotifyDailyPrecip)}
+                aria-label="Toggle daily precipitation alerts"
+              />
+            }
+          />
+          <SettingRow
+            icon={Leaf}
+            label="Pollen"
+            sublabel="Medium or high pollen levels"
+            right={
+              <Switch
+                checked={notifyPollen}
+                onCheckedChange={handleToggle("pref_notifyPollen", setNotifyPollen)}
+                aria-label="Toggle pollen alerts"
+              />
+            }
+          />
+          <SettingRow
+            icon={Wind}
+            label="Air quality"
+            sublabel="When the US AQI is unhealthy"
+            right={
+              <Switch
+                checked={notifyAqi}
+                onCheckedChange={handleToggle("pref_notifyAqi", setNotifyAqi)}
+                aria-label="Toggle air quality alerts"
+              />
+            }
+          />
+          <SettingRow
+            icon={Bell}
+            label="Enable device notifications"
+            sublabel="Allow this browser to surface weather alerts"
+            onClick={() => {
+              if (typeof Notification !== "undefined") Notification.requestPermission();
+            }}
+          />
+        </Section>
+
+        <Section title="Units">
+          <SettingRow
+            icon={Thermometer}
+            label="Temperature"
+            sublabel={units.temp === "C" ? "Celsius" : "Fahrenheit"}
+            onClick={() => setUnits({ temp: units.temp === "C" ? "F" : "C" })}
+          />
+          <SettingRow
+            icon={Wind}
+            label="Wind"
+            sublabel={units.wind}
+            onClick={() => {
+              const order = ["mph", "kph", "kt", "mps"];
+              setUnits({ wind: order[(order.indexOf(units.wind) + 1) % order.length] });
+            }}
+          />
+          <SettingRow
+            icon={Info}
+            label="Pressure"
+            sublabel={units.pressure}
+            onClick={() => setUnits({ pressure: units.pressure === "mb" ? "inHg" : "mb" })}
+          />
         </Section>
 
         {/* Radio */}
@@ -115,6 +229,15 @@ export default function Settings() {
                 aria-label="Toggle auto-tune nearest station"
               />
             }
+          />
+        </Section>
+
+        <Section title="Safety">
+          <SettingRow
+            icon={Users}
+            label="Shelter contacts"
+            sublabel="People to text if you take cover"
+            onClick={() => navigate("/Contacts")}
           />
         </Section>
 

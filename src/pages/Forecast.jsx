@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import AppHeader from "@/components/mobile/AppHeader";
@@ -8,20 +9,22 @@ import HourlyStrip from "@/components/forecast/HourlyStrip";
 import MinutePrecipitation from "@/components/forecast/MinutePrecipitation";
 import WeatherAlertsCard from "@/components/forecast/WeatherAlertsCard";
 import WeatherKitSetupNotice from "@/components/forecast/WeatherKitSetupNotice";
+import LifestyleCard from "@/components/forecast/LifestyleCard";
+import AirQualityCard from "@/components/forecast/AirQualityCard";
+import LightningCard from "@/components/forecast/LightningCard";
+import WinterCard from "@/components/forecast/WinterCard";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 import useWeatherLocation from "@/hooks/useWeatherLocation";
-import { fetchWeatherKit, WeatherKitNotConfiguredError } from "@/lib/api/weatherkit";
-import {
-  adaptWeatherKitAlerts,
-  adaptWeatherKitCurrent,
-  adaptWeatherKitDaily,
-  adaptWeatherKitHourly,
-  adaptWeatherKitNextHour,
-} from "@/lib/weather/weatherkit-adapters";
+import { fetchAirBundle, fetchForecastBundle } from "@/lib/api/forecastBundle";
+import { adaptAirQuality } from "@/lib/api/openMeteo";
+import { buildLifestyle } from "@/lib/weather/lifestyle";
+import { useLightning } from "@/hooks/useLiveHazards";
+import { haversineKm } from "@/lib/geo";
 
 export default function Forecast() {
   useTabPageMemory("Forecast");
   const { coords, error: locationError, loading: locationLoading, retry } = useWeatherLocation();
+  const { data: lightning } = useLightning();
 
   const {
     data,
@@ -30,12 +33,38 @@ export default function Forecast() {
     refetch,
     isFetching,
   } = useQuery({
-    queryKey: ["weatherkit", coords?.latitude, coords?.longitude],
+    queryKey: ["forecast-bundle", coords?.latitude, coords?.longitude],
     enabled: Boolean(coords),
     staleTime: 300000,
     refetchInterval: 600000,
-    queryFn: () => fetchWeatherKit(coords.latitude, coords.longitude),
+    queryFn: () => fetchForecastBundle(coords.latitude, coords.longitude),
   });
+
+  const { data: airRaw } = useQuery({
+    queryKey: ["air-bundle", coords?.latitude, coords?.longitude],
+    enabled: Boolean(coords),
+    staleTime: 300000,
+    queryFn: () => fetchAirBundle(coords.latitude, coords.longitude),
+  });
+
+  const air = airRaw ? adaptAirQuality(airRaw) : null;
+  const lifestyle = useMemo(
+    () => (data?.current ? buildLifestyle(data.current.current, data.hourly || [], air || {}) : []),
+    [data, air]
+  );
+
+  const nearestLightningKm = useMemo(() => {
+    if (!coords || !lightning?.features?.length) return null;
+    let min = Infinity;
+    lightning.features.forEach((feature) => {
+      const coordsPair = feature.geometry?.coordinates;
+      if (!Array.isArray(coordsPair) || coordsPair.length < 2) return;
+      const [lon, lat] = coordsPair;
+      const distance = haversineKm(coords.latitude, coords.longitude, lat, lon);
+      if (distance < min) min = distance;
+    });
+    return Number.isFinite(min) ? min : null;
+  }, [coords, lightning]);
 
   const showLoading = locationLoading || (Boolean(coords) && isLoading && !data);
 
@@ -46,7 +75,9 @@ export default function Forecast() {
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 pb-28">
         <div className="mx-auto flex max-w-md flex-col gap-5">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-slate-500">Powered by Apple WeatherKit</p>
+            <p className="text-xs text-slate-500">
+              {data?.source === "open-meteo" ? "Open-Meteo + CAMS · all layers unlocked" : "Apple WeatherKit · all layers unlocked"}
+            </p>
             {isFetching && !showLoading && (
               <span className="inline-flex items-center gap-1 text-[11px] text-slate-500">
                 <LoaderCircle className="h-3 w-3 animate-spin" aria-hidden="true" />
@@ -65,25 +96,21 @@ export default function Forecast() {
             <WeatherKitSetupNotice type="location" message={locationError} onRetry={retry} />
           )}
 
-          {!showLoading && !locationError && error instanceof WeatherKitNotConfiguredError && (
-            <WeatherKitSetupNotice type="not-configured" message={error.hint} />
-          )}
-
-          {!showLoading && !locationError && error && !(error instanceof WeatherKitNotConfiguredError) && (
-            <WeatherKitSetupNotice
-              type="error"
-              message={error.message}
-              onRetry={() => refetch()}
-            />
+          {!showLoading && !locationError && error && (
+            <WeatherKitSetupNotice type="error" message={error.message} onRetry={() => refetch()} />
           )}
 
           {!showLoading && !locationError && !error && data && (
             <>
-              <WeatherAlertsCard alerts={adaptWeatherKitAlerts(data)} />
-              <CurrentConditionsCard data={adaptWeatherKitCurrent(data)} />
-              <MinutePrecipitation minutes={adaptWeatherKitNextHour(data)} />
-              <HourlyStrip hours={adaptWeatherKitHourly(data)} />
-              <DailyList days={adaptWeatherKitDaily(data)} />
+              <WeatherAlertsCard alerts={data.alerts} />
+              <LightningCard nearestKm={nearestLightningKm} reportCount={lightning?.features?.length || 0} />
+              <CurrentConditionsCard data={data.current} />
+              <MinutePrecipitation minutes={data.minutes} />
+              <LifestyleCard items={lifestyle} />
+              <AirQualityCard air={air} />
+              <HourlyStrip hours={data.hourly} />
+              <WinterCard days={data.daily} />
+              <DailyList days={data.daily} />
             </>
           )}
         </div>
