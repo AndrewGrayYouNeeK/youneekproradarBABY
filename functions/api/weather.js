@@ -1,4 +1,4 @@
-import { fetchWeatherKit, isWeatherKitConfigured } from "../_lib/weatherkit.js";
+import { fetchWeatherKit, inspectWeatherKitEnv, isWeatherKitConfigured } from "../_lib/weatherkit.js";
 
 export async function onRequestGet(context) {
   const { env, request } = context;
@@ -7,7 +7,8 @@ export async function onRequestGet(context) {
     return Response.json(
       {
         error: "WeatherKit is not configured",
-        hint: "Set WEATHERKIT_* secrets in Cloudflare or .env for local dev — see WEATHERKIT.md",
+        hint: "Set WEATHERKIT_* secrets on the youneekproradarbaby Worker → Settings → Variables and Secrets (not Builds). See WEATHERKIT.md",
+        ...inspectWeatherKitEnv(env),
       },
       { status: 503 }
     );
@@ -31,6 +32,12 @@ export async function onRequestGet(context) {
       },
     });
   } catch (err) {
-    return Response.json({ error: err.message || "WeatherKit request failed" }, { status: 502 });
+    return Response.json(
+      {
+        error: err.message || "WeatherKit request failed",
+        code: /private key/i.test(err.message || "") ? "invalid_private_key" : "weatherkit_request_failed",
+      },
+      { status: 502 }
+    );
   }
 }

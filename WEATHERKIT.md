@@ -72,7 +72,30 @@ This Services ID becomes your `WEATHERKIT_SERVICE_ID`.
 
 ## Step 5 — Production (Cloudflare Worker)
 
-Set secrets on the `youneekproradarbaby` Worker (never commit these):
+Secrets must be **Worker runtime secrets**, not Build variables.
+
+1. Cloudflare → **Workers & Pages** → **youneekproradarbaby** (this exact Worker — not `youneek-pro-radarynk222`)
+2. **Settings → Variables and Secrets** (the Worker runtime page)
+3. Add four **encrypted secrets** with these exact names:
+
+| Name | Value |
+|---|---|
+| `WEATHERKIT_TEAM_ID` | 10-character Team ID |
+| `WEATHERKIT_KEY_ID` | 10-character Key ID from the WeatherKit key |
+| `WEATHERKIT_SERVICE_ID` | Services ID, e.g. `com.youneek.proradar.weather` |
+| `WEATHERKIT_PRIVATE_KEY` | Full `.p8` as **one line** with `\n` for breaks |
+
+Example private key value:
+
+```
+-----BEGIN PRIVATE KEY-----\nMIGT...\n-----END PRIVATE KEY-----
+```
+
+Do **not** put them under **Builds → Variables**. Build secrets are only available during `npm run build`. The weather API runs later, on the Worker, and will still say “not configured.”
+
+After saving runtime secrets you do **not** need to paste them again. Open **Settings** in the app — it lists which of the four names the Worker actually sees.
+
+Or from a terminal:
 
 ```bash
 npx wrangler secret put WEATHERKIT_TEAM_ID
@@ -80,10 +103,6 @@ npx wrangler secret put WEATHERKIT_KEY_ID
 npx wrangler secret put WEATHERKIT_SERVICE_ID
 npx wrangler secret put WEATHERKIT_PRIVATE_KEY
 ```
-
-Or in the Cloudflare dashboard: **Workers & Pages → youneekproradarbaby → Settings → Variables and Secrets → Add**.
-
-After saving secrets, redeploy (push a commit or **Retry deployment** in Builds).
 
 ## API usage
 
@@ -104,10 +123,10 @@ The Worker requests US customary units (`units=s`). Invalid values like `us` or 
 
 | Problem | Fix |
 |---|---|
-| `WeatherKit is not configured` | Set all four `WEATHERKIT_*` variables |
-| `401` / `403` from Apple | Verify Team ID, Key ID, Services ID, and that WeatherKit is enabled on both the key and Services ID |
-| Invalid private key | Ensure `.p8` newlines are preserved (`\n` in `.env` or multiline quoted string) |
-| Works locally but not in production | Run `wrangler secret list` and confirm all four secrets exist on the deployed Worker |
+| `WeatherKit is not configured` | Secrets are not on the **Worker runtime**. Settings → Variables and Secrets on `youneekproradarbaby`. Names must match exactly. The app Settings screen shows which of the four the Worker sees. |
+| Worker sees the secrets but Apple 401 | WeatherKit must be enabled on **both** the Services ID and the .p8 key. Team ID / Key ID / Services ID must match. |
+| Private key could not be read | Dashboard stripped newlines. Paste as one line with `\n`. Include BEGIN/END. |
+| Still showing Open-Meteo | Open Settings in the app. If a secret is red, the Worker never received it. If all four are green, the Apple token is being rejected — not a missing-secret problem. |
 
 ## Pricing note
 

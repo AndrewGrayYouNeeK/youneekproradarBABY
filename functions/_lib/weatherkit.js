@@ -1,27 +1,26 @@
 import { SignJWT, importPKCS8 } from "jose";
+import { inspectWeatherKitEnv, isWeatherKitConfigured, normalizePrivateKey, trimSecret } from "./weatherkit-key.js";
 
 const WEATHERKIT_BASE = "https://weatherkit.apple.com/api/v1/weather";
 const DEFAULT_DATASETS =
   "currentWeather,forecastHourly,forecastDaily,forecastNextHour,weatherAlerts";
 
-export function isWeatherKitConfigured(env) {
-  return Boolean(
-    env.WEATHERKIT_TEAM_ID &&
-      env.WEATHERKIT_KEY_ID &&
-      env.WEATHERKIT_SERVICE_ID &&
-      env.WEATHERKIT_PRIVATE_KEY
-  );
-}
-
-function normalizePrivateKey(key) {
-  return key.replace(/\\n/g, "\n");
-}
+export { inspectWeatherKitEnv, isWeatherKitConfigured };
 
 export async function createWeatherKitToken(env) {
-  const teamId = env.WEATHERKIT_TEAM_ID;
-  const keyId = env.WEATHERKIT_KEY_ID;
-  const serviceId = env.WEATHERKIT_SERVICE_ID;
-  const privateKey = await importPKCS8(normalizePrivateKey(env.WEATHERKIT_PRIVATE_KEY), "ES256");
+  const teamId = trimSecret(env.WEATHERKIT_TEAM_ID);
+  const keyId = trimSecret(env.WEATHERKIT_KEY_ID);
+  const serviceId = trimSecret(env.WEATHERKIT_SERVICE_ID);
+  const pem = normalizePrivateKey(env.WEATHERKIT_PRIVATE_KEY);
+
+  let privateKey;
+  try {
+    privateKey = await importPKCS8(pem, "ES256");
+  } catch {
+    throw new Error(
+      "WeatherKit private key could not be read. Paste the full .p8, including BEGIN/END lines. In the Cloudflare dashboard, use one line with \\n for each line break."
+    );
+  }
 
   return new SignJWT({})
     .setProtectedHeader({
@@ -50,10 +49,10 @@ export async function fetchWeatherKit(env, lat, lon, dataSets = DEFAULT_DATASETS
   const token = await createWeatherKitToken(env);
   const url = new URL(`${WEATHERKIT_BASE}/en_US/${latitude}/${longitude}`);
   url.searchParams.set("dataSets", dataSets);
-  // Apple's REST units: m = metric, s = US customary. "us" is invalid and can 302/fail.
-  url.searchParams.set("units", "s");
   url.searchParams.set("country", "US");
-  if (timezone) {
+  // Do not send units=us — Apple rejects invalid unit values and the app then
+  // looks like WeatherKit "isn't working" even when all four secrets are set.
+  if (timezone && timezone !== "auto") {
     url.searchParams.set("timezone", timezone);
   }
 
@@ -66,7 +65,18 @@ export async function fetchWeatherKit(env, lat, lon, dataSets = DEFAULT_DATASETS
 
   if (!response.ok) {
     const detail = await response.text().catch(() => "");
-    throw new Error(`WeatherKit ${response.status}${detail ? `: ${detail}` : ""}`);
+    let reason = "";
+    try {
+      reason = JSON.parse(detail)?.reason || "";
+    } catch {
+      reason = detail.slice(0, 180);
+    }
+    if (response.status === 401) {
+      throw new Error(
+        `Apple rejected the WeatherKit token (401${reason ? `: ${reason}` : ""}). Check Team ID, Key ID, Services ID, and that WeatherKit is enabled on both the key and the Services ID.`
+      );
+    }
+    throw new Error(`WeatherKit ${response.status}${reason ? `: ${reason}` : ""}`);
   }
 
   return response.json();

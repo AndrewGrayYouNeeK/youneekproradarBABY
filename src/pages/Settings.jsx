@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { clearLocalData } from "@/lib/clearLocalData";
 import WeatherShell from "@/components/weather/WeatherShell";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 import useForecastWeather from "@/hooks/useForecastWeather";
+import { fetchWeatherKitStatus } from "@/lib/api/weatherkit";
 import { Switch } from "@/components/ui/switch";
-import { ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle, CloudSun } from "lucide-react";
+import { ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle, CloudSun, Check, X } from "lucide-react";
 import { setPref } from "@/lib/prefs";
 
 const APP_VERSION = "1.0.0";
@@ -54,14 +55,22 @@ export default function Settings() {
   useTabPageMemory("Settings");
   const navigate = useNavigate();
   const { data: forecast } = useForecastWeather();
+  const { data: kitStatus } = useQuery({
+    queryKey: ["weatherkit-status"],
+    queryFn: fetchWeatherKitStatus,
+    staleTime: 15000,
+  });
   const kitLive = forecast?.source === "weatherkit";
+  const missing = kitStatus?.missing || [];
   const kitSublabel = kitLive
     ? "Live — NOW / Hourly / 10 Day are using Apple Weather"
-    : forecast?.weatherkitConfigured === false
-      ? "Not configured — set WEATHERKIT_* secrets (see WEATHERKIT.md)"
+    : missing.length
+      ? `Worker does not see ${missing.join(", ")}. Add them on youneekproradarbaby → Settings → Variables and Secrets (not Builds).`
       : forecast?.weatherkitError
-        ? `Fallback to Open-Meteo — ${forecast.weatherkitError}`
-        : "Checking Apple Weather…";
+        ? forecast.weatherkitError
+        : kitStatus?.configured
+          ? "Secrets are on the Worker, but Apple is not returning weather yet."
+          : "Checking Apple Weather…";
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [notifyRain, setNotifyRain] = useState(() => localStorage.getItem("pref_notifyRain") !== "false");
   const [notifyTornado, setNotifyTornado] = useState(() => localStorage.getItem("pref_notifyTornado") !== "false");
@@ -154,6 +163,25 @@ export default function Settings() {
               label={kitLive ? "WeatherKit is in use" : "WeatherKit is not in use"}
               sublabel={kitSublabel}
             />
+            {["WEATHERKIT_TEAM_ID", "WEATHERKIT_KEY_ID", "WEATHERKIT_SERVICE_ID", "WEATHERKIT_PRIVATE_KEY"].map((name) => {
+              const ok = Boolean(kitStatus?.secrets?.[name]);
+              return (
+                <div key={name} className="flex items-center gap-3 px-4 py-3 text-sm">
+                  {ok ? (
+                    <Check className="h-4 w-4 shrink-0 text-lime-400" aria-hidden="true" />
+                  ) : (
+                    <X className="h-4 w-4 shrink-0 text-red-400" aria-hidden="true" />
+                  )}
+                  <span className={ok ? "text-slate-200" : "text-red-200"}>{name}</span>
+                  <span className="ml-auto text-xs text-slate-500">{ok ? "on Worker" : "missing"}</span>
+                </div>
+              );
+            })}
+            {kitStatus && kitStatus.secrets?.WEATHERKIT_PRIVATE_KEY && kitStatus.privateKeyLooksLikePem === false && (
+              <p className="px-4 pb-3 text-xs leading-relaxed text-amber-200/90">
+                The private key is present but does not look like a .p8 PEM. Paste the full file, including BEGIN/END lines, as one line with \n for each break.
+              </p>
+            )}
           </Section>
 
           <Section title="About">
