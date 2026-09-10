@@ -64,7 +64,10 @@ export default function WeatherKitStrip({ windData }) {
   const cardinal = windData ? degreesToCardinal(windData.directionDeg) : "";
   const windLabel = windData?.speedMph != null
     ? `${Math.round(windData.speedMph)} mph ${cardinal}`.trim()
-    : null;
+    : current.wind_speed_10m != null
+      ? `${Math.round(current.wind_speed_10m)} mph`
+      : null;
+  const sourceLabel = data.source === "weatherkit" ? "Apple Weather" : "Open-Meteo";
 
   return (
     <button type="button" onClick={() => navigate("/Forecast")} className={cardClass}>
@@ -85,6 +88,8 @@ export default function WeatherKitStrip({ windData }) {
             {windLabel && <span>{windLabel}</span>}
             {windLabel && nextHour && <span className="text-white/20">·</span>}
             {nextHour && <span>{nextHour.pop}% rain</span>}
+            <span className="text-white/20">·</span>
+            <span>{sourceLabel}</span>
             <ChevronRight className="ml-auto h-3.5 w-3.5 shrink-0 text-lime-400" aria-hidden="true" />
           </div>
         </div>

@@ -23,7 +23,8 @@ export async function onRequestGet(context) {
   }
 
   try {
-    const data = await fetchWeatherKit(env, lat, lon, dataSets || undefined);
+    const timezone = url.searchParams.get("timezone");
+    const data = await fetchWeatherKit(env, lat, lon, dataSets || undefined, timezone || undefined);
     return Response.json(data, {
       headers: {
         "Cache-Control": "public, max-age=300",

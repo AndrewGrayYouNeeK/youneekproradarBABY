@@ -19,7 +19,7 @@ export default function Landing() {
           Making It Rain Accuracy
         </h1>
         <p className="mb-8 text-sm leading-relaxed text-slate-300">
-          Now, Hourly, 10 Day, Maps, and live NOAA radio — plus one-tap Help Me / I&apos;m Safe texts when it counts.
+          Now, Hourly, 10 Day, Maps, and live NOAA radio — Apple Weather when WeatherKit is connected.
         </p>
 
         <Link

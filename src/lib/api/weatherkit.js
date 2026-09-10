@@ -14,6 +14,12 @@ export async function fetchWeatherKit(lat, lon, dataSets = WEATHERKIT_DATASETS) 
     lon: String(lon),
     dataSets,
   });
+  try {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (timezone) params.set("timezone", timezone);
+  } catch {
+    /* ignore */
+  }
 
   const response = await fetch(`/api/weather?${params.toString()}`);
 

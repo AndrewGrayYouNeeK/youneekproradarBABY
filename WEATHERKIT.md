@@ -96,6 +96,9 @@ GET /api/weather?lat=37.77&lon=-122.42
 | `lat` | Yes | Latitude |
 | `lon` | Yes | Longitude |
 | `dataSets` | No | Comma-separated WeatherKit data sets. Default: `currentWeather,forecastHourly,forecastDaily,forecastNextHour,weatherAlerts`. The Worker always sends `country=US` so Apple weather alerts can return. |
+| `timezone` | No | IANA timezone (e.g. `America/New_York`). The app sends the device timezone. Do not send `auto`. |
+
+The Worker requests US customary units (`units=s`). Invalid values like `us` or `si` can make Apple 302/fail, and the app would silently fall back to Open-Meteo. NOW / Hourly / 10 Day show **Powered by Apple Weather** when WeatherKit is actually serving data.
 
 ## Troubleshooting
 

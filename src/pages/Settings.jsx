@@ -4,8 +4,9 @@ import { useMutation } from "@tanstack/react-query";
 import { clearLocalData } from "@/lib/clearLocalData";
 import WeatherShell from "@/components/weather/WeatherShell";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
+import useForecastWeather from "@/hooks/useForecastWeather";
 import { Switch } from "@/components/ui/switch";
-import { ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle } from "lucide-react";
+import { ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle, CloudSun } from "lucide-react";
 import { setPref } from "@/lib/prefs";
 
 const APP_VERSION = "1.0.0";
@@ -52,6 +53,15 @@ function SettingRow({ icon: Icon, label, sublabel, right, onClick, danger }) {
 export default function Settings() {
   useTabPageMemory("Settings");
   const navigate = useNavigate();
+  const { data: forecast } = useForecastWeather();
+  const kitLive = forecast?.source === "weatherkit";
+  const kitSublabel = kitLive
+    ? "Live — NOW / Hourly / 10 Day are using Apple Weather"
+    : forecast?.weatherkitConfigured === false
+      ? "Not configured — set WEATHERKIT_* secrets (see WEATHERKIT.md)"
+      : forecast?.weatherkitError
+        ? `Fallback to Open-Meteo — ${forecast.weatherkitError}`
+        : "Checking Apple Weather…";
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [notifyRain, setNotifyRain] = useState(() => localStorage.getItem("pref_notifyRain") !== "false");
   const [notifyTornado, setNotifyTornado] = useState(() => localStorage.getItem("pref_notifyTornado") !== "false");
@@ -135,6 +145,14 @@ export default function Settings() {
                   aria-label="Toggle auto-tune nearest station"
                 />
               }
+            />
+          </Section>
+
+          <Section title="Apple WeatherKit">
+            <SettingRow
+              icon={CloudSun}
+              label={kitLive ? "WeatherKit is in use" : "WeatherKit is not in use"}
+              sublabel={kitSublabel}
             />
           </Section>
 

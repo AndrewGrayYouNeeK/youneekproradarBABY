@@ -2,6 +2,7 @@ import { LoaderCircle } from "lucide-react";
 import WeatherShell from "@/components/weather/WeatherShell";
 import DailyList from "@/components/forecast/DailyList";
 import WeatherKitSetupNotice from "@/components/forecast/WeatherKitSetupNotice";
+import WeatherSourceBadge from "@/components/forecast/WeatherSourceBadge";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 import useForecastWeather from "@/hooks/useForecastWeather";
 
@@ -25,7 +26,16 @@ export default function Daily() {
             <WeatherKitSetupNotice type="error" message={error.message} onRetry={() => refetch()} />
           )}
           {!showLoading && !locationError && !error && data && (
-            <DailyList days={data.daily} />
+            <>
+              <div className="mb-3">
+                <WeatherSourceBadge
+                  source={data.source}
+                  weatherkitError={data.weatherkitError}
+                  weatherkitConfigured={data.weatherkitConfigured}
+                />
+              </div>
+              <DailyList days={data.daily} />
+            </>
           )}
         </div>
       </div>

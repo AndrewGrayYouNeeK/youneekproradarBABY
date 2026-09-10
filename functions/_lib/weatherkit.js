@@ -36,7 +36,7 @@ export async function createWeatherKitToken(env) {
     .sign(privateKey);
 }
 
-export async function fetchWeatherKit(env, lat, lon, dataSets = DEFAULT_DATASETS) {
+export async function fetchWeatherKit(env, lat, lon, dataSets = DEFAULT_DATASETS, timezone) {
   if (!isWeatherKitConfigured(env)) {
     throw new Error("WeatherKit is not configured");
   }
@@ -48,11 +48,14 @@ export async function fetchWeatherKit(env, lat, lon, dataSets = DEFAULT_DATASETS
   }
 
   const token = await createWeatherKitToken(env);
-  const url = new URL(`${WEATHERKIT_BASE}/en/${latitude}/${longitude}`);
+  const url = new URL(`${WEATHERKIT_BASE}/en_US/${latitude}/${longitude}`);
   url.searchParams.set("dataSets", dataSets);
-  url.searchParams.set("units", "us");
-  url.searchParams.set("timezone", "auto");
+  // Apple's REST units: m = metric, s = US customary. "us" is invalid and can 302/fail.
+  url.searchParams.set("units", "s");
   url.searchParams.set("country", "US");
+  if (timezone) {
+    url.searchParams.set("timezone", timezone);
+  }
 
   const response = await fetch(url.toString(), {
     headers: {

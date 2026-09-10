@@ -1,4 +1,5 @@
 import { formatConditionCode } from "./conditions.js";
+import { convertTemperature, convertWindSpeed, weatherKitUnitsFrom } from "./weatherkit-units.js";
 
 const CONDITION_TO_WMO = {
   Clear: 0,
@@ -44,19 +45,24 @@ function popPercent(value) {
   return Math.round(value <= 1 ? value * 100 : value);
 }
 
+function roundMaybe(value) {
+  return Number.isFinite(Number(value)) ? Math.round(Number(value)) : value;
+}
+
 export function adaptWeatherKitCurrent(data) {
   const current = data?.currentWeather;
   const today = data?.forecastDaily?.days?.[0];
+  const units = weatherKitUnitsFrom(data);
 
   return {
     current: {
-      temperature_2m: current?.temperature,
-      apparent_temperature: current?.temperatureApparent,
-      dew_point: current?.temperatureDewPoint,
+      temperature_2m: convertTemperature(current?.temperature, units),
+      apparent_temperature: convertTemperature(current?.temperatureApparent, units),
+      dew_point: convertTemperature(current?.temperatureDewPoint, units),
       relative_humidity_2m: (current?.humidity ?? 0) * 100,
-      wind_speed_10m: current?.windSpeed,
+      wind_speed_10m: convertWindSpeed(current?.windSpeed, units),
       wind_direction_10m: current?.windDirection,
-      wind_gusts_10m: current?.windGust,
+      wind_gusts_10m: convertWindSpeed(current?.windGust, units),
       weather_code: conditionToWmo(current?.conditionCode),
       condition_label: formatConditionCode(current?.conditionCode),
       pressure_msl: current?.pressure,
@@ -68,10 +74,11 @@ export function adaptWeatherKitCurrent(data) {
       precipitation_intensity: current?.precipitationIntensity,
       daylight: current?.daylight,
       as_of: current?.asOf,
+      attribution_url: current?.metadata?.attributionURL || data?.currentWeather?.metadata?.attributionURL,
     },
     daily: {
-      temperature_2m_max: [today?.temperatureMax],
-      temperature_2m_min: [today?.temperatureMin],
+      temperature_2m_max: [convertTemperature(today?.temperatureMax, units)],
+      temperature_2m_min: [convertTemperature(today?.temperatureMin, units)],
       sunrise: [today?.sunrise],
       sunset: [today?.sunset],
     },
@@ -80,10 +87,11 @@ export function adaptWeatherKitCurrent(data) {
 
 export function adaptWeatherKitHourly(data) {
   const hours = data?.forecastHourly?.hours || [];
+  const units = weatherKitUnitsFrom(data);
 
   return hours.slice(0, 240).map((hour) => ({
     time: hour.forecastStart,
-    temperature: Math.round(hour.temperature ?? 0),
+    temperature: roundMaybe(convertTemperature(hour.temperature, units)) ?? 0,
     pop: popPercent(hour.precipitationChance),
     label: formatConditionCode(hour.conditionCode),
     weather_code: conditionToWmo(hour.conditionCode),
@@ -92,11 +100,12 @@ export function adaptWeatherKitHourly(data) {
 
 export function adaptWeatherKitDaily(data) {
   const days = data?.forecastDaily?.days || [];
+  const units = weatherKitUnitsFrom(data);
 
   return days.slice(0, 10).map((day) => ({
     date: day.forecastStart,
-    high: Math.round(day.temperatureMax ?? 0),
-    low: Math.round(day.temperatureMin ?? 0),
+    high: roundMaybe(convertTemperature(day.temperatureMax, units)) ?? 0,
+    low: roundMaybe(convertTemperature(day.temperatureMin, units)) ?? 0,
     pop: popPercent(day.precipitationChance),
     label: formatConditionCode(day.conditionCode),
     weather_code: conditionToWmo(day.conditionCode),

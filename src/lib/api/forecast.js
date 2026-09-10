@@ -18,6 +18,9 @@ export async function fetchForecastBundle(lat, lon) {
   let daily = [];
   let nextHour = [];
   let kitAlerts = [];
+  let weatherkitError = null;
+  let weatherkitConfigured = true;
+  let attributionUrl = "https://developer.apple.com/weatherkit/data-source-attribution/";
 
   try {
     const data = await fetchWeatherKit(lat, lon);
@@ -27,7 +30,13 @@ export async function fetchForecastBundle(lat, lon) {
     daily = adaptWeatherKitDaily(data);
     nextHour = adaptWeatherKitNextHour(data);
     kitAlerts = adaptWeatherKitAlerts(data);
-  } catch {
+    attributionUrl =
+      data?.currentWeather?.metadata?.attributionURL ||
+      current?.current?.attribution_url ||
+      attributionUrl;
+  } catch (err) {
+    weatherkitConfigured = err?.name !== "WeatherKitNotConfiguredError";
+    weatherkitError = err?.hint || err?.message || "WeatherKit unavailable";
     const fallback = await fetchOpenMeteoForecast(lat, lon);
     source = "open-meteo";
     current = fallback.current;
@@ -39,5 +48,15 @@ export async function fetchForecastBundle(lat, lon) {
   const nwsAlerts = await nwsPromise;
   const alerts = kitAlerts.length ? kitAlerts : nwsAlerts;
 
-  return { source, current, hourly, daily, nextHour, alerts };
+  return {
+    source,
+    current,
+    hourly,
+    daily,
+    nextHour,
+    alerts,
+    weatherkitError,
+    weatherkitConfigured,
+    attributionUrl,
+  };
 }
