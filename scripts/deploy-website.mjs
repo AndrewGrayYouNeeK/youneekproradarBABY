@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Publish the landing page to youneek-pro-radarynk222.
- * The weather website stays on youneekproradarbaby (`wrangler deploy`).
+ * Uses --name so wrangler.toml can keep the baby Worker name for Workers Builds.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
@@ -27,7 +27,7 @@ if (inCi && !process.env.CLOUDFLARE_API_TOKEN) {
   log(
     `Skipping ${LANDING_PROJECT} landing deploy: CLOUDFLARE_API_TOKEN is not set.\n` +
       `Weather website: Cloudflare → ${WEATHER_PROJECT} → deploy command \`npx wrangler deploy\`\n` +
-      `Landing page:    Cloudflare → ${LANDING_PROJECT} → deploy command \`npx wrangler deploy --config wrangler.landing.toml\``
+      `Landing page:    wrangler deploy --name ${LANDING_PROJECT}`
   );
   process.exit(0);
 }
@@ -39,7 +39,17 @@ if (!existsSync("dist/index.html")) {
 
 log(`Publishing landing page to ${LANDING_PROJECT}…`);
 
-if (wrangler(["deploy", "--config", "wrangler.landing.toml"])) {
+if (
+  wrangler([
+    "deploy",
+    "--name",
+    LANDING_PROJECT,
+    "--var",
+    "SITE_ROLE:landing",
+    "--var",
+    `CLOUDFLARE_WORKER_NAME:${LANDING_PROJECT}`,
+  ])
+) {
   log(`\nLanding Worker ${LANDING_PROJECT} updated. WeatherKit secrets stay on ${WEATHER_PROJECT}.`);
   process.exit(0);
 }
@@ -66,7 +76,7 @@ console.error(
   `\nCould not publish landing ${LANDING_PROJECT}.\n` +
     `In Cloudflare → Workers & Pages → ${LANDING_PROJECT}:\n` +
     `  • Connect this GitHub repo\n` +
-    `  • Deploy command: npx wrangler deploy --config wrangler.landing.toml\n` +
+    `  • Deploy command: npx wrangler deploy --name ${LANDING_PROJECT}\n` +
     `  • Set WEATHER_APP_URL to the ${WEATHER_PROJECT} weather site URL`
 );
 process.exit(1);

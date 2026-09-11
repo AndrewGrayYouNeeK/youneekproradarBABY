@@ -13,8 +13,8 @@
     "preview": "vite preview",
     "deploy": "wrangler deploy",
     "deploy:weather": "wrangler deploy",
-    "deploy:landing": "wrangler deploy --config wrangler.landing.toml",
-    "deploy:ynk222": "wrangler deploy --config wrangler.landing.toml",
+    "deploy:landing": "wrangler deploy --name youneek-pro-radarynk222 --var SITE_ROLE:landing --var CLOUDFLARE_WORKER_NAME:youneek-pro-radarynk222",
+    "deploy:ynk222": "wrangler deploy --name youneek-pro-radarynk222 --var SITE_ROLE:landing --var CLOUDFLARE_WORKER_NAME:youneek-pro-radarynk222",
     "deploy:website": "node scripts/deploy-website.mjs",
     "pages:deploy": "npm run build && npm run deploy:landing"
   },
