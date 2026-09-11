@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -20,4 +20,8 @@ test("no extra wrangler*.toml files that would fail the baby Workers Builds name
     (name) => /^wrangler.*\.(toml|json|jsonc)$/.test(name) && name !== "wrangler.toml"
   );
   assert.deepEqual(extras, []);
+});
+
+test("Workers assets are not given a Pages _redirects file", () => {
+  assert.equal(existsSync(join(root, "public/_redirects")), false);
 });

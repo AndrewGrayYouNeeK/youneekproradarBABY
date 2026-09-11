@@ -6,17 +6,17 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "node --test src/lib/weather/weatherkit-units.test.js functions/_lib/weatherkit-key.test.js functions/_lib/site.test.js functions/_lib/wrangler-config.test.js",
+    "test": "node --test src/lib/weather/weatherkit-units.test.js functions/_lib/weatherkit-key.test.js functions/_lib/site.test.js functions/_lib/wrangler-config.test.js scripts/deploy-website.test.js",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
     "preview": "vite preview",
     "deploy": "wrangler deploy",
     "deploy:weather": "wrangler deploy",
-    "deploy:landing": "wrangler deploy --name youneek-pro-radarynk222 --var SITE_ROLE:landing --var WORKER_PROJECT:youneek-pro-radarynk222",
-    "deploy:ynk222": "wrangler deploy --name youneek-pro-radarynk222 --var SITE_ROLE:landing --var WORKER_PROJECT:youneek-pro-radarynk222",
+    "deploy:landing": "node scripts/deploy-website.mjs",
+    "deploy:ynk222": "node scripts/deploy-website.mjs",
     "deploy:website": "node scripts/deploy-website.mjs",
-    "pages:deploy": "npm run build && npm run deploy:landing"
+    "pages:deploy": "npm run build && npm run deploy"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

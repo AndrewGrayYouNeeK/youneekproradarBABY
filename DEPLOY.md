@@ -17,9 +17,10 @@ The landing “Open the weather app” button goes to the weather website. Same-
 |---|---|
 | Production branch | `main` (or this PR branch until it merges) |
 | Build command | `npm run build` |
-| Deploy command | `npx wrangler deploy` (preview builds keep the default `npx wrangler versions upload`) |
+| Deploy command | `npx wrangler deploy` |
+| Non-production deploy command | `npx wrangler versions upload` |
 
-Do **not** add `--env ynk222` or `--name youneek-pro-radarynk222` on this project. That is what breaks the **Workers Builds: youneekproradarbaby** check. If a previous note said to use `--env ynk222` here, change it back.
+Do **not** add `--env ynk222` or `--name youneek-pro-radarynk222` on this project. Reset **both** the production and non-production commands if a previous note said to use `--env ynk222` here. That is what breaks **Workers Builds: youneekproradarbaby**.
 
 Add the four `WEATHERKIT_*` secrets here: [WEATHERKIT.md](./WEATHERKIT.md). Do not add Variables whose names start with `CLOUDFLARE_`.
 

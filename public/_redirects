@@ -1,3 +1,0 @@
-# SPA fallback for classic Cloudflare Pages.
-# /api/* is handled by the Worker (`run_worker_first`).
-/*    /index.html   200
