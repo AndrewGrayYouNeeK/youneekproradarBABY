@@ -1,20 +1,25 @@
-export const WEBSITE_PROJECT = "youneek-pro-radarynk222";
-export const PREVIEW_WORKER = "youneekproradarbaby";
+import { LANDING_PROJECT, WEATHER_PROJECT, siteRoleFromEnv } from "./site.js";
 
 function present(value) {
   return Boolean(String(value ?? "").trim());
 }
 
 export function workerProjectName(env = {}) {
-  return String(env.CLOUDFLARE_WORKER_NAME || "").trim() || WEBSITE_PROJECT;
+  return String(env.CLOUDFLARE_WORKER_NAME || "").trim() || WEATHER_PROJECT;
 }
 
 export function weatherKitSecretsHint(env = {}) {
   const project = workerProjectName(env);
+  if (siteRoleFromEnv(env) === "landing") {
+    return (
+      `This is the landing page (${LANDING_PROJECT}). WeatherKit secrets belong on the weather website ` +
+      `${WEATHER_PROJECT} → Settings → Variables and Secrets (not Builds). See WEATHERKIT.md`
+    );
+  }
   return (
-    `Set WEATHERKIT_* secrets on ${project} (live site is ${WEBSITE_PROJECT}). ` +
-    `Cloudflare → Workers & Pages → that project → Settings → Variables and Secrets (not Builds). ` +
-    `Copy the same four onto ${PREVIEW_WORKER} if you still use that Worker. See WEATHERKIT.md`
+    `Set WEATHERKIT_* secrets on the weather website ${project}. ` +
+    `Cloudflare → Workers & Pages → ${WEATHER_PROJECT} → Settings → Variables and Secrets (not Builds). ` +
+    `The landing page ${LANDING_PROJECT} does not need these secrets. See WEATHERKIT.md`
   );
 }
 

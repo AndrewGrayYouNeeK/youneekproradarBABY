@@ -70,14 +70,17 @@ This Services ID becomes your `WEATHERKIT_SERVICE_ID`.
    - **503** → credentials missing or incomplete in `.env`
    - **200** → WeatherKit is working
 
-## Step 5 — Production (Cloudflare — youneek-pro-radarynk222)
+## Step 5 — Production (Cloudflare — weather website)
 
-The website is **`youneek-pro-radarynk222`**. Secrets on `youneekproradarbaby` alone will not change what the live site serves.
+There are **two** Cloudflare projects:
 
-Secrets must be **runtime Variables and Secrets** on that project, not Build variables.
+- **`youneekproradarbaby`** — weather website. Put WeatherKit secrets **here**.
+- **`youneek-pro-radarynk222`** — landing page. Do **not** put WeatherKit secrets here. Set `WEATHER_APP_URL` to the weather site instead (see [DEPLOY.md](./DEPLOY.md)).
 
-1. Cloudflare → **Workers & Pages** → **youneek-pro-radarynk222**
-2. **Settings → Variables and Secrets** (or Pages → Settings → Environment variables → Production)
+Secrets must be **runtime Variables and Secrets** on `youneekproradarbaby`, not Build variables.
+
+1. Cloudflare → **Workers & Pages** → **youneekproradarbaby**
+2. **Settings → Variables and Secrets** (the Worker runtime page)
 3. Add four **encrypted secrets** with these exact names:
 
 | Name | Value |
@@ -87,7 +90,7 @@ Secrets must be **runtime Variables and Secrets** on that project, not Build var
 | `WEATHERKIT_SERVICE_ID` | Services ID, e.g. `com.youneek.proradar.weather` |
 | `WEATHERKIT_PRIVATE_KEY` | Full `.p8` as **one line** with `\n` for breaks |
 
-If you still open the baby Worker URL, add the **same four** on `youneekproradarbaby` too. They do not sync.
+If you still open a preview URL for the same Worker, it already uses these secrets. The **landing** project `youneek-pro-radarynk222` should not get copies of them.
 
 Example private key value:
 
@@ -95,20 +98,20 @@ Example private key value:
 -----BEGIN PRIVATE KEY-----\nMIGT...\n-----END PRIVATE KEY-----
 ```
 
-Do **not** put them under **Builds → Variables**. Build secrets are only available during `npm run build`. The weather API runs later, on the Worker / Pages Function, and will still say “not configured.”
+Do **not** put them under **Builds → Variables**. Build secrets are only available during `npm run build`. The weather API runs later, on the Worker, and will still say “not configured.”
 
-After saving runtime secrets you do **not** need to paste them again. Open **Settings** in the app on the **website** — it lists which of the four names **this** project actually sees.
+After saving runtime secrets you do **not** need to paste them again. Open **Settings on the weather website** — it lists which of the four names that Worker actually sees.
 
-Or from a terminal (targets the website via `--env ynk222`):
+Or from a terminal (default Worker = weather website):
 
 ```bash
-npx wrangler secret put WEATHERKIT_TEAM_ID --env ynk222
-npx wrangler secret put WEATHERKIT_KEY_ID --env ynk222
-npx wrangler secret put WEATHERKIT_SERVICE_ID --env ynk222
-npx wrangler secret put WEATHERKIT_PRIVATE_KEY --env ynk222
+npx wrangler secret put WEATHERKIT_TEAM_ID
+npx wrangler secret put WEATHERKIT_KEY_ID
+npx wrangler secret put WEATHERKIT_SERVICE_ID
+npx wrangler secret put WEATHERKIT_PRIVATE_KEY
 ```
 
-Deploy the website with `npx wrangler deploy --env ynk222` (see [DEPLOY.md](./DEPLOY.md)).
+Deploy the weather website with `npx wrangler deploy` (see [DEPLOY.md](./DEPLOY.md)).
 
 ## API usage
 
@@ -129,7 +132,7 @@ The Worker requests US customary units (`units=s`). Invalid values like `us` or 
 
 | Problem | Fix |
 |---|---|
-| `WeatherKit is not configured` | Secrets are not on **youneek-pro-radarynk222** runtime Variables and Secrets. Names must match exactly. The app Settings screen shows which of the four this site sees. |
+| `WeatherKit is not configured` | Secrets are not on **youneekproradarbaby** (the weather website) runtime Variables and Secrets. The landing page does not use these secrets. |
 | Worker sees the secrets but Apple 401 | WeatherKit must be enabled on **both** the Services ID and the .p8 key. Team ID / Key ID / Services ID must match. |
 | Private key could not be read | Dashboard stripped newlines. Paste as one line with `\n`. Include BEGIN/END. |
 | Still showing Open-Meteo | Open Settings in the app. If a secret is red, the Worker never received it. If all four are green, the Apple token is being rejected — not a missing-secret problem. |

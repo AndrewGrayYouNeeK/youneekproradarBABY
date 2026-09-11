@@ -1,4 +1,4 @@
-name: Deploy youneek-pro-radarynk222
+name: Deploy weather and landing
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  website:
+  sites:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,7 +21,17 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
-      - name: Publish to youneek-pro-radarynk222
+      - name: Publish weather website (youneekproradarbaby)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "No CLOUDFLARE_API_TOKEN; skip wrangler deploys."
+            exit 0
+          fi
+          npx wrangler deploy
+      - name: Publish landing page (youneek-pro-radarynk222)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

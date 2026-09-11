@@ -3,10 +3,16 @@ import { onRequestGet as getActiveStorms } from "../functions/api/getActiveStorm
 import { onRequestGet as getWeather } from "../functions/api/weather.js";
 import { onRequestGet as getWeatherStatus } from "../functions/api/weather-status.js";
 import { onRequestGet as getLightning } from "../functions/api/lightning.js";
+import { onRequestGet as getSite } from "../functions/api/site.js";
+import { corsHeaders } from "../functions/_lib/cors.js";
 
 export default {
   async fetch(request, env) {
     const { pathname } = new URL(request.url);
+
+    if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
+      return new Response(null, { status: 204, headers: corsHeaders() });
+    }
 
     if (request.method === "GET" && pathname === "/api/alerts") {
       return getAlerts({ request });
@@ -14,6 +20,10 @@ export default {
 
     if (request.method === "GET" && pathname === "/api/getActiveStorms") {
       return getActiveStorms();
+    }
+
+    if (request.method === "GET" && pathname === "/api/site") {
+      return getSite({ env });
     }
 
     if (request.method === "GET" && pathname === "/api/weather-status") {

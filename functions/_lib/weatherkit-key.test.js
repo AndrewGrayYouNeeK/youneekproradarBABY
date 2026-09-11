@@ -5,8 +5,8 @@ import {
   normalizePrivateKey,
   privateKeyLooksLikePem,
   weatherKitSecretsHint,
-  WEBSITE_PROJECT,
 } from "./weatherkit-key.js";
+import { WEATHER_PROJECT, LANDING_PROJECT } from "./site.js";
 
 const BODY =
   "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgAAAAAAAAAAAAAAAAAAAAAAAHBgkqhkiG9w0BAQEFAASBjzCBjAIBAT";
@@ -42,17 +42,20 @@ test("inspect reports which of the four secrets the Worker actually has", () => 
   assert.deepEqual(status.missing, ["WEATHERKIT_KEY_ID", "WEATHERKIT_PRIVATE_KEY"]);
   assert.equal(status.secrets.WEATHERKIT_TEAM_ID, true);
   assert.equal(status.secrets.WEATHERKIT_KEY_ID, false);
-  assert.equal(status.project, WEBSITE_PROJECT);
+  assert.equal(status.project, WEATHER_PROJECT);
 });
 
 test("inspect uses CLOUDFLARE_WORKER_NAME from the live Worker", () => {
-  const status = inspectWeatherKitEnv({ CLOUDFLARE_WORKER_NAME: "youneek-pro-radarynk222" });
-  assert.equal(status.project, "youneek-pro-radarynk222");
+  const status = inspectWeatherKitEnv({ CLOUDFLARE_WORKER_NAME: "youneekproradarbaby" });
+  assert.equal(status.project, "youneekproradarbaby");
 });
 
-test("hints point WeatherKit secrets at the live YNK222 website", () => {
-  const website = weatherKitSecretsHint({ CLOUDFLARE_WORKER_NAME: "youneek-pro-radarynk222" });
-  assert.match(website, /youneek-pro-radarynk222/);
-  assert.match(website, /Variables and Secrets/);
-  assert.doesNotMatch(website, /not youneek-pro-radarynk222/);
+test("hints point WeatherKit secrets at the weather website, not the landing page", () => {
+  const weather = weatherKitSecretsHint({ CLOUDFLARE_WORKER_NAME: WEATHER_PROJECT, SITE_ROLE: "weather" });
+  assert.match(weather, /youneekproradarbaby/);
+  assert.match(weather, /landing page/);
+  const landing = weatherKitSecretsHint({ SITE_ROLE: "landing" });
+  assert.match(landing, /landing page/);
+  assert.match(landing, /youneekproradarbaby/);
+  assert.match(landing, new RegExp(LANDING_PROJECT));
 });

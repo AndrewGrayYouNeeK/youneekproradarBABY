@@ -65,7 +65,7 @@ export default function Settings() {
   const kitSublabel = kitLive
     ? "Live — NOW / Hourly / 10 Day are using Apple Weather"
     : missing.length
-      ? `This site (${kitStatus?.project || "youneek-pro-radarynk222"}) does not see ${missing.join(", ")}. Add them on youneek-pro-radarynk222 → Settings → Variables and Secrets (not Builds).`
+      ? `This site (${kitStatus?.project || "youneekproradarbaby"}) does not see ${missing.join(", ")}. Add them on the weather website youneekproradarbaby → Settings → Variables and Secrets (not Builds). The landing page does not need these secrets.`
       : forecast?.weatherkitError
         ? forecast.weatherkitError
         : kitStatus?.configured

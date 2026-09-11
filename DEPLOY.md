@@ -1,20 +1,31 @@
-# Deploy guide — website is youneek-pro-radarynk222
+# Deploy guide — two Cloudflare projects
 
-The app you open in the browser is Cloudflare project **`youneek-pro-radarynk222`** (YouNeeK Pro Radar YNK222).  
-`youneekproradarbaby` is a second Worker used by Workers Builds. Code that only deploys to baby **will not show up on the website**.
+This repo ships **two sites**. Do not publish the weather app as the landing homepage, and do not put WeatherKit secrets on the landing project.
 
-| Cloudflare project | Role |
-|---|---|
-| **`youneek-pro-radarynk222`** | **Live website / custom domain.** This is the one that must receive this repo and WeatherKit secrets. |
-| `youneekproradarbaby` | Extra Worker. Keep in sync if you still open that URL. |
+| Cloudflare project | Job | Home page | WeatherKit secrets |
+|---|---|---|---|
+| **`youneekproradarbaby`** | **Weather website** — NOW, Hourly, 10 Day, Maps, Radio | `/Forecast` | **Yes** — runtime Variables and Secrets |
+| **`youneek-pro-radarynk222`** | **Landing page** — welcome + live conditions teaser | `/landing` | **No** — set `WEATHER_APP_URL` instead |
+
+The landing “Open the weather app” button goes to the weather website. Same-origin `/Forecast` is only the fallback when `WEATHER_APP_URL` is empty (local dev).
 
 ---
 
-## 1. Point YNK222 at this repo (required)
+## Weather website (`youneekproradarbaby`)
 
-Open [Cloudflare → Workers & Pages → youneek-pro-radarynk222](https://dash.cloudflare.com) and connect GitHub repo `AndrewGrayYouNeeK/youneekproradarBABY`.
+| Setting | Value |
+|---|---|
+| Production branch | `main` (or this PR branch until it merges) |
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy` |
 
-### If the project is Workers Builds (recommended)
+Add the four `WEATHERKIT_*` secrets here: [WEATHERKIT.md](./WEATHERKIT.md).
+
+CLI: `npm run build && npm run deploy:weather`
+
+---
+
+## Landing page (`youneek-pro-radarynk222`)
 
 | Setting | Value |
 |---|---|
@@ -22,103 +33,41 @@ Open [Cloudflare → Workers & Pages → youneek-pro-radarynk222](https://dash.c
 | Build command | `npm run build` |
 | Deploy command | `npx wrangler deploy --env ynk222` |
 
-That `--env ynk222` flag is what publishes as **youneek-pro-radarynk222** instead of baby. Then **Retry deployment**.
+Then add a **plain text variable** (not a WeatherKit secret):
 
-### If the project is still classic Pages
-
-| Setting | Value |
+| Name | Value |
 |---|---|
-| Production branch | `main` (or this PR branch until it merges) |
-| Build command | `npm run build` |
-| Build output directory | `dist` |
+| `WEATHER_APP_URL` | Full URL of the weather site, e.g. `https://youneekproradarbaby.<your-subdomain>.workers.dev` (no trailing slash) |
 
-Pages Functions in `functions/` deploy with the site. `public/_redirects` keeps client routes on `index.html`; `/api/*` stays on Functions.
+Find that URL in Cloudflare → youneekproradarbaby → **Triggers**. If the weather app has a custom domain, use that.
 
----
-
-## 2. WeatherKit secrets on the website
-
-Add all four on **youneek-pro-radarynk222** → **Settings → Variables and Secrets** (runtime, not Builds):
-
-- `WEATHERKIT_TEAM_ID`
-- `WEATHERKIT_KEY_ID`
-- `WEATHERKIT_SERVICE_ID`
-- `WEATHERKIT_PRIVATE_KEY`
-
-If you also use baby, paste the same four there. Secrets do not copy between projects. Details: [WEATHERKIT.md](./WEATHERKIT.md).
-
-From a terminal logged into Wrangler:
-
-```bash
-npx wrangler secret put WEATHERKIT_TEAM_ID --env ynk222
-npx wrangler secret put WEATHERKIT_KEY_ID --env ynk222
-npx wrangler secret put WEATHERKIT_SERVICE_ID --env ynk222
-npx wrangler secret put WEATHERKIT_PRIVATE_KEY --env ynk222
-```
+CLI: `npm run build && npm run deploy:landing`
 
 ---
 
-## 3. GitHub publish (optional backup)
+## GitHub publish (optional)
 
-Workflow `.github/workflows/deploy-ynk222.yml` runs `npm run deploy:website` on `main` and this fix branch.
-
-Add repo secrets:
-
-- `CLOUDFLARE_API_TOKEN` — Account token with Workers Scripts + Pages edit
-- `CLOUDFLARE_ACCOUNT_ID` — your account id
-
-Without that token the workflow skips deploy and prints how to use the Cloudflare dashboard instead.
+`.github/workflows/deploy-ynk222.yml` deploys **both** projects when `CLOUDFLARE_API_TOKEN` is set.
 
 ---
 
-## 4. Local / CLI
-
-```bash
-npm run build
-npm run deploy:ynk222      # Worker named youneek-pro-radarynk222
-npm run deploy:website     # Worker, then Pages fallback
-npm run deploy             # youneekproradarbaby only
-```
-
----
-
-## API routes (same codebase)
+## API routes (weather website)
 
 | Route | Purpose |
 |---|---|
-| `/api/alerts?type=tornado` | NWS alert polygons |
-| `/api/getActiveStorms` | Hurricane data proxy (NHC) |
-| `/api/weather?lat=&lon=` | Apple WeatherKit forecasts |
-| `/api/weather-status` | Which WeatherKit secrets this project sees |
-
----
-
-## baby Worker (optional)
-
-`youneekproradarbaby` can keep:
-
-| Setting | Value |
-|---|---|
-| Production branch | `main` |
-| Build command | `npm run build` |
-| Deploy command | `npx wrangler deploy` |
-
-That URL is **not** the website. Custom domains belong on **youneek-pro-radarynk222**.
-
----
-
-## Tab title still says "base44"?
-
-Retry the **YNK222** deployment, then hard-refresh (`Ctrl+Shift+R` / `Cmd+Shift+R`). Remove and re-add any home-screen shortcut.
+| `/api/weather?lat=&lon=` | Apple WeatherKit (falls back in the app to Open-Meteo) |
+| `/api/weather-status` | Which WeatherKit secrets the **weather** Worker sees |
+| `/api/site` | `landing` vs `weather` role + `WEATHER_APP_URL` |
+| `/api/alerts` | NWS polygons |
+| `/api/getActiveStorms` | NHC storms |
 
 ---
 
 ## Local dev
 
 ```bash
-git checkout main
 npm install
 npm run dev
 ```
 
-Open `/landing` for the welcome screen, then Radar / Forecast / Globe from there.
+`/` and `/landing` show the landing page. `/Forecast` is the weather app.
