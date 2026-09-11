@@ -27,7 +27,7 @@ if (inCi && !process.env.CLOUDFLARE_API_TOKEN) {
   log(
     `Skipping ${LANDING_PROJECT} landing deploy: CLOUDFLARE_API_TOKEN is not set.\n` +
       `Weather website: Cloudflare → ${WEATHER_PROJECT} → deploy command \`npx wrangler deploy\`\n` +
-      `Landing page:    Cloudflare → ${LANDING_PROJECT} → deploy command \`npx wrangler deploy --env ynk222\``
+      `Landing page:    Cloudflare → ${LANDING_PROJECT} → deploy command \`npx wrangler deploy --config wrangler.landing.toml\``
   );
   process.exit(0);
 }
@@ -39,7 +39,7 @@ if (!existsSync("dist/index.html")) {
 
 log(`Publishing landing page to ${LANDING_PROJECT}…`);
 
-if (wrangler(["deploy", "--env", "ynk222"])) {
+if (wrangler(["deploy", "--config", "wrangler.landing.toml"])) {
   log(`\nLanding Worker ${LANDING_PROJECT} updated. WeatherKit secrets stay on ${WEATHER_PROJECT}.`);
   process.exit(0);
 }
@@ -66,7 +66,7 @@ console.error(
   `\nCould not publish landing ${LANDING_PROJECT}.\n` +
     `In Cloudflare → Workers & Pages → ${LANDING_PROJECT}:\n` +
     `  • Connect this GitHub repo\n` +
-    `  • Deploy command: npx wrangler deploy --env ynk222\n` +
+    `  • Deploy command: npx wrangler deploy --config wrangler.landing.toml\n` +
     `  • Set WEATHER_APP_URL to the ${WEATHER_PROJECT} weather site URL`
 );
 process.exit(1);

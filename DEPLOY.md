@@ -31,7 +31,7 @@ CLI: `npm run build && npm run deploy:weather`
 |---|---|
 | Production branch | `main` (or this PR branch until it merges) |
 | Build command | `npm run build` |
-| Deploy command | `npx wrangler deploy --env ynk222` |
+| Deploy command | `npx wrangler deploy --config wrangler.landing.toml` |
 
 Then add a **plain text variable** (not a WeatherKit secret):
 
