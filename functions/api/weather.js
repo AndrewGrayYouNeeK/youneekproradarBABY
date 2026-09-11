@@ -1,13 +1,16 @@
-import { fetchWeatherKit, isWeatherKitConfigured } from "../_lib/weatherkit.js";
+import { fetchWeatherKit, inspectWeatherKitEnv, isWeatherKitConfigured } from "../_lib/weatherkit.js";
+import { weatherKitSecretsHint } from "../_lib/weatherkit-key.js";
+import { jsonWithCors } from "../_lib/cors.js";
 
 export async function onRequestGet(context) {
   const { env, request } = context;
 
   if (!isWeatherKitConfigured(env)) {
-    return Response.json(
+    return jsonWithCors(
       {
         error: "WeatherKit is not configured",
-        hint: "Set WEATHERKIT_* secrets in Cloudflare or .env for local dev — see WEATHERKIT.md",
+        hint: weatherKitSecretsHint(env),
+        ...inspectWeatherKitEnv(env),
       },
       { status: 503 }
     );
@@ -19,17 +22,24 @@ export async function onRequestGet(context) {
   const dataSets = url.searchParams.get("dataSets");
 
   if (!lat || !lon) {
-    return Response.json({ error: "lat and lon are required" }, { status: 400 });
+    return jsonWithCors({ error: "lat and lon are required" }, { status: 400 });
   }
 
   try {
-    const data = await fetchWeatherKit(env, lat, lon, dataSets || undefined);
-    return Response.json(data, {
+    const timezone = url.searchParams.get("timezone");
+    const data = await fetchWeatherKit(env, lat, lon, dataSets || undefined, timezone || undefined);
+    return jsonWithCors(data, {
       headers: {
         "Cache-Control": "public, max-age=300",
       },
     });
   } catch (err) {
-    return Response.json({ error: err.message || "WeatherKit request failed" }, { status: 502 });
+    return jsonWithCors(
+      {
+        error: err.message || "WeatherKit request failed",
+        code: /private key/i.test(err.message || "") ? "invalid_private_key" : "weatherkit_request_failed",
+      },
+      { status: 502 }
+    );
   }
 }

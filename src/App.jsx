@@ -9,6 +9,8 @@ import { AuthProvider } from "@/lib/AuthContext";
 import { NavigationStackProvider } from "@/lib/NavigationStack";
 import { RadioProvider } from "@/lib/RadioContext";
 import OnboardingModal from "@/components/radar/OnboardingModal";
+import useSiteConfig from "@/hooks/useSiteConfig";
+import { homePathForRole } from "@/lib/sites";
 
 const Radar = lazy(() => import("./pages/Radar"));
 const Contacts = lazy(() => import("./pages/Contacts"));
@@ -27,25 +29,32 @@ const Spinner = () => (
   </div>
 );
 
+function HomeGate() {
+  const { role } = useSiteConfig();
+  return <Navigate to={homePathForRole(role)} replace />;
+}
+
 const AppRoutes = () => {
   const location = useLocation();
+  const { role } = useSiteConfig();
   const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem("onboarded_v1"));
+  const skipOnboarding = role === "landing";
 
   return (
     <>
-      {showOnboarding && <OnboardingModal onDone={() => setShowOnboarding(false)} />}
+      {showOnboarding && !skipOnboarding && <OnboardingModal onDone={() => setShowOnboarding(false)} />}
       <AnimatePresence mode="wait">
         <motion.div
           key={location.pathname}
-          initial={{ opacity: 0, x: 12 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -12 }}
-          transition={{ duration: 0.18, ease: "easeOut" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.12, ease: "easeOut" }}
           className="h-full"
         >
           <Suspense fallback={<Spinner />}>
             <Routes location={location}>
-              <Route path="/" element={<Navigate to="/landing" replace />} />
+              <Route path="/" element={<HomeGate />} />
               <Route path="/landing" element={<Landing />} />
               <Route path="/Radar" element={<Radar />} />
               <Route path="/Forecast" element={<Forecast />} />

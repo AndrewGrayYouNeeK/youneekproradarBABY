@@ -2,6 +2,7 @@ import { LoaderCircle } from "lucide-react";
 import WeatherShell from "@/components/weather/WeatherShell";
 import HourlyList from "@/components/forecast/HourlyList";
 import WeatherKitSetupNotice from "@/components/forecast/WeatherKitSetupNotice";
+import WeatherSourceBadge from "@/components/forecast/WeatherSourceBadge";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 import useForecastWeather from "@/hooks/useForecastWeather";
 
@@ -27,7 +28,16 @@ export default function Hourly() {
         </div>
       )}
       {!showLoading && !locationError && !error && data && (
-        <HourlyList hours={data.hourly} />
+        <>
+          <div className="px-4 pt-3">
+            <WeatherSourceBadge
+              source={data.source}
+              weatherkitError={data.weatherkitError}
+              weatherkitConfigured={data.weatherkitConfigured}
+            />
+          </div>
+          <HourlyList hours={data.hourly} />
+        </>
       )}
     </WeatherShell>
   );

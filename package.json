@@ -6,11 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "test": "node --test src/lib/weather/weatherkit-units.test.js functions/_lib/weatherkit-key.test.js functions/_lib/site.test.js functions/_lib/wrangler-config.test.js scripts/deploy-website.test.js",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
     "preview": "vite preview",
     "deploy": "wrangler deploy",
+    "deploy:weather": "wrangler deploy",
+    "deploy:landing": "node scripts/deploy-website.mjs",
+    "deploy:ynk222": "node scripts/deploy-website.mjs",
+    "deploy:website": "node scripts/deploy-website.mjs",
     "pages:deploy": "npm run build && npm run deploy"
   },
   "dependencies": {

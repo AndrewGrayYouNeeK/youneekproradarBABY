@@ -8,12 +8,26 @@ export class WeatherKitNotConfiguredError extends Error {
   }
 }
 
+export async function fetchWeatherKitStatus() {
+  const response = await fetch("/api/weather-status", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error("Could not read WeatherKit status");
+  }
+  return response.json();
+}
+
 export async function fetchWeatherKit(lat, lon, dataSets = WEATHERKIT_DATASETS) {
   const params = new URLSearchParams({
     lat: String(lat),
     lon: String(lon),
     dataSets,
   });
+  try {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (timezone) params.set("timezone", timezone);
+  } catch {
+    /* ignore */
+  }
 
   const response = await fetch(`/api/weather?${params.toString()}`);
 
