@@ -45,13 +45,13 @@ test("inspect reports which of the four secrets the Worker actually has", () => 
   assert.equal(status.project, WEATHER_PROJECT);
 });
 
-test("inspect uses CLOUDFLARE_WORKER_NAME from the live Worker", () => {
-  const status = inspectWeatherKitEnv({ CLOUDFLARE_WORKER_NAME: "youneekproradarbaby" });
+test("inspect uses WORKER_PROJECT from the live Worker", () => {
+  const status = inspectWeatherKitEnv({ WORKER_PROJECT: "youneekproradarbaby" });
   assert.equal(status.project, "youneekproradarbaby");
 });
 
 test("hints point WeatherKit secrets at the weather website, not the landing page", () => {
-  const weather = weatherKitSecretsHint({ CLOUDFLARE_WORKER_NAME: WEATHER_PROJECT, SITE_ROLE: "weather" });
+  const weather = weatherKitSecretsHint({ WORKER_PROJECT: WEATHER_PROJECT, SITE_ROLE: "weather" });
   assert.match(weather, /youneekproradarbaby/);
   assert.match(weather, /landing page/);
   const landing = weatherKitSecretsHint({ SITE_ROLE: "landing" });

@@ -1,10 +1,14 @@
 export const WEATHER_PROJECT = "youneekproradarbaby";
 export const LANDING_PROJECT = "youneek-pro-radarynk222";
 
+export function workerProjectFromEnv(env = {}) {
+  return String(env.WORKER_PROJECT || env.CLOUDFLARE_WORKER_NAME || "").trim();
+}
+
 export function siteRoleFromEnv(env = {}) {
   const explicit = String(env.SITE_ROLE || "").trim().toLowerCase();
   if (explicit === "landing" || explicit === "weather" || explicit === "local") return explicit;
-  const name = String(env.CLOUDFLARE_WORKER_NAME || "").toLowerCase();
+  const name = workerProjectFromEnv(env).toLowerCase();
   if (name.includes("ynk222") || name === LANDING_PROJECT) return "landing";
   return "weather";
 }

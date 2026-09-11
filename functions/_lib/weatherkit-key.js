@@ -1,11 +1,11 @@
-import { LANDING_PROJECT, WEATHER_PROJECT, siteRoleFromEnv } from "./site.js";
+import { LANDING_PROJECT, WEATHER_PROJECT, siteRoleFromEnv, workerProjectFromEnv } from "./site.js";
 
 function present(value) {
   return Boolean(String(value ?? "").trim());
 }
 
 export function workerProjectName(env = {}) {
-  return String(env.CLOUDFLARE_WORKER_NAME || "").trim() || WEATHER_PROJECT;
+  return workerProjectFromEnv(env) || WEATHER_PROJECT;
 }
 
 export function weatherKitSecretsHint(env = {}) {

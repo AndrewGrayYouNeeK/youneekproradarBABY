@@ -26,7 +26,7 @@ const inCi = Boolean(process.env.CI || process.env.GITHUB_ACTIONS);
 if (inCi && !process.env.CLOUDFLARE_API_TOKEN) {
   log(
     `Skipping ${LANDING_PROJECT} landing deploy: CLOUDFLARE_API_TOKEN is not set.\n` +
-      `Weather website: Cloudflare → ${WEATHER_PROJECT} → deploy command \`npx wrangler deploy\`\n` +
+      `Weather website: Cloudflare → ${WEATHER_PROJECT} → deploy command \`npx wrangler deploy\` (no --env)\n` +
       `Landing page:    wrangler deploy --name ${LANDING_PROJECT}`
   );
   process.exit(0);
@@ -47,7 +47,7 @@ if (
     "--var",
     "SITE_ROLE:landing",
     "--var",
-    `CLOUDFLARE_WORKER_NAME:${LANDING_PROJECT}`,
+    `WORKER_PROJECT:${LANDING_PROJECT}`,
   ])
 ) {
   log(`\nLanding Worker ${LANDING_PROJECT} updated. WeatherKit secrets stay on ${WEATHER_PROJECT}.`);

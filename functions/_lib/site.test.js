@@ -24,7 +24,8 @@ test("weather site home is NOW, landing and local home is the splash page", () =
 test("wrangler SITE_ROLE and worker name pick the Cloudflare project", () => {
   assert.equal(siteRoleFromEnv({ SITE_ROLE: "landing" }), "landing");
   assert.equal(siteRoleFromEnv({ SITE_ROLE: "local" }), "local");
-  assert.equal(siteRoleFromEnv({ CLOUDFLARE_WORKER_NAME: WEATHER_PROJECT }), "weather");
+  assert.equal(siteRoleFromEnv({ WORKER_PROJECT: WEATHER_PROJECT }), "weather");
+  assert.equal(siteRoleFromEnv({ WORKER_PROJECT: LANDING_PROJECT }), "landing");
   const landing = describeSite({ SITE_ROLE: "landing", WEATHER_APP_URL: "https://weather.example" });
   assert.equal(landing.project, LANDING_PROJECT);
   assert.equal(landing.weatherAppUrl, "https://weather.example");
