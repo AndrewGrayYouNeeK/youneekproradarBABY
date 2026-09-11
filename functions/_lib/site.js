@@ -3,7 +3,7 @@ export const LANDING_PROJECT = "youneek-pro-radarynk222";
 
 export function siteRoleFromEnv(env = {}) {
   const explicit = String(env.SITE_ROLE || "").trim().toLowerCase();
-  if (explicit === "landing" || explicit === "weather") return explicit;
+  if (explicit === "landing" || explicit === "weather" || explicit === "local") return explicit;
   const name = String(env.CLOUDFLARE_WORKER_NAME || "").toLowerCase();
   if (name.includes("ynk222") || name === LANDING_PROJECT) return "landing";
   return "weather";
