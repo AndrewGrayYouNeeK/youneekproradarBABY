@@ -65,7 +65,7 @@ export default function Settings() {
   const kitSublabel = kitLive
     ? "Live — NOW / Hourly / 10 Day are using Apple Weather"
     : missing.length
-      ? `Worker does not see ${missing.join(", ")}. Add them on youneekproradarbaby → Settings → Variables and Secrets (not Builds).`
+      ? `This site (${kitStatus?.project || "youneek-pro-radarynk222"}) does not see ${missing.join(", ")}. Add them on youneek-pro-radarynk222 → Settings → Variables and Secrets (not Builds).`
       : forecast?.weatherkitError
         ? forecast.weatherkitError
         : kitStatus?.configured
@@ -173,7 +173,7 @@ export default function Settings() {
                     <X className="h-4 w-4 shrink-0 text-red-400" aria-hidden="true" />
                   )}
                   <span className={ok ? "text-slate-200" : "text-red-200"}>{name}</span>
-                  <span className="ml-auto text-xs text-slate-500">{ok ? "on Worker" : "missing"}</span>
+                  <span className="ml-auto text-xs text-slate-500">{ok ? `on ${kitStatus?.project || "Worker"}` : "missing"}</span>
                 </div>
               );
             })}

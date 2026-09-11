@@ -1,4 +1,5 @@
 import { fetchWeatherKit, inspectWeatherKitEnv, isWeatherKitConfigured } from "../_lib/weatherkit.js";
+import { weatherKitSecretsHint } from "../_lib/weatherkit-key.js";
 
 export async function onRequestGet(context) {
   const { env, request } = context;
@@ -7,7 +8,7 @@ export async function onRequestGet(context) {
     return Response.json(
       {
         error: "WeatherKit is not configured",
-        hint: "Set WEATHERKIT_* secrets on the youneekproradarbaby Worker → Settings → Variables and Secrets (not Builds). See WEATHERKIT.md",
+        hint: weatherKitSecretsHint(env),
         ...inspectWeatherKitEnv(env),
       },
       { status: 503 }

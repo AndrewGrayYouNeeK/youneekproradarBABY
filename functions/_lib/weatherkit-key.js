@@ -1,5 +1,21 @@
+export const WEBSITE_PROJECT = "youneek-pro-radarynk222";
+export const PREVIEW_WORKER = "youneekproradarbaby";
+
 function present(value) {
   return Boolean(String(value ?? "").trim());
+}
+
+export function workerProjectName(env = {}) {
+  return String(env.CLOUDFLARE_WORKER_NAME || "").trim() || WEBSITE_PROJECT;
+}
+
+export function weatherKitSecretsHint(env = {}) {
+  const project = workerProjectName(env);
+  return (
+    `Set WEATHERKIT_* secrets on ${project} (live site is ${WEBSITE_PROJECT}). ` +
+    `Cloudflare → Workers & Pages → that project → Settings → Variables and Secrets (not Builds). ` +
+    `Copy the same four onto ${PREVIEW_WORKER} if you still use that Worker. See WEATHERKIT.md`
+  );
 }
 
 export function trimSecret(value) {
@@ -57,6 +73,7 @@ export function inspectWeatherKitEnv(env = {}) {
   const privateKey = present(env.WEATHERKIT_PRIVATE_KEY);
   return {
     configured: teamId && keyId && serviceId && privateKey,
+    project: workerProjectName(env),
     secrets: {
       WEATHERKIT_TEAM_ID: teamId,
       WEATHERKIT_KEY_ID: keyId,

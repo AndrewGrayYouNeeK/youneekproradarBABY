@@ -1,4 +1,4 @@
-import { inspectWeatherKitEnv } from "../_lib/weatherkit-key.js";
+import { inspectWeatherKitEnv, weatherKitSecretsHint } from "../_lib/weatherkit-key.js";
 
 export async function onRequestGet({ env }) {
   const status = inspectWeatherKitEnv(env);
@@ -6,8 +6,8 @@ export async function onRequestGet({ env }) {
     {
       ...status,
       hint: status.configured
-        ? "Worker has all four secrets. If forecasts still say Open-Meteo, Apple is rejecting the token or the private key cannot be parsed."
-        : "Add these on the youneekproradarbaby Worker → Settings → Variables and Secrets (encrypted). Not the Builds tab. Names must match exactly.",
+        ? `Worker ${status.project} has all four secrets. If forecasts still say Open-Meteo, Apple is rejecting the token or the private key cannot be parsed.`
+        : weatherKitSecretsHint(env),
     },
     {
       headers: { "Cache-Control": "no-store" },

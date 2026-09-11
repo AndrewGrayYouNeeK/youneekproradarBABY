@@ -4,6 +4,8 @@ import {
   inspectWeatherKitEnv,
   normalizePrivateKey,
   privateKeyLooksLikePem,
+  weatherKitSecretsHint,
+  WEBSITE_PROJECT,
 } from "./weatherkit-key.js";
 
 const BODY =
@@ -40,4 +42,17 @@ test("inspect reports which of the four secrets the Worker actually has", () => 
   assert.deepEqual(status.missing, ["WEATHERKIT_KEY_ID", "WEATHERKIT_PRIVATE_KEY"]);
   assert.equal(status.secrets.WEATHERKIT_TEAM_ID, true);
   assert.equal(status.secrets.WEATHERKIT_KEY_ID, false);
+  assert.equal(status.project, WEBSITE_PROJECT);
+});
+
+test("inspect uses CLOUDFLARE_WORKER_NAME from the live Worker", () => {
+  const status = inspectWeatherKitEnv({ CLOUDFLARE_WORKER_NAME: "youneek-pro-radarynk222" });
+  assert.equal(status.project, "youneek-pro-radarynk222");
+});
+
+test("hints point WeatherKit secrets at the live YNK222 website", () => {
+  const website = weatherKitSecretsHint({ CLOUDFLARE_WORKER_NAME: "youneek-pro-radarynk222" });
+  assert.match(website, /youneek-pro-radarynk222/);
+  assert.match(website, /Variables and Secrets/);
+  assert.doesNotMatch(website, /not youneek-pro-radarynk222/);
 });

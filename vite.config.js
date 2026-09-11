@@ -85,6 +85,7 @@ function weatherDevProxy(mode) {
     configureServer(server) {
       const env = loadEnv(mode, process.cwd(), "");
       const workerEnv = {
+        CLOUDFLARE_WORKER_NAME: "youneek-pro-radarynk222",
         WEATHERKIT_TEAM_ID: env.WEATHERKIT_TEAM_ID,
         WEATHERKIT_KEY_ID: env.WEATHERKIT_KEY_ID,
         WEATHERKIT_SERVICE_ID: env.WEATHERKIT_SERVICE_ID,

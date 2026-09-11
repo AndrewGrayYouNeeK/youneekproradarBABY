@@ -1,0 +1,3 @@
+# SPA fallback for youneek-pro-radarynk222 when it is classic Cloudflare Pages.
+# /api/* is served by functions/ (see public/_routes.json).
+/*    /index.html   200

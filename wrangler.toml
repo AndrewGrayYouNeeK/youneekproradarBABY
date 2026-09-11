@@ -2,6 +2,11 @@ name = "youneekproradarbaby"
 compatibility_date = "2024-09-23"
 main = "./worker/index.js"
 
+# youneekproradarbaby = Workers Builds preview Worker (existing CI).
+# youneek-pro-radarynk222 = the live website. In that project's Builds:
+#   Build command:  npm run build
+#   Deploy command: npx wrangler deploy --env ynk222
+
 [assets]
 directory = "./dist"
 binding = "ASSETS"
@@ -9,7 +14,23 @@ not_found_handling = "single-page-application"
 run_worker_first = ["/api/*"]
 
 [vars]
+CLOUDFLARE_WORKER_NAME = "youneekproradarbaby"
 # Non-secret defaults can go here. Secrets are set in the Cloudflare dashboard
 # or via: npx wrangler secret put WEATHERKIT_TEAM_ID
 # WeatherKit secrets: WEATHERKIT_TEAM_ID, WEATHERKIT_KEY_ID, WEATHERKIT_SERVICE_ID, WEATHERKIT_PRIVATE_KEY
+# Put the same four secrets on youneek-pro-radarynk222 (the website), not only baby.
 # See WEATHERKIT.md for Apple Developer setup.
+
+[env.ynk222]
+name = "youneek-pro-radarynk222"
+compatibility_date = "2024-09-23"
+main = "./worker/index.js"
+
+[env.ynk222.assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+[env.ynk222.vars]
+CLOUDFLARE_WORKER_NAME = "youneek-pro-radarynk222"
