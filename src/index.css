@@ -51,9 +51,9 @@
   html,
   body,
   #root {
-    @apply bg-slate-950 text-white overscroll-none;
-    color-scheme: dark;
-    background-color: #020617;
+    @apply text-white overscroll-none;
+    color-scheme: light;
+    background-color: #4DA6EA;
   }
 
   body {

@@ -7,16 +7,16 @@ export default function MinutePrecipitation({ minutes = [] }) {
   return (
     <section>
       <div className="mb-3 flex items-end justify-between">
-        <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80">
           Next Hour
         </h2>
-        <p className="text-[11px] text-slate-500">
+        <p className="text-[11px] text-white/75">
           {nextWet
             ? `Precipitation likely around ${new Date(nextWet.time).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
             : "Dry through the next hour"}
         </p>
       </div>
-      <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-3">
+      <div className="rounded-2xl border border-white/25 bg-white/15 px-3 py-3 backdrop-blur-md">
         <div className="flex h-16 items-end gap-px">
           {minutes.map((minute) => {
             const height = Math.max(6, Math.round(((minute.intensity || minute.chance / 100) / peak) * 100));
@@ -30,7 +30,7 @@ export default function MinutePrecipitation({ minutes = [] }) {
             );
           })}
         </div>
-        <div className="mt-2 flex justify-between text-[10px] text-slate-500">
+        <div className="mt-2 flex justify-between text-[10px] text-white/70">
           <span>Now</span>
           <span>+60 min</span>
         </div>

@@ -14,7 +14,7 @@ export default function Hourly() {
     <WeatherShell alerts={data?.alerts || []}>
       {showLoading && (
         <div className="flex flex-1 items-center justify-center">
-          <LoaderCircle className="h-6 w-6 animate-spin text-lime-300" aria-hidden="true" />
+              <LoaderCircle className="h-6 w-6 animate-spin text-white" aria-hidden="true" />
         </div>
       )}
       {!showLoading && locationError && (

@@ -14,8 +14,8 @@ const APP_VERSION = "1.0.0";
 
 function Section({ title, children }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-      <div className="border-b border-white/5 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+    <div className="overflow-hidden rounded-2xl border border-white/25 bg-white/15 backdrop-blur-md">
+      <div className="border-b border-white/15 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/75">
         {title}
       </div>
       <div className="divide-y divide-white/5">{children}</div>
