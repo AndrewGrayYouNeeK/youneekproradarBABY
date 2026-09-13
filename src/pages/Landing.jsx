@@ -55,7 +55,7 @@ export default function Landing() {
           Making It Rain Accuracy
         </h1>
         <p className="mb-6 text-sm leading-relaxed text-slate-300">
-          Live conditions on this page. The full weather app — Now, Hourly, 10 Day, Maps, and NOAA radio — opens on the weather site.
+          Live conditions on this page. Open the weather app for NOW, Hourly, 10 Day, Maps, and NOAA radio.
         </p>
 
         <NowTeaser />
