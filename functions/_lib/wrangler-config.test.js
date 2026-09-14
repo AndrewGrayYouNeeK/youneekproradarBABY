@@ -13,6 +13,8 @@ test("wrangler.toml names only youneekproradarbaby so Workers Builds can match t
   assert.doesNotMatch(toml, /name = "youneek-pro-radarynk222"/);
   assert.doesNotMatch(toml, /CLOUDFLARE_WORKER_NAME|WORKER_PROJECT\s*=/);
   assert.doesNotMatch(toml, /^SITE_ROLE\s*=/m);
+  assert.match(toml, /pattern = "youneekproradar.com"/);
+  assert.match(toml, /custom_domain = true/);
 });
 
 test("no extra wrangler*.toml files that would fail the baby Workers Builds name check", () => {

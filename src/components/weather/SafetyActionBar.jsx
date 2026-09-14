@@ -75,10 +75,10 @@ export function SafetyActionBar({ compact = false }) {
         type="button"
         onClick={() => send("safe")}
         aria-label="I'm Safe text"
-        className={`flex items-center justify-center gap-2 font-bold text-zinc-950 shadow-lg shadow-lime-900/20 ${
+        className={`flex items-center justify-center gap-2 font-bold text-slate-950 shadow-lg shadow-black/20 ${
           compact
-            ? "h-9 min-h-9 rounded-full bg-lime-400 px-3 text-[12px]"
-            : "min-h-12 rounded-2xl bg-lime-400 px-3 text-sm"
+            ? "h-9 min-h-9 rounded-full bg-[#FFD400] px-3 text-[12px]"
+            : "min-h-12 rounded-2xl bg-[#FFD400] px-3 text-sm"
         }`}
       >
         <ShieldCheck className={compact ? "h-3.5 w-3.5" : "h-5 w-5"} aria-hidden="true" />
@@ -93,12 +93,12 @@ export function SafetyActionBar({ compact = false }) {
         buttons
       ) : (
         <div
-          className="border-t border-white/10 bg-[#0c1016]/96 px-3 pt-2 backdrop-blur-xl"
+          className="border-t border-white/20 bg-black/25 px-3 pt-2 backdrop-blur-xl"
           style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}
         >
           <div className="mx-auto max-w-lg">
             {buttons}
-            <p className="mt-1.5 text-center text-[11px] text-slate-400">
+            <p className="mt-1.5 text-center text-[11px] text-white/75">
               {status || "One tap opens Messages with your GPS. You still tap Send."}
             </p>
           </div>
@@ -108,7 +108,7 @@ export function SafetyActionBar({ compact = false }) {
         <div className="pointer-events-none fixed inset-x-0 bottom-24 z-[2400] flex justify-center px-4">
           <div
             className={`max-w-sm rounded-2xl px-4 py-3 text-center shadow-2xl ${
-              flash.kind === "emergency" ? "bg-red-600 text-white" : "bg-lime-400 text-zinc-950"
+              flash.kind === "emergency" ? "bg-red-600 text-white" : "bg-[#FFD400] text-slate-950"
             }`}
           >
             <div className="text-sm font-bold">{flash.title}</div>

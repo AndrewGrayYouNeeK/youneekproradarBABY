@@ -41,15 +41,15 @@ export default function Forecast() {
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
         <div className="mx-auto flex max-w-md flex-col gap-4">
           {isFetching && !showLoading && (
-            <div className="flex items-center gap-1 text-[11px] text-slate-500">
+            <div className="flex items-center gap-1 text-[11px] text-white/80">
               <LoaderCircle className="h-3 w-3 animate-spin" aria-hidden="true" />
               Updating
             </div>
           )}
 
           {showLoading && (
-            <div className="flex items-center justify-center rounded-3xl border border-white/10 bg-white/5 py-16">
-              <LoaderCircle className="h-6 w-6 animate-spin text-lime-300" aria-hidden="true" />
+            <div className="flex items-center justify-center rounded-3xl border border-white/25 bg-white/15 py-16">
+              <LoaderCircle className="h-6 w-6 animate-spin text-white" aria-hidden="true" />
             </div>
           )}
 
@@ -79,13 +79,13 @@ export default function Forecast() {
               <EnvironmentCards data={environment} />
               <div>
                 <div className="mb-2 flex items-center justify-between">
-                  <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80">
                     10 Day
                   </h2>
                   <button
                     type="button"
                     onClick={() => navigate("/Daily")}
-                    className="text-[11px] font-semibold text-lime-300"
+                    className="text-[11px] font-semibold text-yellow-300"
                   >
                     See all
                   </button>

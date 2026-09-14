@@ -16,7 +16,7 @@ export default function Daily() {
         <div className="mx-auto max-w-md">
           {showLoading && (
             <div className="flex items-center justify-center py-16">
-              <LoaderCircle className="h-6 w-6 animate-spin text-lime-300" aria-hidden="true" />
+              <LoaderCircle className="h-6 w-6 animate-spin text-white" aria-hidden="true" />
             </div>
           )}
           {!showLoading && locationError && (

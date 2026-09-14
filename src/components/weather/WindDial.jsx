@@ -1,4 +1,5 @@
 import { degToCardinal } from "@/lib/weather/conditions";
+import { frostCard } from "@/lib/weather/skyTheme";
 
 export default function WindDial({ speedMph = 0, directionDeg = 0, gustMph }) {
   const speed = Math.round(speedMph || 0);
@@ -6,10 +7,10 @@ export default function WindDial({ speedMph = 0, directionDeg = 0, gustMph }) {
   const cardinal = degToCardinal(directionDeg);
 
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+    <div className={`flex items-center gap-4 px-4 py-3 ${frostCard}`}>
       <div className="relative h-24 w-24 shrink-0">
         <svg viewBox="0 0 100 100" className="h-full w-full">
-          <circle cx="50" cy="50" r="46" fill="#0b1220" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
+          <circle cx="50" cy="50" r="46" fill="rgba(14,42,78,0.45)" stroke="rgba(255,255,255,0.35)" strokeWidth="2" />
           {Array.from({ length: 12 }).map((_, index) => {
             const angle = (index / 12) * Math.PI * 2;
             const x1 = 50 + Math.sin(angle) * 38;
@@ -28,9 +29,9 @@ export default function WindDial({ speedMph = 0, directionDeg = 0, gustMph }) {
         </svg>
       </div>
       <div className="min-w-0">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Wind</div>
+        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/75">Wind</div>
         <div className="mt-1 text-2xl font-semibold text-white">{speed} mph</div>
-        <div className="text-sm text-slate-300">{cardinal}{gustMph ? ` · Gusts ${Math.round(gustMph)}` : ""}</div>
+        <div className="text-sm text-white/85">{cardinal}{gustMph ? ` · Gusts ${Math.round(gustMph)}` : ""}</div>
       </div>
     </div>
   );

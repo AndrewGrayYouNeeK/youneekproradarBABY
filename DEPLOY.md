@@ -7,7 +7,9 @@ This repo ships **two sites**. Do not publish the weather app as the landing hom
 | **`youneekproradarbaby`** | **Weather website** — NOW, Hourly, 10 Day, Maps, Radio | `/Forecast` | **Yes** — runtime Variables and Secrets |
 | **`youneek-pro-radarynk222`** | **Landing page** — welcome + live conditions teaser | `/landing` | **No** — set `WEATHER_APP_URL` instead |
 
-The landing “Open the weather app” button goes to the weather website. Same-origin `/Forecast` is only the fallback when `WEATHER_APP_URL` is empty (local dev).
+The public website **https://youneekproradar.com** is the weather app (NOW / Hourly / 10 Day / Maps / Radio). It is attached to **`youneekproradarbaby`**.
+
+The landing “Open the weather app” button goes to that weather website (`https://youneekproradarbaby.youneekartifacts.workers.dev` unless you set `WEATHER_APP_URL`).
 
 ---
 
@@ -40,9 +42,9 @@ Then add a **plain text variable** (not a WeatherKit secret):
 
 | Name | Value |
 |---|---|
-| `WEATHER_APP_URL` | Full URL of the weather site, e.g. `https://youneekproradarbaby.<your-subdomain>.workers.dev` (no trailing slash) |
+| `WEATHER_APP_URL` | Full URL of the weather site. Default in code: `https://youneekproradarbaby.youneekartifacts.workers.dev` (no trailing slash) |
 
-Find that URL in Cloudflare → youneekproradarbaby → **Triggers**. If the weather app has a custom domain, use that.
+The weather Worker also serves **https://youneekproradar.com**. If that hostname is still on `youneek-pro-radarynk222`, remove it there after this deploy so baby can take it.
 
 CLI: `npm run build && npm run deploy:landing`
 
@@ -73,4 +75,4 @@ npm install
 npm run dev
 ```
 
-`/` and `/landing` show the landing page. `/Forecast` is the weather app.
+`/` and `/Forecast` show the weather app (NOW). `/landing` is the splash page.

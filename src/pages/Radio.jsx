@@ -23,12 +23,12 @@ export default function RadioPage() {
     <WeatherShell>
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5">
         <div className="mx-auto flex max-w-md flex-col items-center text-center">
-          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-lime-400/15 text-lime-300">
+          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-white/15 text-[#FFD400]">
             <Radio className="h-10 w-10" aria-hidden="true" />
           </div>
-          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-lime-400">Weather radio</div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FFD400]">Weather radio</div>
           <h1 className="mt-1 text-2xl font-semibold text-white">{station.label}</h1>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-white/80">
             One tap plays live NOAA Weather Radio for the station nearest you.
           </p>
           <div className="mt-3 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
@@ -39,7 +39,7 @@ export default function RadioPage() {
             type="button"
             onClick={togglePlayback}
             aria-label={isPlaying ? "Pause weather radio" : "Play weather radio"}
-            className="mt-8 flex h-24 w-24 items-center justify-center rounded-full bg-lime-400 text-zinc-950 shadow-xl shadow-lime-900/30"
+            className="mt-8 flex h-24 w-24 items-center justify-center rounded-full bg-[#FFD400] text-slate-950 shadow-xl shadow-black/20"
           >
             {isBuffering ? (
               <LoaderCircle className="h-10 w-10 animate-spin" aria-hidden="true" />

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClientInstance } from "@/lib/query-client";
@@ -8,7 +8,6 @@ import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider } from "@/lib/AuthContext";
 import { NavigationStackProvider } from "@/lib/NavigationStack";
 import { RadioProvider } from "@/lib/RadioContext";
-import OnboardingModal from "@/components/radar/OnboardingModal";
 import useSiteConfig from "@/hooks/useSiteConfig";
 import { homePathForRole } from "@/lib/sites";
 
@@ -24,8 +23,8 @@ const Landing = lazy(() => import("./pages/Landing"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 
 const Spinner = () => (
-  <div className="fixed inset-0 flex items-center justify-center bg-slate-950">
-    <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-700 border-t-sky-400" />
+  <div className="fixed inset-0 flex items-center justify-center bg-[#4DA6EA]">
+    <div className="h-8 w-8 animate-spin rounded-full border-4 border-white/40 border-t-white" />
   </div>
 );
 
@@ -36,13 +35,9 @@ function HomeGate() {
 
 const AppRoutes = () => {
   const location = useLocation();
-  const { role } = useSiteConfig();
-  const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem("onboarded_v1"));
-  const skipOnboarding = role === "landing";
 
   return (
     <>
-      {showOnboarding && !skipOnboarding && <OnboardingModal onDone={() => setShowOnboarding(false)} />}
       <AnimatePresence mode="wait">
         <motion.div
           key={location.pathname}
@@ -81,7 +76,7 @@ function App() {
         <Router>
           <NavigationStackProvider>
             <RadioProvider>
-            <div className="mx-auto h-[100dvh] w-full max-w-4xl overflow-hidden bg-[#0a0d12] text-white">
+            <div className="mx-auto h-[100dvh] w-full max-w-4xl overflow-hidden bg-[#4DA6EA] text-white">
               <AppRoutes />
             </div>
             <Toaster />

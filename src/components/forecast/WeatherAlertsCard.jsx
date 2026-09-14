@@ -1,18 +1,18 @@
 export default function WeatherAlertsCard({ alerts = [] }) {
   if (!alerts.length) {
     return (
-      <section className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-        <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+      <section className="rounded-2xl border border-white/25 bg-white/15 px-4 py-3 backdrop-blur-md">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80">
           Alerts
         </h2>
-        <p className="mt-2 text-sm text-slate-300">No active weather alerts for this location.</p>
+        <p className="mt-2 text-sm text-white">No active weather alerts for this location.</p>
       </section>
     );
   }
 
   return (
     <section>
-        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80">
           Alerts
         </h2>
       <div className="space-y-2">
