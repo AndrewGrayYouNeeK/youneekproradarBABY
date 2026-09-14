@@ -1,5 +1,5 @@
-import { describeWeatherCode, degToCardinal } from "@/lib/weather/conditions";
-import { formatPressure, formatTemp, formatVisibility, formatWind } from "@/lib/units";
+import { describeWeatherCode, degToCardinal, formatPrecipType } from "@/lib/weather/conditions";
+import { formatPrecip, formatPressure, formatTemp, formatVisibility, formatWind } from "@/lib/units";
 import { useUnits } from "@/lib/UnitsContext";
 
 export default function CurrentConditionsCard({ data, extras = {} }) {
@@ -14,6 +14,9 @@ export default function CurrentConditionsCard({ data, extras = {} }) {
   const trend = current.pressure_trend
     ? String(current.pressure_trend).replace(/([A-Z])/g, " $1").trim()
     : "";
+  const precipType = formatPrecipType(current.precip_type);
+  const hasCloudLayers =
+    current.cloud_cover_low != null || current.cloud_cover_mid != null || current.cloud_cover_high != null;
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900 to-slate-950 p-6">
@@ -33,6 +36,7 @@ export default function CurrentConditionsCard({ data, extras = {} }) {
           <div className="text-xs text-slate-400">
             Feels like {formatTemp(current.apparent_temperature, units.temp)}
             {current.daylight === false ? " · Night" : ""}
+            {precipType ? ` · ${precipType}` : ""}
           </div>
         </div>
         <Icon className="h-20 w-20 text-sky-300/80" strokeWidth={1.4} aria-hidden="true" />
@@ -48,6 +52,14 @@ export default function CurrentConditionsCard({ data, extras = {} }) {
         <Stat
           label="Gusts"
           value={current.wind_gusts_10m != null ? formatWind(current.wind_gusts_10m, units.wind) : "—"}
+        />
+        <Stat
+          label="Wind max"
+          value={extras.windMax != null ? formatWind(extras.windMax, units.wind) : "—"}
+        />
+        <Stat
+          label="Wind avg"
+          value={extras.windAvg != null ? formatWind(extras.windAvg, units.wind) : "—"}
         />
         <Stat label="Humidity" value={`${Math.round(current.relative_humidity_2m ?? 0)}%`} />
         <Stat label="Dew point" value={current.dew_point != null ? formatTemp(current.dew_point, units.temp) : "—"} />
@@ -66,10 +78,11 @@ export default function CurrentConditionsCard({ data, extras = {} }) {
           label="Precip rate"
           value={
             current.precipitation_intensity != null
-              ? `${Number(current.precipitation_intensity).toFixed(2)} in/hr`
+              ? `${formatPrecip(current.precipitation_intensity, units.precip)}/hr`
               : "—"
           }
         />
+        <Stat label="Precip type" value={precipType || "None"} />
         <Stat
           label="Sun"
           value={
@@ -81,6 +94,30 @@ export default function CurrentConditionsCard({ data, extras = {} }) {
         <Stat label="Moon" value={extras.moon || "—"} />
         <Stat label="Heat index" value={extras.heat != null ? formatTemp(extras.heat, units.temp) : "—"} />
       </div>
+
+      {hasCloudLayers && (
+        <div className="relative mt-4 rounded-2xl border border-white/5 bg-white/5 px-3 py-3">
+          <div className="text-[10px] uppercase tracking-[0.16em] text-slate-500">Cloud layers</div>
+          <div className="mt-2 space-y-2">
+            <CloudLayer label="High" value={current.cloud_cover_high} />
+            <CloudLayer label="Mid" value={current.cloud_cover_mid} />
+            <CloudLayer label="Low" value={current.cloud_cover_low} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CloudLayer({ label, value }) {
+  const pct = Number.isFinite(Number(value)) ? Math.max(0, Math.min(100, Number(value))) : 0;
+  return (
+    <div className="flex items-center gap-3">
+      <div className="w-10 text-[11px] text-slate-400">{label}</div>
+      <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-white/10">
+        <div className="h-full rounded-full bg-sky-300/80" style={{ width: `${pct}%` }} />
+      </div>
+      <div className="w-8 text-right text-[11px] tabular-nums text-white">{Number.isFinite(Number(value)) ? `${Math.round(Number(value))}%` : "—"}</div>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { WEATHERKIT_DATASETS } from "@/lib/weather/weatherkit-datasets";
 
+const OPTIONAL_WEATHER_PARAMS = ["hourlyStart", "hourlyEnd", "dailyStart", "dailyEnd", "currentAsOf"];
+
 export class WeatherKitNotConfiguredError extends Error {
   constructor(hint) {
     super("WeatherKit is not configured");
@@ -8,12 +10,16 @@ export class WeatherKitNotConfiguredError extends Error {
   }
 }
 
-export async function fetchWeatherKit(lat, lon, dataSets = WEATHERKIT_DATASETS) {
+export async function fetchWeatherKit(lat, lon, dataSets = WEATHERKIT_DATASETS, options = {}) {
   const params = new URLSearchParams({
     lat: String(lat),
     lon: String(lon),
-    dataSets,
+    dataSets: dataSets || WEATHERKIT_DATASETS,
   });
+
+  for (const key of OPTIONAL_WEATHER_PARAMS) {
+    if (options[key]) params.set(key, options[key]);
+  }
 
   const response = await fetch(`/api/weather?${params.toString()}`);
 

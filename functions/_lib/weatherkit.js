@@ -36,7 +36,10 @@ export async function createWeatherKitToken(env) {
     .sign(privateKey);
 }
 
-export async function fetchWeatherKit(env, lat, lon, dataSets = DEFAULT_DATASETS) {
+const ATTRIBUTION_ORIGIN = "https://weatherkit.apple.com";
+const OPTIONAL_WEATHER_PARAMS = ["hourlyStart", "hourlyEnd", "dailyStart", "dailyEnd", "currentAsOf"];
+
+export async function fetchWeatherKit(env, lat, lon, dataSets = DEFAULT_DATASETS, options = {}) {
   if (!isWeatherKitConfigured(env)) {
     throw new Error("WeatherKit is not configured");
   }
@@ -50,9 +53,13 @@ export async function fetchWeatherKit(env, lat, lon, dataSets = DEFAULT_DATASETS
   const token = await createWeatherKitToken(env);
   const url = new URL(`${WEATHERKIT_BASE}/en/${latitude}/${longitude}`);
   url.searchParams.set("dataSets", dataSets);
-  url.searchParams.set("units", "us");
+  url.searchParams.set("units", "m");
   url.searchParams.set("timezone", "auto");
   url.searchParams.set("country", "US");
+
+  for (const key of OPTIONAL_WEATHER_PARAMS) {
+    if (options[key]) url.searchParams.set(key, options[key]);
+  }
 
   const response = await fetch(url.toString(), {
     headers: {
@@ -67,4 +74,31 @@ export async function fetchWeatherKit(env, lat, lon, dataSets = DEFAULT_DATASETS
   }
 
   return response.json();
+}
+
+export async function fetchWeatherKitAttribution(env, language = "en_US") {
+  if (!isWeatherKitConfigured(env)) {
+    throw new Error("WeatherKit is not configured");
+  }
+
+  const token = await createWeatherKitToken(env);
+  const response = await fetch(`${ATTRIBUTION_ORIGIN}/attribution/${language}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    throw new Error(`WeatherKit attribution ${response.status}${detail ? `: ${detail}` : ""}`);
+  }
+
+  const payload = await response.json();
+  const resolved = {};
+  for (const [key, value] of Object.entries(payload || {})) {
+    resolved[key] =
+      typeof value === "string" && value.startsWith("/") ? `${ATTRIBUTION_ORIGIN}${value}` : value;
+  }
+  return resolved;
 }

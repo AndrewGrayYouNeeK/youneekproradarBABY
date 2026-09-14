@@ -1,4 +1,4 @@
-export default function WeatherAlertsCard({ alerts = [] }) {
+export default function WeatherAlertsCard({ alerts = [], detailsUrl }) {
   if (!alerts.length) {
     return (
       <section className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
@@ -6,6 +6,16 @@ export default function WeatherAlertsCard({ alerts = [] }) {
           Apple Weather Alerts
         </h2>
         <p className="mt-2 text-sm text-slate-300">No official WeatherKit alerts for this location.</p>
+        {detailsUrl && (
+          <a
+            href={detailsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-2 inline-block text-[11px] text-sky-300 hover:text-sky-200"
+          >
+            Open Apple alert details
+          </a>
+        )}
       </section>
     );
   }
@@ -23,7 +33,7 @@ export default function WeatherAlertsCard({ alerts = [] }) {
           >
             <div className="text-sm font-semibold text-amber-50">{alert.name}</div>
             <div className="mt-1 text-[11px] uppercase tracking-[0.12em] text-amber-200/70">
-              {[alert.severity, alert.urgency, alert.source].filter(Boolean).join(" · ")}
+              {[alert.severity, alert.urgency, alert.certainty, alert.source].filter(Boolean).join(" · ")}
             </div>
             {alert.description && (
               <p className="mt-2 text-xs leading-relaxed text-amber-100/80">{alert.description}</p>
@@ -32,6 +42,16 @@ export default function WeatherAlertsCard({ alerts = [] }) {
               <p className="mt-2 text-[11px] text-slate-400">
                 Until {new Date(alert.expires).toLocaleString()}
               </p>
+            )}
+            {alert.url && (
+              <a
+                href={alert.url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 inline-block text-[11px] text-sky-300 hover:text-sky-200"
+              >
+                Official alert details
+              </a>
             )}
           </article>
         ))}

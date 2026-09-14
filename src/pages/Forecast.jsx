@@ -13,11 +13,16 @@ import LifestyleCard from "@/components/forecast/LifestyleCard";
 import AirQualityCard from "@/components/forecast/AirQualityCard";
 import LightningCard from "@/components/forecast/LightningCard";
 import WinterCard from "@/components/forecast/WinterCard";
+import DayPartsCard from "@/components/forecast/DayPartsCard";
+import AstronomyCard from "@/components/forecast/AstronomyCard";
+import ComparisonCard from "@/components/forecast/ComparisonCard";
+import WeatherKitAttribution from "@/components/forecast/WeatherKitAttribution";
 import useTabPageMemory from "@/hooks/useTabPageMemory";
 import useWeatherLocation from "@/hooks/useWeatherLocation";
 import { fetchAirBundle, fetchForecastBundle } from "@/lib/api/forecastBundle";
 import { adaptAirQuality } from "@/lib/api/openMeteo";
-import { buildLifestyle } from "@/lib/weather/lifestyle";
+import { buildLifestyle, formatMoonPhase } from "@/lib/weather/lifestyle";
+import { heatIndexF } from "@/lib/units";
 import { useLightning } from "@/hooks/useLiveHazards";
 import { haversineKm } from "@/lib/geo";
 
@@ -52,6 +57,18 @@ export default function Forecast() {
     () => (data?.current ? buildLifestyle(data.current.current, data.hourly || [], air || {}) : []),
     [data, air]
   );
+
+  const extras = useMemo(() => {
+    const current = data?.current?.current || {};
+    const today = data?.daily?.[0];
+    return {
+      uv: current.uv_index,
+      moon: data?.astronomy?.moonPhaseLabel || formatMoonPhase(today?.moonPhase),
+      heat: heatIndexF(current.temperature_2m, current.relative_humidity_2m),
+      windMax: today?.windMax,
+      windAvg: today?.windAvg,
+    };
+  }, [data]);
 
   const nearestLightningKm = useMemo(() => {
     if (!coords || !lightning?.features?.length) return null;
@@ -102,15 +119,22 @@ export default function Forecast() {
 
           {!showLoading && !locationError && !error && data && (
             <>
-              <WeatherAlertsCard alerts={data.alerts} />
+              <WeatherAlertsCard alerts={data.alerts} detailsUrl={data.metadata?.alertDetailsUrl} />
               <LightningCard nearestKm={nearestLightningKm} reportCount={lightning?.features?.length || 0} />
-              <CurrentConditionsCard data={data.current} />
-              <MinutePrecipitation minutes={data.minutes} />
+              <CurrentConditionsCard data={data.current} extras={extras} />
+              <ComparisonCard comparison={data.comparison} currentTemp={data.current?.current?.temperature_2m} />
+              <DayPartsCard parts={data.dayParts} />
+              <MinutePrecipitation minutes={data.minutes} summary={data.minuteSummary} />
               <LifestyleCard items={lifestyle} />
               <AirQualityCard air={air} />
               <HourlyStrip hours={data.hourly} />
+              {data.recentHours?.length > 0 && (
+                <HourlyStrip hours={data.recentHours} title="Past 24 hours" />
+              )}
+              <AstronomyCard astronomy={data.astronomy} />
               <WinterCard days={data.daily} />
               <DailyList days={data.daily} />
+              {data.source === "weatherkit" && <WeatherKitAttribution metadata={data.metadata} />}
             </>
           )}
         </div>

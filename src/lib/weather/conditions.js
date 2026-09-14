@@ -57,7 +57,27 @@ export function formatHourTime(iso) {
   return new Date(iso).toLocaleTimeString([], { hour: "numeric" });
 }
 
+export function formatClock(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
 export function formatDayLabel(iso) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+  const date = new Date(iso);
+  const utcMidnight = date.getUTCHours() === 0 && date.getUTCMinutes() === 0;
+  return date.toLocaleDateString([], {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    ...(utcMidnight ? { timeZone: "UTC" } : {}),
+  });
+}
+
+export function formatPrecipType(type) {
+  if (!type || type === "clear") return null;
+  return String(type)
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (char) => char.toUpperCase())
+    .trim();
 }

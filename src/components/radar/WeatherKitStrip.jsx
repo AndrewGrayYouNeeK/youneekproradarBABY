@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, LoaderCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { fetchWeatherKit, WeatherKitNotConfiguredError } from "@/lib/api/weatherkit";
-import { adaptWeatherKitCurrent, adaptWeatherKitHourly } from "@/lib/weather/weatherkit-adapters";
-import { describeWeatherCode } from "@/lib/weather/conditions";
+import { WeatherKitNotConfiguredError } from "@/lib/api/weatherkit";
+import { fetchForecastBundle } from "@/lib/api/forecastBundle";
+import { describeWeatherCode, formatPrecipType } from "@/lib/weather/conditions";
 import useWeatherLocation from "@/hooks/useWeatherLocation";
 
 export default function WeatherKitStrip() {
@@ -11,11 +11,11 @@ export default function WeatherKitStrip() {
   const { coords, error: locationError, loading: locationLoading } = useWeatherLocation();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["weatherkit", coords?.latitude, coords?.longitude],
+    queryKey: ["forecast-bundle", coords?.latitude, coords?.longitude],
     enabled: Boolean(coords),
     staleTime: 300000,
     refetchInterval: 600000,
-    queryFn: () => fetchWeatherKit(coords.latitude, coords.longitude),
+    queryFn: () => fetchForecastBundle(coords.latitude, coords.longitude),
   });
 
   if (locationLoading || (isLoading && coords)) {
@@ -33,7 +33,7 @@ export default function WeatherKitStrip() {
     return null;
   }
 
-  if (error instanceof WeatherKitNotConfiguredError) {
+  if (data?.fallbackError instanceof WeatherKitNotConfiguredError || error instanceof WeatherKitNotConfiguredError) {
     return (
       <button
         type="button"
@@ -51,14 +51,17 @@ export default function WeatherKitStrip() {
     );
   }
 
-  if (error || !data) {
+  if (error || !data?.current) {
     return null;
   }
 
-  const current = adaptWeatherKitCurrent(data);
-  const nextHour = adaptWeatherKitHourly(data)[0];
+  const current = data.current;
+  const nextHour = data.hourly?.[0];
+  const rest = data.dayParts?.find((part) => part.id === "rest") || data.dayParts?.find((part) => part.id === "day");
   const code = describeWeatherCode(current.current.weather_code);
   const Icon = code.icon;
+  const precipType = formatPrecipType(nextHour?.precipType);
+  const delta = data.comparison?.delta;
 
   return (
     <button
@@ -78,11 +81,11 @@ export default function WeatherKitStrip() {
                 {current.current.condition_label || code.label}
               </span>
             </div>
-            {nextHour && (
-              <div className="text-[11px] text-slate-500">
-                Next hour {nextHour.temperature}° · {nextHour.pop}% rain
-              </div>
-            )}
+            <div className="truncate text-[11px] text-slate-500">
+              {nextHour && `Next hour ${nextHour.temperature}° · ${precipType || `${nextHour.pop}%`}`}
+              {rest?.label ? ` · ${rest.title} ${rest.label}` : ""}
+              {delta != null && delta !== 0 ? ` · ${delta > 0 ? "+" : ""}${delta}° vs yesterday` : ""}
+            </div>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1 text-[11px] font-medium text-sky-300">

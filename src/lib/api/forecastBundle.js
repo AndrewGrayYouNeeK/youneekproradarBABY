@@ -9,22 +9,47 @@ import {
 } from "@/lib/api/openMeteo";
 import {
   adaptWeatherKitAlerts,
+  adaptWeatherKitAstronomy,
+  adaptWeatherKitComparison,
   adaptWeatherKitCurrent,
   adaptWeatherKitDaily,
+  adaptWeatherKitDayParts,
   adaptWeatherKitHourly,
+  adaptWeatherKitMetadata,
+  adaptWeatherKitMinuteSummary,
   adaptWeatherKitNextHour,
+  splitWeatherKitHourly,
 } from "@/lib/weather/weatherkit-adapters";
+
+function isoOffset(ms) {
+  return new Date(Date.now() + ms).toISOString();
+}
 
 export async function fetchForecastBundle(lat, lon) {
   try {
-    const data = await fetchWeatherKit(lat, lon);
+    const data = await fetchWeatherKit(lat, lon, undefined, {
+      hourlyStart: isoOffset(-24 * 60 * 60 * 1000),
+      hourlyEnd: isoOffset(10 * 24 * 60 * 60 * 1000),
+    });
+    const current = adaptWeatherKitCurrent(data);
+    const allHours = adaptWeatherKitHourly(data);
+    const { hourly, recentHours } = splitWeatherKitHourly(allHours);
+    const daily = adaptWeatherKitDaily(data);
+    const metadata = adaptWeatherKitMetadata(data);
+
     return {
       source: "weatherkit",
-      current: adaptWeatherKitCurrent(data),
-      hourly: adaptWeatherKitHourly(data),
-      daily: adaptWeatherKitDaily(data),
+      current,
+      hourly,
+      recentHours,
+      daily,
       minutes: adaptWeatherKitNextHour(data),
+      minuteSummary: adaptWeatherKitMinuteSummary(data),
+      dayParts: adaptWeatherKitDayParts(data),
+      astronomy: adaptWeatherKitAstronomy(data),
+      comparison: adaptWeatherKitComparison(allHours, current.current.temperature_2m),
       alerts: adaptWeatherKitAlerts(data),
+      metadata,
       raw: data,
     };
   } catch (error) {
@@ -33,9 +58,15 @@ export async function fetchForecastBundle(lat, lon) {
       source: "open-meteo",
       current: adaptOpenMeteoCurrent(data),
       hourly: adaptOpenMeteoHourly(data),
+      recentHours: [],
       daily: adaptOpenMeteoDaily(data),
       minutes: adaptOpenMeteoNextHour(data),
+      minuteSummary: [],
+      dayParts: [],
+      astronomy: null,
+      comparison: null,
       alerts: [],
+      metadata: null,
       raw: data,
       fallbackError: error instanceof WeatherKitNotConfiguredError ? error : null,
     };
