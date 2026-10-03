@@ -2,6 +2,45 @@ export const WEATHERBUG_GOLD = "#FFD400";
 export const WEATHERBUG_BLUE = "#1E7BD6";
 export const WEATHERBUG_SKY = "#4DA6EA";
 
+/** Apple WeatherKit currentWeather.conditionCode values → home-screen scene. */
+export const WEATHERKIT_SCENES = {
+  Clear: "clear",
+  MostlyClear: "clear",
+  Hot: "clear",
+  PartlyCloudy: "partly",
+  MostlyCloudy: "partly",
+  Breezy: "partly",
+  Windy: "partly",
+  Cloudy: "overcast",
+  Fog: "fog",
+  Haze: "fog",
+  Smoky: "fog",
+  BlowingDust: "fog",
+  Drizzle: "rain",
+  Rain: "rain",
+  HeavyRain: "rain",
+  Showers: "rain",
+  SunShowers: "rain",
+  FreezingDrizzle: "rain",
+  FreezingRain: "rain",
+  Flurries: "snow",
+  SunFlurries: "snow",
+  Snow: "snow",
+  HeavySnow: "snow",
+  Blizzard: "snow",
+  BlowingSnow: "snow",
+  Sleet: "snow",
+  WintryMix: "snow",
+  Frigid: "snow",
+  Hail: "storm",
+  Thunderstorms: "storm",
+  IsolatedThunderstorms: "storm",
+  ScatteredThunderstorms: "storm",
+  StrongStorms: "storm",
+  Hurricane: "storm",
+  TropicalStorm: "storm",
+};
+
 const THEMES = {
   storm: {
     name: "storm",
@@ -41,16 +80,55 @@ const THEMES = {
   },
 };
 
-export function skyTheme({ weatherCode = 0, daylight = true } = {}) {
+const HEAVY_CODES = new Set(["HeavyRain", "HeavySnow", "Blizzard", "StrongStorms", "Hurricane", "Hail"]);
+const LIGHT_CODES = new Set(["Drizzle", "Flurries", "SunFlurries", "SunShowers", "MostlyClear"]);
+
+function sceneFromWmo(code) {
+  if (code >= 95) return "storm";
+  if ((code >= 71 && code < 80) || code >= 85) return "snow";
+  if (code >= 51 || (code >= 80 && code < 85)) return "rain";
+  if (code === 45 || code === 48) return "fog";
+  if (code === 3) return "overcast";
+  if (code === 2) return "partly";
+  return "clear";
+}
+
+function intensityFor({ conditionCode, weatherCode, precipitationIntensity }) {
+  const mmh = Number(precipitationIntensity);
+  if (Number.isFinite(mmh) && mmh > 0) {
+    if (mmh >= 7.6) return "heavy";
+    if (mmh >= 2.5) return "medium";
+    return "light";
+  }
+  if (HEAVY_CODES.has(conditionCode) || weatherCode >= 96 || weatherCode === 65 || weatherCode === 75 || weatherCode === 82) {
+    return "heavy";
+  }
+  if (LIGHT_CODES.has(conditionCode) || weatherCode === 51 || weatherCode === 71 || weatherCode === 80) {
+    return "light";
+  }
+  return "medium";
+}
+
+export function skyTheme({
+  weatherCode = 0,
+  conditionCode = "",
+  daylight = true,
+  precipitationIntensity = 0,
+} = {}) {
   const code = Number(weatherCode) || 0;
-  if (code >= 95) return THEMES.storm;
-  if ((code >= 71 && code < 80) || code >= 85) return THEMES.snow;
-  if (code >= 51 || (code >= 80 && code < 85)) return THEMES.rain;
-  if (code === 45 || code === 48) return THEMES.fog;
-  if (code === 3) return THEMES.overcast;
-  if (code === 2) return daylight ? THEMES.partly : THEMES["partly-night"];
-  if (!daylight) return THEMES["clear-night"];
-  return THEMES.clear;
+  const kitId = String(conditionCode || "").trim();
+  let scene = WEATHERKIT_SCENES[kitId] || sceneFromWmo(code);
+
+  if (scene === "clear" && !daylight) scene = "clear-night";
+  if (scene === "partly" && !daylight) scene = "partly-night";
+
+  const theme = THEMES[scene] || THEMES.clear;
+  return {
+    ...theme,
+    conditionCode: kitId || null,
+    intensity: intensityFor({ conditionCode: kitId, weatherCode: code, precipitationIntensity }),
+    daylight: daylight !== false,
+  };
 }
 
 export function weatherIconClass(code) {
