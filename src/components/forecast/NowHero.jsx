@@ -7,7 +7,7 @@ export default function NowHero({ data, source, weatherkitError, weatherkitConfi
   if (!data) return null;
   const current = data.current || {};
   const daily = data.daily || {};
-  const code = describeWeatherCode(current.weather_code);
+  const code = describeWeatherCode(current.weather_code, current.daylight);
   const Icon = code.icon;
 
   return (
