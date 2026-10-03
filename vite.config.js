@@ -6,6 +6,7 @@ import { onRequestGet as getWeatherStatus } from "./functions/api/weather-status
 import { onRequestGet as getLightning } from "./functions/api/lightning.js";
 import { onRequestGet as getPointAlerts } from "./functions/api/point-alerts.js";
 import { onRequestGet as getSite } from "./functions/api/site.js";
+import { onRequestGet as getStack } from "./functions/api/stack.js";
 
 const NWS_HEADERS = { Accept: "application/geo+json", "User-Agent": "YouNeeKProRadar/1.0 (alerts)" };
 
@@ -158,6 +159,48 @@ function pointAlertsDevProxy() {
   };
 }
 
+function stackDevProxy(mode) {
+  return {
+    name: "stack-dev-proxy",
+    configureServer(server) {
+      const env = loadEnv(mode, process.cwd(), "");
+      const workerEnv = {
+        WORKER_PROJECT: "youneekproradarbaby",
+        SITE_ROLE: "local",
+        STACK_ACCESS_KEY: env.STACK_ACCESS_KEY,
+        STACK_FIXTURE: env.STACK_FIXTURE,
+        CLOUDFLARE_API_TOKEN: env.CLOUDFLARE_API_TOKEN,
+        CLOUDFLARE_ACCOUNT_ID: env.CLOUDFLARE_ACCOUNT_ID,
+        CURSOR_API_KEY: env.CURSOR_API_KEY,
+        APPLE_ISSUER_ID: env.APPLE_ISSUER_ID,
+        APPLE_KEY_ID: env.APPLE_KEY_ID,
+        APPLE_PRIVATE_KEY: env.APPLE_PRIVATE_KEY,
+        WEATHERKIT_TEAM_ID: env.WEATHERKIT_TEAM_ID,
+        WEATHERKIT_KEY_ID: env.WEATHERKIT_KEY_ID,
+        WEATHERKIT_SERVICE_ID: env.WEATHERKIT_SERVICE_ID,
+        WEATHERKIT_PRIVATE_KEY: env.WEATHERKIT_PRIVATE_KEY,
+      };
+
+      server.middlewares.use("/api/stack", async (req, res) => {
+        try {
+          const request = new Request(`http://localhost${req.url}`, {
+            method: req.method || "GET",
+            headers: { authorization: req.headers.authorization || "" },
+          });
+          const response = await getStack({ request, env: workerEnv });
+          res.statusCode = response.status;
+          response.headers.forEach((value, key) => res.setHeader(key, value));
+          res.end(await response.text());
+        } catch {
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ ok: false, error: "Stack desk failed" }));
+        }
+      });
+    },
+  };
+}
+
 function lightningDevProxy() {
   return {
     name: "lightning-dev-proxy",
@@ -180,7 +223,7 @@ function lightningDevProxy() {
 
 export default defineConfig(({ mode }) => ({
   logLevel: "error",
-  plugins: [react(), alertsDevProxy(), weatherDevProxy(mode), pointAlertsDevProxy(), lightningDevProxy()],
+  plugins: [react(), alertsDevProxy(), weatherDevProxy(mode), pointAlertsDevProxy(), lightningDevProxy(), stackDevProxy(mode)],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

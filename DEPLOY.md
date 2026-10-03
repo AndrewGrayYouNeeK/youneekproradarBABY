@@ -63,6 +63,7 @@ CLI: `npm run build && npm run deploy:landing`
 | `/api/weather?lat=&lon=` | Apple WeatherKit (falls back in the app to Open-Meteo) |
 | `/api/weather-status` | Which WeatherKit secrets the **weather** Worker sees |
 | `/api/site` | `landing` vs `weather` role + `WEATHER_APP_URL` |
+| `/api/stack` | Locked desk for Cloudflare, Cursor, and Apple Developer. See [STACK.md](./STACK.md). |
 | `/api/alerts` | NWS polygons |
 | `/api/getActiveStorms` | NHC storms |
 

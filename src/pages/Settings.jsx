@@ -7,7 +7,7 @@ import useTabPageMemory from "@/hooks/useTabPageMemory";
 import useForecastWeather from "@/hooks/useForecastWeather";
 import { fetchWeatherKitStatus } from "@/lib/api/weatherkit";
 import { Switch } from "@/components/ui/switch";
-import { ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle, CloudSun, Check, X } from "lucide-react";
+import { ChevronRight, Radio, Bell, Shield, Info, Trash2, AlertTriangle, CloudSun, Check, X, Layers } from "lucide-react";
 import { setPref } from "@/lib/prefs";
 
 const APP_VERSION = "1.0.0";
@@ -208,6 +208,12 @@ export default function Settings() {
                 <p className="text-slate-500">© 2026 Andrew Gray · YouNeeK</p>
               </div>
             )}
+            <SettingRow
+              icon={Layers}
+              label="Stack desk"
+              sublabel="Cloudflare, Cursor, and Apple Developer"
+              onClick={() => navigate("/stack")}
+            />
             <SettingRow
               icon={Shield}
               label="Privacy"

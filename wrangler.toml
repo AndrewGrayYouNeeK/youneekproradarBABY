@@ -20,3 +20,5 @@ run_worker_first = ["/api/*"]
 # or via: npx wrangler secret put WEATHERKIT_TEAM_ID
 # WeatherKit secrets: WEATHERKIT_TEAM_ID, WEATHERKIT_KEY_ID, WEATHERKIT_SERVICE_ID, WEATHERKIT_PRIVATE_KEY
 # See WEATHERKIT.md for Apple Developer setup.
+# Stack desk secrets (optional): STACK_ACCESS_KEY, CLOUDFLARE_API_TOKEN, CURSOR_API_KEY,
+# APPLE_ISSUER_ID, APPLE_KEY_ID, APPLE_PRIVATE_KEY. See STACK.md.
