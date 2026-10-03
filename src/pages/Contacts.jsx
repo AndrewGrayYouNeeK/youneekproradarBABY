@@ -133,7 +133,7 @@ export default function Contacts() {
         <div>
           <h1 className="text-xl font-bold">Shelter Contacts</h1>
           <p className="mt-1 text-sm text-slate-400">
-            These people get one-tap Help Me and I&apos;m Safe texts with your GPS location. Messages opens immediately — you still tap Send.
+            These people get one-tap Help Me and I&apos;m Safe texts with your GPS location when a weather emergency is in your area. Messages opens immediately — you still tap Send.
           </p>
         </div>
 
@@ -258,7 +258,7 @@ export default function Contacts() {
         <div className="flex items-start gap-2 rounded-xl border border-white/5 bg-white/[0.02] px-3 py-3">
           <Shield className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
           <p className="text-xs leading-relaxed text-slate-500">
-            Emergency and I&apos;m Safe texts only go out when you tap Help Me or I&apos;m Safe, then Send in Messages.
+            Help Me and I&apos;m Safe only appear during a weather emergency in your area, or shortly after one. Drafts open in Messages — you still tap Send.
           </p>
         </div>
 

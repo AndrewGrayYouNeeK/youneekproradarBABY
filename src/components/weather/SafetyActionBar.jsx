@@ -13,7 +13,7 @@ function pulseHaptic(kind) {
   }
 }
 
-export function SafetyActionBar({ compact = false }) {
+export function SafetyActionBar({ compact = false, emergency }) {
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
   const [flash, setFlash] = useState(null);
@@ -99,7 +99,10 @@ export function SafetyActionBar({ compact = false }) {
           <div className="mx-auto max-w-lg">
             {buttons}
             <p className="mt-1.5 text-center text-[11px] text-white/75">
-              {status || "One tap opens Messages with your GPS. You still tap Send."}
+              {status ||
+                (emergency?.recent
+                  ? "A recent weather emergency was in your area. One tap opens Messages with your GPS."
+                  : "Weather emergency in your area. One tap opens Messages with your GPS. You still tap Send.")}
             </p>
           </div>
         </div>

@@ -50,6 +50,7 @@ export default function RadarLayersMenu({
   onRadarOpacityChange,
   onResetView,
   onFeatureAction,
+  showSafetyActions = true,
   dockIds = [],
   onTogglePin,
   onMovePin,
@@ -215,6 +216,7 @@ export default function RadarLayersMenu({
                 </button>
               ))}
             </div>
+            {showSafetyActions && (
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
@@ -231,6 +233,7 @@ export default function RadarLayersMenu({
                 I&apos;m Safe
               </button>
             </div>
+            )}
           </Section>
 
           <RadioControls />

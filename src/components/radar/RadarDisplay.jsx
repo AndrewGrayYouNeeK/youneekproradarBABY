@@ -14,6 +14,8 @@ import useMapDesk from "@/hooks/useMapDesk";
 import { getMapFeature } from "@/lib/mapDesk";
 import { readCachedGps, writeCachedGps } from "@/lib/locationCache";
 import { loadShelterContacts, sendContactTexts } from "@/lib/safety/sms";
+import useForecastWeather from "@/hooks/useForecastWeather";
+import useWeatherEmergency from "@/hooks/useWeatherEmergency";
 import "leaflet/dist/leaflet.css";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -164,6 +166,8 @@ export default function RadarDisplay({
   const didCenterRef = useRef(false);
   const navigate = useNavigate();
   const { dockIds, togglePin, move, reset } = useMapDesk();
+  const { data: forecast } = useForecastWeather();
+  const emergency = useWeatherEmergency(forecast?.alerts || []);
 
   settingsRef.current = settings;
   userLocationRef.current = userLocation;
@@ -611,11 +615,18 @@ export default function RadarDisplay({
       return;
     }
 
-    if (id === "help") sendSafety("emergency");
-    if (id === "safe") sendSafety("safe");
+    if (id === "help") {
+      if (!emergency.visible) return;
+      sendSafety("emergency");
+    }
+    if (id === "safe") {
+      if (!emergency.visible) return;
+      sendSafety("safe");
+    }
   }, [
     navigate,
     sendSafety,
+    emergency.visible,
     settings,
     showFlood,
     showNexrad,
@@ -675,6 +686,7 @@ export default function RadarDisplay({
         onRadarOpacityChange={setRadarOpacity}
         onResetView={handleConusView}
         onFeatureAction={handleChipClick}
+        showSafetyActions={emergency.visible}
         dockIds={dockIds}
         onTogglePin={togglePin}
         onMovePin={move}
@@ -737,6 +749,7 @@ export default function RadarDisplay({
           onSpeedChange={setLoopSpeed}
           onSeek={setLoopIndex}
           productLabel={ACTIVE_PRODUCT.label}
+          showSafetyActions={emergency.visible}
         />
       </div>
 

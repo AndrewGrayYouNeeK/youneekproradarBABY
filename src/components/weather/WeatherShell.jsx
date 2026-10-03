@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, ChevronDown, MapPin, Settings } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { RadioMiniButton, SafetyActionBar } from "@/components/weather/SafetyActionBar";
+import WeatherBackground from "@/components/weather/WeatherBackground";
+import useWeatherEmergency from "@/hooks/useWeatherEmergency";
 import useWeatherLocation from "@/hooks/useWeatherLocation";
 import { fetchForecastBundle } from "@/lib/api/forecast";
 import { reverseGeocode } from "@/lib/locationCache";
@@ -41,24 +43,28 @@ export default function WeatherShell({ children, variant = "page", alerts: alert
   });
 
   const alerts = alertsProp ?? forecast?.alerts ?? [];
+  const emergency = useWeatherEmergency(alerts);
   const alertCount = alerts.length;
   const current = forecast?.current?.current || {};
   const sky = skyTheme({
     weatherCode: current.weather_code,
+    conditionCode: current.condition_code,
     daylight: current.daylight !== false,
+    precipitationIntensity: current.precipitation_intensity,
   });
 
   return (
     <div
-      className="flex h-[100dvh] flex-col overflow-hidden"
+      className="relative flex h-[100dvh] flex-col overflow-hidden"
       style={
         overlay
-          ? { background: "#0a0d12", "--weather-chrome-top": "8.85rem" }
+          ? { background: "#0a0d12", "--weather-chrome-top": emergency.visible ? "8.85rem" : "6.7rem" }
           : { background: sky.background }
       }
     >
+      {!overlay && <WeatherBackground theme={sky} />}
       <header
-        className={`z-[1700] shrink-0 ${
+        className={`relative z-[1700] shrink-0 ${
           overlay
             ? "absolute inset-x-0 top-0 bg-gradient-to-b from-[#07101c] via-[#07101c]/92 to-transparent"
             : "bg-gradient-to-b from-black/25 to-transparent"
@@ -128,18 +134,18 @@ export default function WeatherShell({ children, variant = "page", alerts: alert
             );
           })}
         </nav>
-        {overlay && (
+        {overlay && emergency.visible && (
           <div className="px-3 pb-2">
-            <SafetyActionBar compact />
+            <SafetyActionBar compact emergency={emergency} />
           </div>
         )}
       </header>
 
-      <div className={`min-h-0 flex-1 ${overlay ? "relative" : "flex flex-col overflow-hidden"}`}>
+      <div className={`relative z-[1] min-h-0 flex-1 ${overlay ? "" : "flex flex-col overflow-hidden"}`}>
         {children}
       </div>
 
-      {!overlay && <SafetyActionBar />}
+      {!overlay && emergency.visible && <SafetyActionBar emergency={emergency} />}
     </div>
   );
 }

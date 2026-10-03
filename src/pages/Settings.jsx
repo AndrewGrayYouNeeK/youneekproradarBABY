@@ -98,7 +98,7 @@ export default function Settings() {
             <SettingRow
               icon={Shield}
               label="Shelter contacts"
-              sublabel="People who get Help Me and I'm Safe texts"
+              sublabel="People who get Help Me and I'm Safe texts during weather emergencies"
               onClick={() => navigate("/Contacts")}
             />
             <SettingRow
@@ -163,6 +163,9 @@ export default function Settings() {
               label={kitLive ? "WeatherKit is in use" : "WeatherKit is not in use"}
               sublabel={kitSublabel}
             />
+            <p className="px-4 py-3 text-xs leading-relaxed text-white/70">
+              Put your Apple WeatherKit IDs on the weather website Worker: Team ID, Key ID, Services ID, and the .p8 private key. Names must be WEATHERKIT_TEAM_ID, WEATHERKIT_KEY_ID, WEATHERKIT_SERVICE_ID, and WEATHERKIT_PRIVATE_KEY.
+            </p>
             {["WEATHERKIT_TEAM_ID", "WEATHERKIT_KEY_ID", "WEATHERKIT_SERVICE_ID", "WEATHERKIT_PRIVATE_KEY"].map((name) => {
               const ok = Boolean(kitStatus?.secrets?.[name]);
               return (

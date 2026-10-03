@@ -33,7 +33,7 @@ export default function ShelterAlert({ activeTornadoWarning, activeTornadoWatch 
           Send an emergency text or an I&apos;m Safe text to {contacts.map((contact) => contact.name).join(", ")}.
           Drafts open in Messages — you still tap Send.
         </p>
-        <SafetyTextActions compact />
+        <SafetyTextActions compact forceVisible />
       </motion.div>
     </AnimatePresence>
   );

@@ -9,6 +9,18 @@ import {
   adaptWeatherKitNextHour,
 } from "@/lib/weather/weatherkit-adapters";
 
+function mergeAlerts(kitAlerts, nwsAlerts) {
+  const out = [];
+  const seen = new Set();
+  for (const alert of [...(kitAlerts || []), ...(nwsAlerts || [])]) {
+    const key = alert.id || `${alert.name}-${alert.issued || alert.expires || ""}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(alert);
+  }
+  return out;
+}
+
 export async function fetchForecastBundle(lat, lon) {
   const nwsPromise = fetchNwsPointAlerts(lat, lon).catch(() => []);
 
@@ -46,7 +58,7 @@ export async function fetchForecastBundle(lat, lon) {
   }
 
   const nwsAlerts = await nwsPromise;
-  const alerts = kitAlerts.length ? kitAlerts : nwsAlerts;
+  const alerts = mergeAlerts(kitAlerts, nwsAlerts);
 
   return {
     source,
