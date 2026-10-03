@@ -21,7 +21,6 @@ const RadioPage = lazy(() => import("./pages/Radio"));
 const Globe = lazy(() => import("./pages/Globe"));
 const Landing = lazy(() => import("./pages/Landing"));
 const Privacy = lazy(() => import("./pages/Privacy"));
-const Stack = lazy(() => import("./pages/Stack"));
 
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center bg-[#4DA6EA]">
@@ -61,7 +60,6 @@ const AppRoutes = () => {
               <Route path="/Contacts" element={<Contacts />} />
               <Route path="/Settings" element={<Settings />} />
               <Route path="/Privacy" element={<Privacy />} />
-              <Route path="/stack" element={<Stack />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>
@@ -71,18 +69,6 @@ const AppRoutes = () => {
   );
 };
 
-function AppFrame() {
-  const location = useLocation();
-  const desk = location.pathname === "/stack";
-  return (
-    <div className={desk
-      ? "h-[100dvh] w-full overflow-hidden bg-[#09090b] text-white"
-      : "mx-auto h-[100dvh] w-full max-w-4xl overflow-hidden bg-[#4DA6EA] text-white"}>
-      <AppRoutes />
-    </div>
-  );
-}
-
 function App() {
   return (
     <AuthProvider>
@@ -90,7 +76,9 @@ function App() {
         <Router>
           <NavigationStackProvider>
             <RadioProvider>
-            <AppFrame />
+            <div className="mx-auto h-[100dvh] w-full max-w-4xl overflow-hidden bg-[#4DA6EA] text-white">
+              <AppRoutes />
+            </div>
             <Toaster />
             </RadioProvider>
           </NavigationStackProvider>
