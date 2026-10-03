@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import StackBoard from "@/components/stack/StackBoard";
 
 const STORAGE_KEY = "youneek.stack.access";
@@ -19,6 +19,7 @@ export default function Stack() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [query, setQuery] = useState("");
+  const skipEmptyLoad = useRef(false);
 
   useEffect(() => {
     const previous = document.title;
@@ -31,16 +32,19 @@ export default function Stack() {
   const load = useCallback(async (key, { quiet = false } = {}) => {
     if (quiet) setRefreshing(true);
     else setLoading(true);
-    setError("");
+    if (key) setError("");
     try {
       const headers = key ? { Authorization: `Bearer ${key}` } : {};
       const response = await fetch("/api/stack", { headers, cache: "no-store" });
       const body = await readBody(response);
       if (response.status === 401) {
         sessionStorage.removeItem(STORAGE_KEY);
-        setAccessKey("");
         setPayload(body);
-        if (key) setError("That access key was not accepted.");
+        if (key) {
+          setError("That access key was not accepted.");
+          skipEmptyLoad.current = true;
+          setAccessKey("");
+        }
         return;
       }
       if (!response.ok && response.status !== 503) {
@@ -58,6 +62,10 @@ export default function Stack() {
   }, []);
 
   useEffect(() => {
+    if (!accessKey && skipEmptyLoad.current) {
+      skipEmptyLoad.current = false;
+      return;
+    }
     load(accessKey);
   }, [accessKey, load]);
 
@@ -73,7 +81,6 @@ export default function Stack() {
     if (!next) return;
     sessionStorage.setItem(STORAGE_KEY, next);
     setAccessKey(next);
-    setDraftKey("");
   }
 
   function lock() {

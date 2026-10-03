@@ -175,7 +175,11 @@ export default function StackBoard({ snapshot, query, onQuery, refreshing, onRef
                 <IdLine label="Service" value={apple?.weatherKit?.serviceId || snapshot.catalog?.apple?.serviceId} />
               </dl>
               {apple?.weatherKit?.missing?.length > 0 && (
-                <p className="mt-2 text-xs text-white/45">{apple.weatherKit.missing.join(", ")}</p>
+                <ul className="mt-2 space-y-1 font-mono text-[11px] leading-relaxed text-white/45">
+                  {apple.weatherKit.missing.map((name) => (
+                    <li key={name}>{name}</li>
+                  ))}
+                </ul>
               )}
             </div>
             <ConnectNote
@@ -253,7 +257,13 @@ function ConnectNote({ connected = false, error = "", missing = [], hint = "" })
   return (
     <div className="rounded-2xl border border-dashed border-white/15 px-3 py-3 text-xs leading-relaxed text-white/60">
       {error ? <p className="text-red-200">{error}</p> : <p>{hint}</p>}
-      {missing?.length > 0 && <p className="mt-2 text-white/40">{missing.join(", ")}</p>}
+      {missing?.length > 0 && (
+        <ul className="mt-2 space-y-1 font-mono text-[11px] text-white/45">
+          {missing.map((name) => (
+            <li key={name}>{name}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
