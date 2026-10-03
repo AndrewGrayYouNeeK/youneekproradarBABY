@@ -2,9 +2,21 @@ import { ShieldAlert, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { sendContactTexts } from "@/lib/safety/sms";
 import { readCachedGps } from "@/lib/locationCache";
+import useForecastWeather from "@/hooks/useForecastWeather";
+import useWeatherEmergency from "@/hooks/useWeatherEmergency";
 
-export default function SafetyTextActions({ compact = false }) {
+export default function SafetyTextActions({ compact = false, forceVisible = false }) {
   const [status, setStatus] = useState("");
+  const { data } = useForecastWeather();
+  const emergency = useWeatherEmergency(data?.alerts || []);
+
+  if (!forceVisible && !emergency.visible) {
+    return (
+      <p className="text-xs text-slate-400">
+        Help Me and I&apos;m Safe appear when a weather emergency is active in your area, or was recently.
+      </p>
+    );
+  }
 
   const send = (kind) => {
     try {

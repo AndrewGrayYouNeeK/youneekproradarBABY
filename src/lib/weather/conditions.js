@@ -3,10 +3,12 @@ import {
   CloudDrizzle,
   CloudFog,
   CloudLightning,
+  CloudMoon,
   CloudRain,
   CloudRainWind,
   CloudSnow,
   CloudSun,
+  Moon,
   Sun,
 } from "lucide-react";
 
@@ -37,8 +39,12 @@ export const WMO_CODES = {
   99: { label: "Severe Thunderstorm", icon: CloudLightning },
 };
 
-export function describeWeatherCode(code) {
-  return WMO_CODES[code] || { label: "Unknown", icon: Cloud };
+export function describeWeatherCode(code, daylight = true) {
+  const info = WMO_CODES[code] || { label: "Unknown", icon: Cloud };
+  const value = Number(code) || 0;
+  if (daylight === false && value <= 1) return { ...info, icon: Moon };
+  if (daylight === false && value === 2) return { ...info, icon: CloudMoon };
+  return info;
 }
 
 export function degToCardinal(deg) {

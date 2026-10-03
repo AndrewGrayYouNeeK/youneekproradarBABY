@@ -4,6 +4,7 @@ import { onRequestGet as getWeather } from "../functions/api/weather.js";
 import { onRequestGet as getWeatherStatus } from "../functions/api/weather-status.js";
 import { onRequestGet as getLightning } from "../functions/api/lightning.js";
 import { onRequestGet as getSite } from "../functions/api/site.js";
+import { onRequestGet as getPointAlerts } from "../functions/api/point-alerts.js";
 import { corsHeaders } from "../functions/_lib/cors.js";
 
 export default {
@@ -36,6 +37,10 @@ export default {
 
     if (request.method === "GET" && pathname === "/api/lightning") {
       return getLightning();
+    }
+
+    if (request.method === "GET" && pathname === "/api/point-alerts") {
+      return getPointAlerts({ request });
     }
 
     return env.ASSETS.fetch(request);

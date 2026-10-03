@@ -114,9 +114,10 @@ export default function RadarPlaybackDock({
   onSpeedChange,
   onSeek,
   productLabel,
+  showSafetyActions = true,
 }) {
   const [editing, setEditing] = useState(false);
-  const groups = featuresOnMap(dockIds);
+  const groups = featuresOnMap(dockIds, { safetyActions: showSafetyActions });
 
   return (
     <div className="pointer-events-auto mx-auto w-full max-w-xl overflow-hidden rounded-[1.4rem] border border-white/10 bg-[#10151c]/96 shadow-[0_18px_50px_rgba(0,0,0,0.55)] backdrop-blur-xl">

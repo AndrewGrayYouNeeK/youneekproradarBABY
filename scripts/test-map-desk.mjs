@@ -35,6 +35,7 @@ assert(MAX_DOCK_CHIPS === MAP_FEATURES.length, "The radar can hold the full pro 
 const groups = featuresOnMap(DEFAULT_DOCK_IDS);
 assert(groups.map((group) => group.id).join(",") === "overlays,warnings,desk,safety", "Radar tools should stay in labeled groups");
 assert(groups.find((group) => group.id === "desk").features.map((feature) => feature.id).join(",") === "now,hourly,daily,radio,globe,settings", "Desk tools should be on the radar");
+assert(featuresOnMap(DEFAULT_DOCK_IDS, { safetyActions: false }).every((group) => group.id !== "safety" || group.features.every((feature) => feature.id !== "help" && feature.id !== "safe")), "Help Me and I'm Safe hide when there is no local emergency");
 
 const saved = saveDockIds(["hourly", "help", "bogus", "radar"]);
 assert(JSON.stringify(saved) === JSON.stringify(["hourly", "help", "radar"]), "Unknown tools should be dropped");

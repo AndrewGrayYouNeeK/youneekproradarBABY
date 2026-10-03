@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
-import { CloudSun, ChevronRight, ShieldCheck } from "lucide-react";
+import { CloudSun, ChevronRight, ShieldCheck, Users } from "lucide-react";
 import { describeWeatherCode } from "@/lib/weather/conditions";
 import { skyTheme, weatherIconClass, WEATHERBUG_GOLD } from "@/lib/weather/skyTheme";
+import WeatherBackground from "@/components/weather/WeatherBackground";
 import useForecastWeather from "@/hooks/useForecastWeather";
+import useWeatherEmergency from "@/hooks/useWeatherEmergency";
 import useSiteConfig from "@/hooks/useSiteConfig";
 
 function NowTeaser() {
@@ -37,8 +39,11 @@ export default function Landing() {
   const current = data?.current?.current || {};
   const sky = skyTheme({
     weatherCode: current.weather_code,
+    conditionCode: current.condition_code,
     daylight: current.daylight !== false,
+    precipitationIntensity: current.precipitation_intensity,
   });
+  const emergency = useWeatherEmergency(data?.alerts || []);
 
   const primaryClass =
     "flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-2xl text-base font-bold text-slate-950 shadow-lg";
@@ -50,6 +55,7 @@ export default function Landing() {
       className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden px-6 text-center"
       style={{ background: sky.background }}
     >
+      <WeatherBackground theme={sky} />
       <div className="relative z-[1] flex max-w-md flex-col items-center">
         <div
           className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl border border-white/30 bg-white/15 text-white shadow-lg backdrop-blur-xl"
@@ -88,8 +94,8 @@ export default function Landing() {
                 Maps
               </a>
               <a href={contactsHref} className={secondaryClass}>
-                <ShieldCheck className="h-4 w-4" />
-                I&apos;m Safe
+                {emergency.visible ? <ShieldCheck className="h-4 w-4" /> : <Users className="h-4 w-4" />}
+                {emergency.visible ? "I'm Safe" : "Contacts"}
               </a>
             </>
           ) : (
@@ -98,8 +104,8 @@ export default function Landing() {
                 Maps
               </Link>
               <Link to={contactsHref} className={secondaryClass}>
-                <ShieldCheck className="h-4 w-4" />
-                I&apos;m Safe
+                {emergency.visible ? <ShieldCheck className="h-4 w-4" /> : <Users className="h-4 w-4" />}
+                {emergency.visible ? "I'm Safe" : "Contacts"}
               </Link>
             </>
           )}

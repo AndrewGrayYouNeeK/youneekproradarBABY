@@ -36,12 +36,14 @@ export function getMapFeature(id) {
   return MAP_FEATURES.find((feature) => feature.id === id);
 }
 
-export function featuresOnMap(dockIds) {
+export function featuresOnMap(dockIds, options = {}) {
+  const safetyActions = options.safetyActions !== false;
   const order = new Map((dockIds || []).map((id, index) => [id, index]));
   return MAP_FEATURE_GROUPS.map((group) => ({
     ...group,
     features: MAP_FEATURES
       .filter((feature) => feature.group === group.id && order.has(feature.id))
+      .filter((feature) => safetyActions || (feature.id !== "help" && feature.id !== "safe"))
       .sort((a, b) => order.get(a.id) - order.get(b.id)),
   })).filter((group) => group.features.length > 0);
 }

@@ -10,6 +10,7 @@ const CONDITION_TO_WMO = {
   Fog: 45,
   Haze: 45,
   Smoky: 45,
+  BlowingDust: 45,
   Breezy: 2,
   Windy: 2,
   Frigid: 71,
@@ -23,7 +24,9 @@ const CONDITION_TO_WMO = {
   HeavyRain: 65,
   Rain: 63,
   Showers: 80,
+  SunShowers: 80,
   Flurries: 71,
+  SunFlurries: 71,
   HeavySnow: 75,
   Snow: 73,
   Blizzard: 75,
@@ -64,6 +67,7 @@ export function adaptWeatherKitCurrent(data) {
       wind_direction_10m: current?.windDirection,
       wind_gusts_10m: convertWindSpeed(current?.windGust, units),
       weather_code: conditionToWmo(current?.conditionCode),
+      condition_code: current?.conditionCode || null,
       condition_label: formatConditionCode(current?.conditionCode),
       pressure_msl: current?.pressure,
       pressure_trend: current?.pressureTrend,
@@ -95,6 +99,7 @@ export function adaptWeatherKitHourly(data) {
     pop: popPercent(hour.precipitationChance),
     label: formatConditionCode(hour.conditionCode),
     weather_code: conditionToWmo(hour.conditionCode),
+    condition_code: hour.conditionCode || null,
   }));
 }
 
@@ -109,6 +114,7 @@ export function adaptWeatherKitDaily(data) {
     pop: popPercent(day.precipitationChance),
     label: formatConditionCode(day.conditionCode),
     weather_code: conditionToWmo(day.conditionCode),
+    condition_code: day.conditionCode || null,
   }));
 }
 

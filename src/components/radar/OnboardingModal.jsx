@@ -21,7 +21,7 @@ const SLIDES = [
   {
     icon: "🆘",
     title: "Help Me / I'm Safe",
-    body: "One tap opens a GPS text to your shelter contacts. Help Me means you need assistance. I'm Safe means you are accounted for.",
+    body: "When a weather emergency is in your area — or just was — Help Me and I'm Safe appear. One tap opens a GPS text to your shelter contacts.",
   },
 ];
 
