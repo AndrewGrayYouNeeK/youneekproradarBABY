@@ -15,7 +15,7 @@ function particles(count, seed) {
   });
 }
 
-export default function WeatherBackground({ theme }) {
+export default function WeatherBackground({ theme, className = "" }) {
   const name = theme?.name || "clear";
   const intensity = theme?.intensity || "medium";
   const rainCount = intensity === "heavy" ? 52 : intensity === "light" ? 22 : 36;
@@ -30,7 +30,7 @@ export default function WeatherBackground({ theme }) {
   const showClouds = name !== "clear" && name !== "clear-night";
 
   return (
-    <div className={`weather-bg weather-bg--${name}`} aria-hidden="true">
+    <div className={`weather-bg weather-bg--${name} ${className}`.trim()} aria-hidden="true">
       <div className="weather-bg__sky" style={{ background: theme?.background }} />
       {showStars && (
         <div className="weather-bg__stars">

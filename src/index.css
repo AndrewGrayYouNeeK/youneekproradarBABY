@@ -391,7 +391,119 @@
     .weather-bg__flash,
     .weather-bg__sun,
     .weather-bg__star,
-    .weather-bg__fog {
+    .weather-bg__fog,
+    .ynk-radar-sweep,
+    .ynk-neon,
+    .ynk-neon-magenta,
+    .ynk-glitch,
+    .ynk-gps-dot {
+      animation: none !important;
+    }
+  }
+}
+
+@layer components {
+  .weather-bg.weather-bg--fixed {
+    position: fixed;
+    z-index: 0;
+  }
+
+  .ynk-neon {
+    color: #00ff9c;
+    text-shadow:
+      0 0 7px #00ff9c,
+      0 0 18px #00ff9c,
+      0 0 32px rgba(0, 255, 156, 0.65);
+    animation: ynkNeonPulse 2.4s ease-in-out infinite;
+  }
+
+  .ynk-neon-magenta {
+    color: #ff00d4;
+    text-shadow:
+      0 0 7px #ff00d4,
+      0 0 18px #ff00d4,
+      0 0 32px rgba(255, 0, 212, 0.55);
+    animation: ynkNeonPulse 2.4s ease-in-out infinite;
+  }
+
+  .ynk-glitch {
+    display: block;
+  }
+
+  .ynk-glitch--magenta {
+    color: #ff00d4;
+    opacity: 0.8;
+    animation: ynkGlitch 3s infinite;
+  }
+
+  .ynk-glitch--green {
+    color: #00ff9c;
+    opacity: 0.8;
+    animation: ynkGlitch 3s infinite reverse;
+  }
+
+  .ynk-radar-sweep {
+    animation: ynkRadarSpin 4s linear infinite;
+  }
+
+  .ynk-map .leaflet-container {
+    height: 100%;
+    width: 100%;
+    background: #05070c;
+    font-family: ui-monospace, monospace;
+  }
+
+  .ynk-gps-dot {
+    position: relative;
+    display: block;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: #00ff9c;
+    box-shadow: 0 0 10px #00ff9c, 0 0 4px #fff;
+    border: 2px solid #000;
+  }
+
+  .ynk-gps-dot::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    background: rgba(0, 255, 156, 0.35);
+    animation: ynkGpsPulse 1.8s ease-out infinite;
+  }
+
+  @keyframes ynkNeonPulse {
+    0%,
+    100% { opacity: 1; }
+    50% { opacity: 0.72; }
+  }
+
+  @keyframes ynkGlitch {
+    0%,
+    90%,
+    100% { transform: translate(0, 0); }
+    92% { transform: translate(2px, -1px); }
+    94% { transform: translate(-2px, 1px); }
+    96% { transform: translate(1px, 2px); }
+  }
+
+  @keyframes ynkRadarSpin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes ynkGpsPulse {
+    0% { transform: scale(0.6); opacity: 0.6; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ynk-radar-sweep,
+    .ynk-neon,
+    .ynk-neon-magenta,
+    .ynk-glitch,
+    .ynk-gps-dot,
+    .ynk-gps-dot::after {
       animation: none !important;
     }
   }
