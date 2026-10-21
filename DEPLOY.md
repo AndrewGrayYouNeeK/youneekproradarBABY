@@ -1,15 +1,13 @@
 # Deploy guide — two Cloudflare projects
 
-This repo ships **two sites**. Do not publish the weather app as the landing homepage, and do not put WeatherKit secrets on the landing project.
+This repo is the landing page on **`youneekproradarbaby`**. Do not move **youneekproradar.com** or any DNS record. Do not deploy this build onto **`youneek-pro-radarynk222`** — that Worker is the separate radar app.
 
 | Cloudflare project | Job | Home page | WeatherKit secrets |
 |---|---|---|---|
-| **`youneekproradarbaby`** | **Weather website** — NOW, Hourly, 10 Day, Maps, Radio | `/Forecast` | **Yes** — runtime Variables and Secrets |
-| **`youneek-pro-radarynk222`** | **Landing page** — welcome + live conditions teaser | `/landing` | **No** — set `WEATHER_APP_URL` instead |
+| **`youneekproradarbaby`** | **Landing page** for youneekproradar.com, plus the weather desk | `/` | **Yes** — runtime Variables and Secrets |
+| **`youneek-pro-radarynk222`** | **Radar app** (separate repo). This landing only links to it. | `/Radar` | Not in this repo |
 
-The public website **https://youneekproradar.com** is the weather app (NOW / Hourly / 10 Day / Maps / Radio). It is attached to **`youneekproradarbaby`**.
-
-The landing “Open the weather app” button goes to that weather website (`https://youneekproradarbaby.youneekartifacts.workers.dev` unless you set `WEATHER_APP_URL`).
+The public website **https://youneekproradar.com** stays attached to **`youneekproradarbaby`**. Do not change that custom domain or DNS. `/` is the landing page. **Open Radar** goes to the separate radar app at `https://youneek-pro-radarynk222.youneekartifacts.workers.dev/Radar`. NOW, Hourly, and 10 Day remain on this site at `/Forecast`, `/Hourly`, and `/Daily`.
 
 ---
 
@@ -30,23 +28,13 @@ CLI: `npm run build && npm run deploy:weather`
 
 ---
 
-## Landing page (`youneek-pro-radarynk222`)
+## Radar app (`youneek-pro-radarynk222`)
 
-| Setting | Value |
-|---|---|
-| Production branch | `main` (or this PR branch until it merges) |
-| Build command | `npm run build` |
-| Deploy command | `npx wrangler deploy --name youneek-pro-radarynk222` |
+Do not publish this repository there, and do not change its domain or DNS. The landing **Open Radar** button uses:
 
-Then add a **plain text variable** (not a WeatherKit secret):
+`https://youneek-pro-radarynk222.youneekartifacts.workers.dev/Radar`
 
-| Name | Value |
-|---|---|
-| `WEATHER_APP_URL` | Full URL of the weather site. Default in code: `https://youneekproradarbaby.youneekartifacts.workers.dev` (no trailing slash) |
-
-The weather Worker also serves **https://youneekproradar.com**. If that hostname is still on `youneek-pro-radarynk222`, remove it there after this deploy so baby can take it.
-
-CLI: `npm run build && npm run deploy:landing`
+Safety texts open `/Contacts` on that same origin. `npm run deploy:landing` still targets that Worker name for older dashboards — do not run it against the live radar app.
 
 ---
 
@@ -75,4 +63,4 @@ npm install
 npm run dev
 ```
 
-`/` and `/Forecast` show the weather app (NOW). `/landing` is the splash page.
+`/` and `/landing` are the landing page. `/Forecast` is the weather desk.
