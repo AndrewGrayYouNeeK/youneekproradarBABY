@@ -1,19 +1,15 @@
 import { lazy, Suspense } from "react";
 import { ChevronRight } from "lucide-react";
-import WeatherBackground from "@/components/weather/WeatherBackground";
+import AlertBanner from "@/components/landing/AlertBanner";
 import NeonSigns from "@/components/landing/NeonSigns";
 import RadarSweep from "@/components/landing/RadarSweep";
 import SafetySms from "@/components/landing/SafetySms";
+import WeatherDesk from "@/components/landing/WeatherDesk";
+import WeatherBackground from "@/components/weather/WeatherBackground";
 import useVisitorWeather from "@/hooks/useVisitorWeather";
 import { RADAR_APP_URL } from "@/lib/landing/radarApp";
-import { describeWeatherCode } from "@/lib/weather/conditions";
 
 const MapPreview = lazy(() => import("@/components/landing/MapPreview"));
-
-const SOURCE_LABEL = {
-  ynk222: "YouNeeK radar weather",
-  "open-meteo": "Open-Meteo",
-};
 
 function OpenRadarLink({ className, children }) {
   return (
@@ -24,15 +20,12 @@ function OpenRadarLink({ className, children }) {
 }
 
 export default function Landing() {
-  const { place, current, sky, weatherSource, loading, usingFallback } = useVisitorWeather();
-  const code = describeWeatherCode(current?.weather_code, sky.daylight !== false);
-  const Icon = code.icon;
-  const placeLabel = place?.label || (loading ? "Finding you…" : "Sky estimate");
-  const sourceLabel = SOURCE_LABEL[weatherSource] || (usingFallback ? "Time of day" : "");
+  const weather = useVisitorWeather();
+  const alertState = weather.place ? weather.alertsState : weather.loading ? "loading" : "idle";
 
   return (
     <div className="relative min-h-[100dvh] overflow-x-hidden bg-black font-mono text-white">
-      <WeatherBackground theme={sky} className="weather-bg--fixed" />
+      <WeatherBackground theme={weather.sky} className="weather-bg--fixed" />
       <div className="pointer-events-none fixed inset-0 z-[1] bg-gradient-to-b from-black/30 via-black/10 to-black/55" />
 
       <div className="relative z-10">
@@ -45,14 +38,33 @@ export default function Landing() {
           </OpenRadarLink>
         </header>
 
-        <section id="top" className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-8 pt-10 md:px-8 md:pt-16 lg:grid-cols-2">
+        <main id="top" className="mx-auto grid max-w-6xl gap-8 px-4 pb-6 pt-4 md:px-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <div>
-            <div className="mb-4 inline-flex items-center gap-2 border border-[#00ff9c]/40 bg-black/70 px-3 py-1.5">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-[#00ff9c] shadow-[0_0_8px_#00ff9c]" />
-              <span className="text-[10px] uppercase tracking-[0.28em] text-[#00ff9c]">SYS_ONLINE</span>
+            <div className="mb-4">
+              {alertState === "idle" ? (
+                <div className="border border-white/20 bg-black/70 px-4 py-3 text-sm text-white/80">
+                  Search a city or allow location to check NWS alerts.
+                </div>
+              ) : (
+                <AlertBanner alerts={weather.alerts} state={alertState} />
+              )}
             </div>
 
-            <h1 className="text-[2.7rem] font-black leading-[0.88] tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.75)] sm:text-6xl lg:text-7xl">
+            <WeatherDesk
+              placeLabel={weather.placeLabel}
+              current={weather.current}
+              hourly={weather.hourly}
+              daily={weather.daily}
+              loading={weather.loading}
+              forecastError={weather.forecastError}
+              onRetry={weather.refetchForecast}
+              daylight={weather.sky.daylight}
+              locationNote={weather.locationNote}
+              onSelectPlace={weather.choosePlace}
+              onUseMine={weather.useMyLocation}
+            />
+
+            <h1 className="mt-6 text-[2rem] font-black leading-[0.9] tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.75)] sm:text-5xl">
               <span className="block">YouNeeK</span>
               <span className="block">PRO</span>
               <span className="relative block">
@@ -66,25 +78,6 @@ export default function Landing() {
               </span>
             </h1>
 
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-white/75">
-              Live radar, the sky outside your window, and safety texts that reach your people.
-            </p>
-
-            <div className="mt-6 flex max-w-md items-center gap-3 border border-white/15 bg-black/70 px-4 py-3 backdrop-blur-md">
-              <Icon className="h-10 w-10 shrink-0 text-[#00ff9c]" strokeWidth={1.4} aria-hidden="true" />
-              <div className="min-w-0">
-                <div className="text-3xl font-light tabular-nums text-white">
-                  {loading ? "…" : current ? `${Math.round(current.temperature_2m)}°` : "—"}
-                </div>
-                <div className="truncate text-xs text-white/75">
-                  {loading ? "Reading the sky…" : current?.condition_label || code.label}
-                  {" · "}
-                  {placeLabel}
-                  {sourceLabel ? ` · ${sourceLabel}` : ""}
-                </div>
-              </div>
-            </div>
-
             <span className="relative mt-6 inline-flex w-full max-w-xs">
               <span className="absolute inset-0 -translate-x-1.5 -translate-y-1.5 bg-[#ff00d4]" aria-hidden="true" />
               <OpenRadarLink className="relative inline-flex min-h-14 w-full items-center justify-center gap-2 bg-[#00ff9c] px-6 py-3.5 text-xs font-bold uppercase tracking-[0.25em] text-black">
@@ -94,10 +87,12 @@ export default function Landing() {
             </span>
           </div>
 
-          <RadarSweep />
-        </section>
+          <div className="hidden lg:block">
+            <RadarSweep />
+          </div>
+        </main>
 
-        <SafetySms latitude={place?.latitude} longitude={place?.longitude} />
+        <SafetySms latitude={weather.place?.latitude} longitude={weather.place?.longitude} />
 
         <Suspense
           fallback={
@@ -106,7 +101,11 @@ export default function Landing() {
             </div>
           }
         >
-          <MapPreview latitude={place?.latitude} longitude={place?.longitude} />
+          <MapPreview
+            latitude={weather.place?.latitude}
+            longitude={weather.place?.longitude}
+            alerts={weather.outlines.length ? weather.outlines : weather.alerts}
+          />
         </Suspense>
 
         <NeonSigns />

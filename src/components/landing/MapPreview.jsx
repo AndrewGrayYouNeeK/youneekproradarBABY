@@ -1,19 +1,47 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { AlertTriangle, Radio } from "lucide-react";
+import { Pause, Play, Radio } from "lucide-react";
+import { outlineStyle, radarFrameStamps } from "@/lib/landing/briefing";
 import { RADAR_APP_URL } from "@/lib/landing/radarApp";
 
-const NEXRAD_BASE = "https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913";
+const NEXRAD_ARCHIVE = "https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/ridge::USCOMP-N0Q-";
+
+function escapeHtml(value) {
+  return String(value || "").replace(/[&<>"']/g, (character) => {
+    switch (character) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      case "'":
+        return "&#39;";
+      default: {
+        const unexpected = character;
+        return unexpected;
+      }
+    }
+  });
+}
 const DARK_BASE = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
 
-export default function MapPreview({ latitude, longitude }) {
+export default function MapPreview({ latitude, longitude, alerts = [] }) {
   const mapEl = useRef(null);
   const mapRef = useRef(null);
   const radarRef = useRef(null);
+  const warningsRef = useRef(null);
   const markerRef = useRef(null);
   const [loading, setLoading] = useState(true);
-  const [warningCount, setWarningCount] = useState(0);
+  const [frames, setFrames] = useState(() => radarFrameStamps());
+  const [frameIdx, setFrameIdx] = useState(0);
+  const [playing, setPlaying] = useState(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return true;
+    return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
 
   useEffect(() => {
     if (!mapEl.current || mapRef.current) return undefined;
@@ -26,57 +54,68 @@ export default function MapPreview({ latitude, longitude }) {
     });
     mapRef.current = map;
     L.tileLayer(DARK_BASE, { maxZoom: 10 }).addTo(map);
-    const radar = L.tileLayer(`${NEXRAD_BASE}/{z}/{x}/{y}.png`, { opacity: 0.78, maxZoom: 10 }).addTo(map);
+    const stamps = radarFrameStamps();
+    setFrames(stamps);
+    setFrameIdx(0);
+    const radar = L.tileLayer(`${NEXRAD_ARCHIVE}${stamps[0].stamp}/{z}/{x}/{y}.png`, {
+      opacity: 0.8,
+      maxZoom: 10,
+    }).addTo(map);
     radarRef.current = radar;
+    warningsRef.current = L.layerGroup().addTo(map);
     radar.on("load", () => setLoading(false));
     const giveUp = window.setTimeout(() => setLoading(false), 8000);
-
-    let cancelled = false;
-    const loadWarnings = async () => {
-      try {
-        const response = await fetch("https://api.weather.gov/alerts/active?event=Tornado%20Warning", {
-          headers: { Accept: "application/geo+json" },
-        });
-        if (!response.ok) return;
-        const data = await response.json();
-        if (cancelled || !mapRef.current) return;
-        const features = (data.features || []).filter((feature) => feature.geometry);
-        features.forEach((feature) => {
-          L.geoJSON(feature.geometry, {
-            style: {
-              color: "#ff0033",
-              weight: 2,
-              fillColor: "#ff0033",
-              fillOpacity: 0.18,
-              dashArray: "4,3",
-            },
-          }).addTo(mapRef.current);
-        });
-        setWarningCount(features.length);
-      } catch {
-        /* Map still shows radar if warnings are blocked. */
-      }
-    };
-    loadWarnings();
-
     const refresh = window.setInterval(() => {
-      radarRef.current?.setUrl(`${NEXRAD_BASE}/{z}/{x}/{y}.png?ts=${Date.now()}`);
+      const next = radarFrameStamps();
+      setFrames(next);
+      setFrameIdx(0);
     }, 120000);
     const onResize = () => map.invalidateSize();
     window.addEventListener("resize", onResize);
     map.invalidateSize();
 
     return () => {
-      cancelled = true;
       window.clearTimeout(giveUp);
       window.clearInterval(refresh);
       window.removeEventListener("resize", onResize);
       map.remove();
       mapRef.current = null;
       radarRef.current = null;
+      warningsRef.current = null;
       markerRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (!playing || frames.length < 2) return undefined;
+    const timer = window.setInterval(() => {
+      setFrameIdx((index) => (index + 1) % frames.length);
+    }, 900);
+    return () => window.clearInterval(timer);
+  }, [playing, frames.length]);
+
+  useEffect(() => {
+    const frame = frames[frameIdx];
+    if (!radarRef.current || !frame) return;
+    radarRef.current.setUrl(`${NEXRAD_ARCHIVE}${frame.stamp}/{z}/{x}/{y}.png`);
+  }, [frames, frameIdx]);
+
+  useEffect(() => {
+    const group = warningsRef.current;
+    if (!group) return;
+    group.clearLayers();
+    alerts.forEach((alert) => {
+      if (!alert.geometry) return;
+      const layer = L.geoJSON(alert.geometry, { style: outlineStyle(alert.severity) });
+      const event = escapeHtml(alert.event);
+      const headline = escapeHtml(alert.headline);
+      layer.bindPopup(
+        `<div style="font-family:monospace;color:#111;min-width:180px"><strong>${event}</strong><div>${headline}</div></div>`
+      );
+      layer.addTo(group);
+      layer.bringToFront();
+    });
+  }, [alerts]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -92,37 +131,24 @@ export default function MapPreview({ latitude, longitude }) {
     map.setView([latitude, longitude], 7, { animate: false });
   }, [latitude, longitude]);
 
+  const frame = frames[frameIdx];
+  const clock = frame ? new Date(frame.time).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "";
+
   return (
-    <section id="maps" className="scroll-mt-24 px-4 py-16 md:px-8">
+    <section id="maps" className="scroll-mt-24 px-4 py-12 md:px-8">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <div>
-            <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.35em] text-[#00ff9c]">// NEXRAD_LIVE_FEED</div>
-            <h2 className="text-3xl font-bold tracking-tight text-white md:text-5xl">
-              Live <span className="ynk-neon">NEXRAD</span> map
-            </h2>
-            <p className="mt-2 max-w-xl text-sm text-white/70">
-              Base reflectivity centered on you. The full desk, loop, and alerts open in the radar app.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em]">
-            <span className="inline-flex items-center gap-2 text-[#00ff9c]">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00ff9c]" />
-              Live
-            </span>
-            <span className={warningCount > 0 ? "text-[#ff4d6a]" : "text-white/45"}>
-              <AlertTriangle className="mr-1 inline h-3 w-3" aria-hidden="true" />
-              {warningCount} tor warn
-            </span>
-          </div>
+        <div className="mb-4">
+          <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.35em] text-[#00ff9c]">// NEXRAD_LIVE_FEED</div>
+          <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+            Precipitation <span className="ynk-neon">radar</span>
+          </h2>
+          <p className="mt-2 max-w-xl text-sm text-white/70">
+            A short reflectivity loop, warning outlines, and your location. Lightning and other pro layers stay in the radar app.
+          </p>
         </div>
 
         <div className="ynk-map relative isolate border border-[#00ff9c]/30 bg-black">
-          <span className="absolute -left-px -top-px z-[401] h-4 w-4 border-l-2 border-t-2 border-[#00ff9c]" />
-          <span className="absolute -right-px -top-px z-[401] h-4 w-4 border-r-2 border-t-2 border-[#ff00d4]" />
-          <span className="absolute -bottom-px -left-px z-[401] h-4 w-4 border-b-2 border-l-2 border-[#ff00d4]" />
-          <span className="absolute -bottom-px -right-px z-[401] h-4 w-4 border-b-2 border-r-2 border-[#00ff9c]" />
-          <div ref={mapEl} className="h-[320px] w-full md:h-[480px]" />
+          <div ref={mapEl} className="h-[300px] w-full md:h-[460px]" />
           {loading && (
             <div className="absolute inset-0 z-[400] flex items-center justify-center bg-black/60">
               <div className="border border-[#00ff9c]/40 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-[#00ff9c]">
@@ -134,11 +160,25 @@ export default function MapPreview({ latitude, longitude }) {
             href={RADAR_APP_URL}
             className="absolute bottom-3 left-3 z-[400] bg-[#00ff9c] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-black"
           >
-            Open this map
+            Open Radar
           </a>
           <div className="absolute bottom-3 right-3 z-[400] bg-black/75 px-2 py-1 font-mono text-[9px] text-white/60">
             <Radio className="mr-1 inline h-3 w-3 text-[#00ff9c]" aria-hidden="true" />
-            NOAA NEXRAD · Iowa State Mesonet
+            Iowa Mesonet N0Q
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-center gap-3 border border-white/15 bg-black/80 px-3 py-2">
+          <button
+            type="button"
+            onClick={() => setPlaying((value) => !value)}
+            className="inline-flex min-h-11 min-w-11 items-center justify-center bg-[#00ff9c] text-black"
+            aria-label={playing ? "Pause radar loop" : "Play radar loop"}
+          >
+            {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          </button>
+          <div className="text-xs text-white/80">
+            {playing ? "Looping" : "Paused"} · {clock} · {frameIdx + 1}/{frames.length}
           </div>
         </div>
       </div>
