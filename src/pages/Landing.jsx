@@ -66,8 +66,7 @@ export default function Landing() {
               </span>
             </h1>
 
-            <p className="ynk-neon mt-4 text-lg font-bold uppercase tracking-[0.28em] md:text-2xl">Making it rain</p>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-white/75">
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-white/75">
               Live radar, the sky outside your window, and safety texts that reach your people.
             </p>
 

@@ -14,7 +14,6 @@ export default function NeonSigns() {
           <h2 className="text-3xl font-bold tracking-tight text-white md:text-5xl">
             Lit up like a <span className="ynk-neon">storm cell</span>.
           </h2>
-          <div className="ynk-neon-magenta mt-4 text-sm font-bold uppercase tracking-[0.35em] md:text-base">Making it rain</div>
         </div>
         <div className="grid gap-6 md:grid-cols-2">
           {SIGNS.map((sign, index) => (
