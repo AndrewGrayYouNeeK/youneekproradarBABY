@@ -2,14 +2,12 @@ import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClientInstance } from "@/lib/query-client";
-import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider } from "@/lib/AuthContext";
 import { NavigationStackProvider } from "@/lib/NavigationStack";
 import { RadioProvider } from "@/lib/RadioContext";
-import useSiteConfig from "@/hooks/useSiteConfig";
-import { homePathForRole } from "@/lib/sites";
 
 const Radar = lazy(() => import("./pages/Radar"));
 const Contacts = lazy(() => import("./pages/Contacts"));
@@ -28,13 +26,13 @@ const Spinner = () => (
   </div>
 );
 
-function HomeGate() {
-  const { role } = useSiteConfig();
-  return <Navigate to={homePathForRole(role)} replace />;
+function isLandingPath(pathname) {
+  return pathname === "/" || pathname === "/landing";
 }
 
 const AppRoutes = () => {
   const location = useLocation();
+  const landing = isLandingPath(location.pathname);
 
   return (
     <>
@@ -45,11 +43,11 @@ const AppRoutes = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.12, ease: "easeOut" }}
-          className="h-full"
+          className={landing ? "min-h-[100dvh]" : "h-full"}
         >
           <Suspense fallback={<Spinner />}>
             <Routes location={location}>
-              <Route path="/" element={<HomeGate />} />
+              <Route path="/" element={<Landing />} />
               <Route path="/landing" element={<Landing />} />
               <Route path="/Radar" element={<Radar />} />
               <Route path="/Forecast" element={<Forecast />} />
@@ -69,6 +67,22 @@ const AppRoutes = () => {
   );
 };
 
+function AppFrame() {
+  const location = useLocation();
+  const landing = isLandingPath(location.pathname);
+  return (
+    <div
+      className={
+        landing
+          ? "min-h-[100dvh] w-full bg-black text-white"
+          : "mx-auto h-[100dvh] w-full max-w-4xl overflow-hidden bg-[#4DA6EA] text-white"
+      }
+    >
+      <AppRoutes />
+    </div>
+  );
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -76,9 +90,7 @@ function App() {
         <Router>
           <NavigationStackProvider>
             <RadioProvider>
-            <div className="mx-auto h-[100dvh] w-full max-w-4xl overflow-hidden bg-[#4DA6EA] text-white">
-              <AppRoutes />
-            </div>
+            <AppFrame />
             <Toaster />
             </RadioProvider>
           </NavigationStackProvider>

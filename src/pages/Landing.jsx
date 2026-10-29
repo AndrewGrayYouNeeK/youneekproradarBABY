@@ -1,115 +1,122 @@
-import { Link } from "react-router-dom";
-import { CloudSun, ChevronRight, ShieldCheck, Users } from "lucide-react";
-import { describeWeatherCode } from "@/lib/weather/conditions";
-import { skyTheme, weatherIconClass, WEATHERBUG_GOLD } from "@/lib/weather/skyTheme";
+import { lazy, Suspense } from "react";
+import { ChevronRight } from "lucide-react";
+import AlertBanner from "@/components/landing/AlertBanner";
+import NeonSigns from "@/components/landing/NeonSigns";
+import RadarSweep from "@/components/landing/RadarSweep";
+import SafetySms from "@/components/landing/SafetySms";
+import WeatherDesk from "@/components/landing/WeatherDesk";
 import WeatherBackground from "@/components/weather/WeatherBackground";
-import useForecastWeather from "@/hooks/useForecastWeather";
-import useWeatherEmergency from "@/hooks/useWeatherEmergency";
-import useSiteConfig from "@/hooks/useSiteConfig";
+import useVisitorWeather from "@/hooks/useVisitorWeather";
+import { RADAR_APP_URL } from "@/lib/landing/radarApp";
 
-function NowTeaser() {
-  const { showLoading, data, locationError } = useForecastWeather();
-  if (showLoading) {
-    return (
-      <div className="mb-8 w-full max-w-xs rounded-2xl border border-white/25 bg-white/15 px-4 py-3 text-sm text-white/80 backdrop-blur-md">
-        Loading your conditions…
-      </div>
-    );
-  }
-  if (locationError || !data?.current?.current) return null;
-  const current = data.current.current;
-  const code = describeWeatherCode(current.weather_code);
-  const Icon = code.icon;
+const MapPreview = lazy(() => import("@/components/landing/MapPreview"));
+
+function OpenRadarLink({ className, children }) {
   return (
-    <div className="mb-8 flex w-full max-w-xs items-center gap-3 rounded-2xl border border-white/25 bg-white/15 px-4 py-3 text-left backdrop-blur-md">
-      <Icon className={`h-10 w-10 shrink-0 ${weatherIconClass(current.weather_code)}`} strokeWidth={1.4} aria-hidden="true" />
-      <div className="min-w-0">
-        <div className="text-3xl font-light tabular-nums text-white">
-          {Math.round(current.temperature_2m ?? 0)}°F
-        </div>
-        <div className="text-xs text-white/80">{current.condition_label || code.label}</div>
-      </div>
-    </div>
+    <a href={RADAR_APP_URL} className={className}>
+      {children}
+    </a>
   );
 }
 
 export default function Landing() {
-  const { weatherHref, mapsHref, contactsHref, external } = useSiteConfig();
-  const { data } = useForecastWeather();
-  const current = data?.current?.current || {};
-  const sky = skyTheme({
-    weatherCode: current.weather_code,
-    conditionCode: current.condition_code,
-    daylight: current.daylight !== false,
-    precipitationIntensity: current.precipitation_intensity,
-  });
-  const emergency = useWeatherEmergency(data?.alerts || []);
-
-  const primaryClass =
-    "flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-2xl text-base font-bold text-slate-950 shadow-lg";
-  const secondaryClass =
-    "flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-white/25 bg-white/15 text-sm font-semibold text-white backdrop-blur-md";
+  const weather = useVisitorWeather();
+  const alertState = weather.place ? weather.alertsState : weather.loading ? "loading" : "idle";
 
   return (
-    <div
-      className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden px-6 text-center"
-      style={{ background: sky.background }}
-    >
-      <WeatherBackground theme={sky} />
-      <div className="relative z-[1] flex max-w-md flex-col items-center">
-        <div
-          className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl border border-white/30 bg-white/15 text-white shadow-lg backdrop-blur-xl"
-          style={{ color: WEATHERBUG_GOLD }}
-        >
-          <CloudSun className="h-12 w-12" strokeWidth={1.6} />
-        </div>
+    <div className="relative min-h-[100dvh] overflow-x-hidden bg-black font-mono text-white">
+      <WeatherBackground theme={weather.sky} className="weather-bg--fixed" />
+      <div className="pointer-events-none fixed inset-0 z-[1] bg-gradient-to-b from-black/30 via-black/10 to-black/55" />
 
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/80">
-          YouNeeK Pro Radar
-        </p>
-        <h1 className="mb-3 text-4xl font-black leading-tight text-white drop-shadow">
-          Making It Rain Accuracy
-        </h1>
-        <p className="mb-6 text-sm leading-relaxed text-white/85">
-          Live conditions on this page. Open the weather app for NOW, Hourly, 10 Day, Maps, and NOAA radio.
-        </p>
-
-        <NowTeaser />
-
-        {external ? (
-          <a href={weatherHref} className={primaryClass} style={{ background: WEATHERBUG_GOLD }}>
-            Open the weather app
-            <ChevronRight className="h-5 w-5" />
+      <div className="relative z-10">
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-white/10 bg-black/60 px-4 py-3 backdrop-blur-md">
+          <a href="#top" className="ynk-neon text-[11px] font-bold tracking-[0.32em]">
+            YOUNEEK
           </a>
-        ) : (
-          <Link to={weatherHref} className={primaryClass} style={{ background: WEATHERBUG_GOLD }}>
-            Open the weather app
-            <ChevronRight className="h-5 w-5" />
-          </Link>
-        )}
-        <div className="mt-4 flex w-full max-w-xs gap-2">
-          {external ? (
-            <>
-              <a href={mapsHref} className={secondaryClass}>
-                Maps
-              </a>
-              <a href={contactsHref} className={secondaryClass}>
-                {emergency.visible ? <ShieldCheck className="h-4 w-4" /> : <Users className="h-4 w-4" />}
-                {emergency.visible ? "I'm Safe" : "Contacts"}
-              </a>
-            </>
-          ) : (
-            <>
-              <Link to={mapsHref} className={secondaryClass}>
-                Maps
-              </Link>
-              <Link to={contactsHref} className={secondaryClass}>
-                {emergency.visible ? <ShieldCheck className="h-4 w-4" /> : <Users className="h-4 w-4" />}
-                {emergency.visible ? "I'm Safe" : "Contacts"}
-              </Link>
-            </>
-          )}
-        </div>
+          <OpenRadarLink className="inline-flex min-h-11 items-center bg-[#00ff9c] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.22em] text-black">
+            Open Radar
+          </OpenRadarLink>
+        </header>
+
+        <main id="top" className="mx-auto grid max-w-6xl gap-8 px-4 pb-6 pt-4 md:px-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+          <div>
+            <div className="mb-4">
+              {alertState === "idle" ? (
+                <div className="border border-white/20 bg-black/70 px-4 py-3 text-sm text-white/80">
+                  Search a city or allow location to check NWS alerts.
+                </div>
+              ) : (
+                <AlertBanner alerts={weather.alerts} state={alertState} />
+              )}
+            </div>
+
+            <WeatherDesk
+              placeLabel={weather.placeLabel}
+              current={weather.current}
+              hourly={weather.hourly}
+              daily={weather.daily}
+              loading={weather.loading}
+              forecastError={weather.forecastError}
+              onRetry={weather.refetchForecast}
+              daylight={weather.sky.daylight}
+              locationNote={weather.locationNote}
+              onSelectPlace={weather.choosePlace}
+              onUseMine={weather.useMyLocation}
+            />
+
+            <h1 className="mt-6 text-[2rem] font-black leading-[0.9] tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.75)] sm:text-5xl">
+              <span className="block">YouNeeK</span>
+              <span className="block">PRO</span>
+              <span className="relative block">
+                <span className="ynk-glitch ynk-glitch--magenta absolute inset-0" aria-hidden="true">
+                  RADAR
+                </span>
+                <span className="ynk-glitch ynk-glitch--green absolute inset-0" aria-hidden="true">
+                  RADAR
+                </span>
+                <span className="ynk-neon relative">RADAR</span>
+              </span>
+            </h1>
+
+            <span className="relative mt-6 inline-flex w-full max-w-xs">
+              <span className="absolute inset-0 -translate-x-1.5 -translate-y-1.5 bg-[#ff00d4]" aria-hidden="true" />
+              <OpenRadarLink className="relative inline-flex min-h-14 w-full items-center justify-center gap-2 bg-[#00ff9c] px-6 py-3.5 text-xs font-bold uppercase tracking-[0.25em] text-black">
+                Open Radar
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              </OpenRadarLink>
+            </span>
+          </div>
+
+          <div className="hidden lg:block">
+            <RadarSweep />
+          </div>
+        </main>
+
+        <SafetySms latitude={weather.place?.latitude} longitude={weather.place?.longitude} />
+
+        <Suspense
+          fallback={
+            <div className="px-4 py-16 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-[#00ff9c]">
+              Loading the map…
+            </div>
+          }
+        >
+          <MapPreview
+            latitude={weather.place?.latitude}
+            longitude={weather.place?.longitude}
+            alerts={weather.outlines.length ? weather.outlines : weather.alerts}
+          />
+        </Suspense>
+
+        <NeonSigns />
+
+        <footer className="px-4 py-10 text-center text-[10px] uppercase tracking-[0.28em] text-white/45">
+          <a href={RADAR_APP_URL} className="text-[#00ff9c]">
+            Open Radar
+          </a>
+          <span className="mx-2">·</span>
+          YouNeeK Pro Radar
+        </footer>
       </div>
     </div>
   );
