@@ -5,7 +5,7 @@ import AppErrorBoundary from '@/components/AppErrorBoundary.jsx'
 import '@/index.css'
 import '@/lib/platform' // applies platform-* class to <body>
 
-// Override stale cached HTML titles from the old Base44 deployment.
+// Keep the tab title and dark theme if a cached HTML shell is stale.
 document.documentElement.classList.add("dark")
 document.body.classList.add("dark")
 document.title = "YouNeeK Pro Radar"
