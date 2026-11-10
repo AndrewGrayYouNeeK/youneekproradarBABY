@@ -13,8 +13,8 @@ export const APP_DOWNLOAD_URL = "";
  */
 export const APP_DOWNLOAD_LABEL = "Join TestFlight";
 
-/** TODO(Andrew): one-time price, such as "4.99". Leave "" to hide the number. */
-export const ONE_TIME_PRICE = "";
+/** Andrew's one-time App Store price. The pricing section shows this amount. */
+export const ONE_TIME_PRICE = "$6.99";
 
 /**
  * TODO(Andrew): support email or https contact URL. Leave "" until one exists.
@@ -31,11 +31,11 @@ export const YOUNEEK_HOME_URL = "https://youneek.dev";
 export const HEADLINE = "Tactical radar. Live alerts. One-tap shelter.";
 
 /**
- * NOAA Weather Radio stays in this sentence. youneek-pro-radarYNK222 already
- * tunes the nearest station and plays its stream (Radio page and RadioContext).
+ * NOAA Weather Radio finds the nearest NWS transmitter and shows its call sign
+ * and frequency. The app does not play or stream the audio.
  */
 export const SUBHEAD =
-  "Live NEXRAD mosaics, NWS warning polygons, NOAA Weather Radio, and a one-tap “I’m Sheltering” button that texts your people with your location.";
+  "Live NEXRAD mosaics, NWS warning polygons, your nearest NOAA Weather Radio station and frequency, and a one-tap “I’m Sheltering” button that texts your people with your location.";
 
 export const PURCHASE_LINE = "Ad-free. One-time purchase.";
 
@@ -63,15 +63,15 @@ export const EXAMPLE_SMS = [
 ].join("\n");
 
 /**
- * Feature cards. The Live NEXRAD line does not say "refreshed automatically":
- * the radar app reloads Iowa Mesonet reflectivity on pull-to-refresh, and
- * reloads NWS alerts on a 5-minute timer.
+ * The default radar is the Iowa Mesonet national reflectivity mosaic.
+ * It reloads on a five-minute timer. Single-site reflectivity and velocity
+ * are chosen in Layers.
  */
 export const FEATURES = [
   {
     id: "nexrad",
     title: "Live NEXRAD",
-    body: "Iowa Mesonet base reflectivity. Pull to refresh the latest scan. See what’s actually out there.",
+    body: "Iowa Mesonet base reflectivity, refreshed automatically. See what’s actually out there.",
   },
   {
     id: "alerts",
@@ -93,14 +93,14 @@ export const FEATURES = [
 export const HOW_HEADING = "Radar when you need it. Safety when it matters.";
 
 /**
- * How-it-works lines that match the radar app today.
- * Individual site products and offline caching are omitted on purpose.
+ * How-it-works lines that match youneek-pro-radarYNK222 main.
+ * Offline covers the app shell and the last forecast and alerts, not live radar tiles.
  */
 export const HOW_POINTS = [
-  "Live national mosaic. The map centers on the nearest radar site.",
+  "Live national mosaic, refreshed automatically. Individual radar sites are in Layers.",
   "Real NWS warning outlines, not just text alerts.",
-  "NOAA Weather Radio stations near you.",
-  "Location-aware when you allow location.",
+  "Finds your nearest NOAA Weather Radio station and frequency.",
+  "Location-aware. Once loaded, the app shell and the last forecast and alerts stay available offline.",
 ];
 
 export const SCREEN_PLACEHOLDERS = [
