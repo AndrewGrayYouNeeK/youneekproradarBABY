@@ -73,6 +73,7 @@ export default function MapPreview({ latitude, longitude, alerts = [] }) {
     const onResize = () => map.invalidateSize();
     window.addEventListener("resize", onResize);
     map.invalidateSize();
+    window.requestAnimationFrame(() => map.invalidateSize());
 
     return () => {
       window.clearTimeout(giveUp);
@@ -142,13 +143,15 @@ export default function MapPreview({ latitude, longitude, alerts = [] }) {
           <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
             Precipitation <span className="ynk-neon">radar</span>
           </h2>
-          <p className="mt-2 max-w-xl text-sm text-white/70">
-            A short reflectivity loop, warning outlines, and your location. Lightning and other pro layers stay in the radar app.
+          <p className="mt-2 max-w-xl text-sm text-white/75">
+            A short reflectivity loop and warning outlines.
+            {Number.isFinite(latitude) ? " The dot is the location used for this briefing." : " National view until you allow location or search a city."}
+            {" "}Lightning and other pro layers stay in the radar app.
           </p>
         </div>
 
-        <div className="ynk-map relative isolate border border-[#00ff9c]/30 bg-black">
-          <div ref={mapEl} className="h-[300px] w-full md:h-[460px]" />
+        <div className="ynk-map relative isolate h-[300px] border border-[#00ff9c]/30 bg-black md:h-[460px]">
+          <div ref={mapEl} className="h-full w-full" />
           {loading && (
             <div className="absolute inset-0 z-[400] flex items-center justify-center bg-black/60">
               <div className="border border-[#00ff9c]/40 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-[#00ff9c]">
@@ -160,7 +163,7 @@ export default function MapPreview({ latitude, longitude, alerts = [] }) {
             href={RADAR_APP_URL}
             className="absolute bottom-3 left-3 z-[400] bg-[#00ff9c] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-black"
           >
-            Open Radar
+            Open web radar
           </a>
           <div className="absolute bottom-3 right-3 z-[400] bg-black/75 px-2 py-1 font-mono text-[9px] text-white/60">
             <Radio className="mr-1 inline h-3 w-3 text-[#00ff9c]" aria-hidden="true" />

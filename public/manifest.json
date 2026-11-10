@@ -1,7 +1,7 @@
 {
   "name": "YouNeeK Pro Radar",
   "short_name": "ProRadar",
-  "description": "Live NEXRAD radar, Apple WeatherKit forecasts, NWS alerts, NOAA weather radio, and shelter notifications.",
+  "description": "Tactical NEXRAD radar + real NWS polygons + one-tap emergency shelter text. Ad-free. One-time purchase.",
   "start_url": "/Forecast",
   "scope": "/",
   "display": "standalone",

@@ -18,6 +18,8 @@ const Daily = lazy(() => import("./pages/Daily"));
 const RadioPage = lazy(() => import("./pages/Radio"));
 const Globe = lazy(() => import("./pages/Globe"));
 const Landing = lazy(() => import("./pages/Landing"));
+const LandingPrivacy = lazy(() => import("./pages/LandingPrivacy"));
+const LandingSupport = lazy(() => import("./pages/LandingSupport"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 
 const Spinner = () => (
@@ -27,7 +29,7 @@ const Spinner = () => (
 );
 
 function isLandingPath(pathname) {
-  return pathname === "/" || pathname === "/landing";
+  return pathname === "/" || pathname === "/landing" || pathname === "/privacy" || pathname === "/support";
 }
 
 const AppRoutes = () => {
@@ -57,6 +59,8 @@ const AppRoutes = () => {
               <Route path="/Globe" element={<Globe />} />
               <Route path="/Contacts" element={<Contacts />} />
               <Route path="/Settings" element={<Settings />} />
+              <Route path="/privacy" element={<LandingPrivacy />} />
+              <Route path="/support" element={<LandingSupport />} />
               <Route path="/Privacy" element={<Privacy />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>

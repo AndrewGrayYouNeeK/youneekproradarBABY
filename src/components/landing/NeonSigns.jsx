@@ -1,3 +1,5 @@
+import { NEON_LINE } from "@/lib/landing/launch";
+
 const SIGNS = [
   { src: "/neon/logo-1.webp", alt: "Green and magenta neon sign reading YouNeeK Pro Radar" },
   { src: "/neon/logo-2.webp", alt: "Neon YouNeeK Pro Radar sign with a lightning bolt" },
@@ -37,6 +39,9 @@ export default function NeonSigns() {
             </figure>
           ))}
         </div>
+        <p className="mx-auto mt-8 max-w-xl text-center text-base text-white/85">
+          {NEON_LINE}
+        </p>
       </div>
     </section>
   );
