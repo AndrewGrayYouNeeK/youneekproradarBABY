@@ -19,15 +19,15 @@ import {
   supportHref,
 } from "./launch.js";
 
-test("store link, price, and support stay empty until Andrew sets them", () => {
+test("store link and support stay empty, and the one-time price is $6.99", () => {
   assert.equal(APP_DOWNLOAD_URL, "");
   assert.equal(APP_DOWNLOAD_LABEL, "Join TestFlight");
   assert.equal(appDownloadIsLive(), false);
   assert.equal(appDownloadHref(), "#waitlist");
   assert.equal(appDownloadHref("not a url"), "#waitlist");
   assert.equal(appDownloadIsLive("https://testflight.apple.com/join/example"), true);
-  assert.equal(ONE_TIME_PRICE, "");
-  assert.equal(oneTimePriceLabel(), "");
+  assert.equal(ONE_TIME_PRICE, "$6.99");
+  assert.equal(oneTimePriceLabel(), "$6.99");
   assert.equal(oneTimePriceLabel("4.99"), "$4.99");
   assert.equal(oneTimePriceLabel("$4.99"), "$4.99");
   assert.equal(SUPPORT_CONTACT, "");
@@ -46,17 +46,18 @@ test("homepage metadata uses the positioning line and skips generic weather-app 
   assert.equal(/weather app/i.test(html), false);
 });
 
-test("launch copy keeps verified features and drops unshipped claims", () => {
-  const published = JSON.stringify({ FEATURES, HOW_POINTS, SUBHEAD });
-  assert.match(SUBHEAD, /NOAA Weather Radio/);
+test("launch copy matches the current radar app", () => {
+  const published = JSON.stringify({ FEATURES, HOW_POINTS, SUBHEAD, SHELTER_REVIEW_NOTE });
+  assert.match(SUBHEAD, /nearest NOAA Weather Radio station and frequency/);
   assert.match(SUBHEAD, /NEXRAD mosaics/);
-  assert.match(published, /Iowa Mesonet base reflectivity/);
+  assert.match(published, /Iowa Mesonet base reflectivity, refreshed automatically/);
+  assert.match(published, /Individual radar sites are in Layers/);
   assert.match(published, /Tornado, severe thunderstorm, flood, and winter/);
-  assert.equal(published.includes("refreshed automatically"), false);
-  assert.equal(published.includes("individual site"), false);
-  assert.equal(published.includes("works offline"), false);
-  assert.equal(published.includes("Making it rain"), false);
+  assert.match(published, /last forecast and alerts stay available offline/);
   assert.match(SHELTER_REVIEW_NOTE, /tap Send/);
+  assert.equal(/listen|stream|play the|in-app audio/i.test(published), false);
+  assert.equal(published.includes("works offline for core"), false);
+  assert.equal(published.includes("Making it rain"), false);
   assert.match(EXAMPLE_SMS, /maps\.google\.com/);
   assert.match(EXAMPLE_SMS, /37\.0000, -97\.0000/);
 });
