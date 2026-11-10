@@ -96,7 +96,7 @@ export default function useVisitorWeather() {
   return {
     place,
     placeLabel,
-    locationNote: !chosen && !gps.coords && gps.error ? gps.error : "",
+    locationNote: !chosen && !gps.coords && !ipPlace && ipSettled && gps.error ? gps.error : "",
     choosePlace: (next) => setChosen({ ...next, source: "search" }),
     useMyLocation: () => {
       setChosen(null);
