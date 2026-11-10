@@ -73,6 +73,7 @@ export default function MapPreview({ latitude, longitude, alerts = [] }) {
     const onResize = () => map.invalidateSize();
     window.addEventListener("resize", onResize);
     map.invalidateSize();
+    window.requestAnimationFrame(() => map.invalidateSize());
 
     return () => {
       window.clearTimeout(giveUp);
@@ -149,8 +150,8 @@ export default function MapPreview({ latitude, longitude, alerts = [] }) {
           </p>
         </div>
 
-        <div className="ynk-map relative isolate border border-[#00ff9c]/30 bg-black">
-          <div ref={mapEl} className="h-[300px] w-full md:h-[460px]" />
+        <div className="ynk-map relative isolate h-[300px] border border-[#00ff9c]/30 bg-black md:h-[460px]">
+          <div ref={mapEl} className="h-full w-full" />
           {loading && (
             <div className="absolute inset-0 z-[400] flex items-center justify-center bg-black/60">
               <div className="border border-[#00ff9c]/40 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-[#00ff9c]">

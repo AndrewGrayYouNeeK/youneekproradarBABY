@@ -446,6 +446,10 @@
     animation: ynkRadarSpin 4s linear infinite;
   }
 
+  .ynk-map {
+    min-height: 300px;
+  }
+
   .ynk-map .leaflet-container {
     height: 100%;
     width: 100%;
