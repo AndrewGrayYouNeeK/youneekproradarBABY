@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { YOUNEEK_HOME_URL } from "@/lib/landing/launch";
+import { SUPPORT_CONTACT, YOUNEEK_HOME_URL, supportHref } from "@/lib/landing/launch";
 
 export default function LandingPrivacy() {
   return (
@@ -47,7 +47,13 @@ export default function LandingPrivacy() {
         <h2 className="mt-8 text-xl font-bold">Before you publish</h2>
         <p className="mt-3 text-sm leading-relaxed text-white/85">
           The separate web radar app also talks to Apple WeatherKit and RainViewer. If the iOS build does too, name those providers here before submission.
-          The support address on this site is still a placeholder.
+        </p>
+        <p className="mt-3 text-sm leading-relaxed text-white/85">
+          Questions or support:{" "}
+          <a className="text-[#00ff9c] underline-offset-4 hover:underline" href={supportHref()}>
+            {SUPPORT_CONTACT}
+          </a>
+          .
         </p>
         <p className="mt-6 text-sm">
           <Link to="/" className="text-[#00ff9c] underline-offset-4 hover:underline">
