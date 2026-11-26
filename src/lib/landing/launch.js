@@ -36,6 +36,16 @@ export const SUBHEAD =
 
 export const PURCHASE_LINE = "Ad-free. One-time purchase.";
 
+/** Minimal landing page copy. */
+export const MINIMAL_TAGLINE = "Tactical radar. Live alerts. Free to try on the web.";
+
+/** What the paid app adds on top of the free web preview. */
+export const APP_ADDS_LINE =
+  "The app adds velocity, tornado hooks, storm distance, rain-in-minutes, detailed alerts, NOAA Weather Radio, and one-tap I’m Safe / I Need Help texts. $6.99 once. No ads. No subscription.";
+
+/** Shown under Get the App until APP_DOWNLOAD_URL is set. */
+export const APP_COMING_SOON = "Coming soon to the App Store and Google Play";
+
 export const TITLE_LINE = "Tactical NEXRAD. Live alerts. One-tap shelter.";
 
 export const NEON_LINE = "Designed for the people who actually watch the radar.";

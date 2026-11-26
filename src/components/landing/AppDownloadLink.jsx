@@ -1,23 +1,19 @@
-import { APP_DOWNLOAD_LABEL, appDownloadHref, appDownloadIsLive } from "@/lib/landing/launch";
+import { APP_COMING_SOON, appDownloadHref, appDownloadIsLive } from "@/lib/landing/launch";
 
+/** Get the App. Until APP_DOWNLOAD_URL is set it is a non-link "coming soon" button. */
 export default function AppDownloadLink({ className, children }) {
-  const live = appDownloadIsLive();
-  const content = (
-    <>
-      {APP_DOWNLOAD_LABEL}
-      {children}
-    </>
-  );
-  if (!live) {
+  if (!appDownloadIsLive()) {
     return (
-      <a href="#waitlist" className={className}>
-        {content}
-      </a>
+      <span className={`${className} cursor-default opacity-80`} aria-disabled="true" title={APP_COMING_SOON}>
+        Get the App · Coming soon
+        {children}
+      </span>
     );
   }
   return (
     <a href={appDownloadHref()} className={className} target="_blank" rel="noreferrer">
-      {content}
+      Get the App
+      {children}
     </a>
   );
 }
