@@ -61,3 +61,19 @@ test("launch copy matches the current radar app", () => {
   assert.match(EXAMPLE_SMS, /maps\.google\.com/);
   assert.match(EXAMPLE_SMS, /37\.0000, -97\.0000/);
 });
+
+test("landing page is bare minimum: try the radar, get the app, privacy and support", () => {
+  const page = readFileSync(new URL("../../pages/Landing.jsx", import.meta.url), "utf8");
+  assert.match(page, /Try the live radar/);
+  assert.match(page, /RADAR_APP_URL/);
+  assert.match(page, /AppDownloadLink/);
+  assert.match(page, /APP_ADDS_LINE/);
+  assert.match(page, /href="\/privacy"/);
+  assert.match(page, /href="\/support"/);
+  for (const clutter of ["FeatureCards", "HowItWorks", "PricingBlock", "SafetySms", "NeonSigns", "WeatherDesk", "MapPreview", "useVisitorWeather"]) {
+    assert.equal(page.includes(clutter), false, clutter);
+  }
+  const link = readFileSync(new URL("../../components/landing/AppDownloadLink.jsx", import.meta.url), "utf8");
+  assert.match(link, /Coming soon/);
+  assert.equal(link.includes("#waitlist"), false);
+});
