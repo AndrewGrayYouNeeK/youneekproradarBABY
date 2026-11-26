@@ -19,7 +19,7 @@ import {
   supportHref,
 } from "./launch.js";
 
-test("store link and support stay empty, and the one-time price is $6.99", () => {
+test("store link stays empty, support email is published, and the one-time price is $6.99", () => {
   assert.equal(APP_DOWNLOAD_URL, "");
   assert.equal(APP_DOWNLOAD_LABEL, "Join TestFlight");
   assert.equal(appDownloadIsLive(), false);
@@ -30,8 +30,8 @@ test("store link and support stay empty, and the one-time price is $6.99", () =>
   assert.equal(oneTimePriceLabel(), "$6.99");
   assert.equal(oneTimePriceLabel("4.99"), "$4.99");
   assert.equal(oneTimePriceLabel("$4.99"), "$4.99");
-  assert.equal(SUPPORT_CONTACT, "");
-  assert.equal(supportHref(), "#support");
+  assert.equal(SUPPORT_CONTACT, "andrewgray@youneek.xyz");
+  assert.equal(supportHref(), "mailto:andrewgray@youneek.xyz");
   assert.equal(supportHref("andrew@example.com"), "mailto:andrew@example.com");
   assert.equal(supportHref("https://youneek.dev/support"), "https://youneek.dev/support");
   assert.equal(YOUNEEK_HOME_URL, "https://youneek.dev");

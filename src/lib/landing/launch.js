@@ -1,7 +1,7 @@
 /**
  * App-launch switchboard for the landing page.
- * TODO(Andrew): fill the empty constants before the App Store submission.
- * Do not invent a TestFlight URL, a price, or a support address.
+ * TODO(Andrew): fill APP_DOWNLOAD_URL before the App Store goes live.
+ * Do not invent a TestFlight or App Store URL.
  */
 
 /** TODO(Andrew): paste the TestFlight or App Store URL. Leave "" until it exists. */
@@ -16,11 +16,8 @@ export const APP_DOWNLOAD_LABEL = "Join TestFlight";
 /** Andrew's one-time App Store price. The pricing section shows this amount. */
 export const ONE_TIME_PRICE = "$6.99";
 
-/**
- * TODO(Andrew): support email or https contact URL. Leave "" until one exists.
- * The public /support page reads this constant and stays flagged while it is empty.
- */
-export const SUPPORT_CONTACT = "";
+/** Public support email. The /support page and privacy page link to this with mailto. */
+export const SUPPORT_CONTACT = "andrewgray@youneek.xyz";
 
 /** Site title and social cards. Do not swap this for generic weather-app wording. */
 export const POSITIONING =

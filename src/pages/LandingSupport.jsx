@@ -24,11 +24,11 @@ export default function LandingSupport() {
       </header>
       <main className="mx-auto max-w-2xl px-4 py-10 md:px-8">
         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-[#ffb4c0]">
-          Placeholder for Andrew
+          YouNeeK Pro Radar
         </p>
         <h1 className="mt-3 text-4xl font-black">Support</h1>
         <p className="mt-4 text-sm leading-relaxed text-white/80">
-          This is the support URL for YouNeeK Pro Radar. The contact below comes from one config constant. Nothing is published until that constant is set.
+          This is the support page for YouNeeK Pro Radar. Email the address below and we will get back to you.
         </p>
 
         {contactIsLive ? (
