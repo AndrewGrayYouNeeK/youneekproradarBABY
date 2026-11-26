@@ -7,7 +7,7 @@ export default function SafetySms() {
       <div className="mx-auto max-w-6xl border border-[#ff4d6a]/70 bg-black/80 p-5 shadow-[0_0_40px_rgba(255,0,51,0.18)] backdrop-blur-md md:p-8">
         <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.35em] text-[#ff8fa3]">
           <ShieldAlert className="h-4 w-4" aria-hidden="true" />
-          I’m Sheltering
+          I’m Safe / I Need Help
         </div>
         <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
           <div>

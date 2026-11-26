@@ -35,7 +35,7 @@ export const HEADLINE = "Tactical radar. Live alerts. One-tap shelter.";
  * and frequency. The app does not play or stream the audio.
  */
 export const SUBHEAD =
-  "Live NEXRAD mosaics, NWS warning polygons, your nearest NOAA Weather Radio station and frequency, and a one-tap “I’m Sheltering” button that texts your people with your location.";
+  "Live NEXRAD mosaics, NWS warning polygons, your nearest NOAA Weather Radio station and frequency, and one-tap “I’m Safe” and “I Need Help” buttons that open a text to your people with your location.";
 
 export const PURCHASE_LINE = "Ad-free. One-time purchase.";
 
@@ -46,18 +46,17 @@ export const NEON_LINE = "Designed for the people who actually watch the radar."
 export const SAFETY_HEADING = "When it counts, one tap is enough.";
 
 export const SAFETY_BODY =
-  "Hit “I’m Sheltering” and the app texts your emergency contacts with your exact coordinates and a Google Maps link. No typing. No searching for numbers. Just a clear signal that you’re safe and where you are.";
+  "Set up your safety contacts the first time you open the app. Then tap “I’m Safe” or “I Need Help” and the app opens a text to them with your location and a map link. No typing. No searching for numbers. Just a clear signal of where you are.";
 
 export const SAFETY_CLOSE = "Built for the moments when the sky turns serious.";
 
 /** Supporting detail. Does not replace Andrew's safety paragraph. */
 export const SHELTER_REVIEW_NOTE =
-  "On iOS you review the draft and tap Send in Messages. Nothing is sent until you do. Contacts stay on your phone. The button shows when a severe warning covers your location.";
+  "On iOS you review the draft and tap Send in Messages. Nothing is sent until you do. Contacts stay on your phone. The buttons show when a warning or watch covers your location.";
 
 /** Fixed example. Not the visitor's location and not a sent message. */
 export const EXAMPLE_SMS = [
-  "I'M SHELTERING",
-  "I'm safe. This is where I am.",
+  "I'm safe. Tornado Warning is in effect near Dallas, TX. Here's where I am:",
   "37.0000, -97.0000",
   "https://maps.google.com/?q=37.0000,-97.0000",
 ].join("\n");
@@ -80,8 +79,8 @@ export const FEATURES = [
   },
   {
     id: "shelter",
-    title: "I’m Sheltering",
-    body: "One tap sends your location and a map link to the people who need to know.",
+    title: "I’m Safe / I Need Help",
+    body: "One tap opens a text with your location and a map link for the people who need to know. You tap Send.",
   },
   {
     id: "purchase",
