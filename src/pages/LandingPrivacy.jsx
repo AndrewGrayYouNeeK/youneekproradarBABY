@@ -25,7 +25,7 @@ export default function LandingPrivacy() {
             Safety contacts stay on your phone. The app does not upload your contact list and does not require an account.
           </p>
           <p>
-            “I’m Sheltering” opens a message in the iOS Messages composer. You review the text and tap Send. Nothing is sent until you do.
+            “I’m Safe” and “I Need Help” open a message in the iOS Messages composer. You review the text and tap Send. Nothing is sent until you do.
           </p>
           <p>The app is ad-free. It does not use advertising identifiers and it does not track you across other companies’ apps or websites.</p>
         </div>
