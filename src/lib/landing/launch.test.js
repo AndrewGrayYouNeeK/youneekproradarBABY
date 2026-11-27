@@ -77,3 +77,13 @@ test("landing page is bare minimum: try the radar, get the app, privacy and supp
   assert.match(link, /Coming soon/);
   assert.equal(link.includes("#waitlist"), false);
 });
+
+test("the site has only the minimal landing, privacy, support, and locked pages", () => {
+  const app = readFileSync(new URL("../../App.jsx", import.meta.url), "utf8");
+  for (const page of ["Forecast", "Hourly", "Daily", "Radio", "Globe", "Contacts", "Settings", "Radar\""]) {
+    assert.equal(app.includes(`import("./pages/${page.replace('"', "")}")`), false, page);
+  }
+  assert.match(app, /<Route path="\/Radar" element={<RadarPreviewRedirect \/>} \/>/);
+  assert.match(app, /LOCKED_PATHS = \["\/Forecast", "\/Hourly", "\/Daily", "\/Radio", "\/Globe", "\/Contacts", "\/Settings"\]/);
+  assert.match(app, /window\.location\.replace\(RADAR_APP_URL\)/);
+});
