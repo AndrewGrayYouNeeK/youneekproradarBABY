@@ -150,3 +150,5 @@ export function supportHref(contact = SUPPORT_CONTACT) {
   if (value.includes("@") && !value.includes(" ")) return `mailto:${value}`;
   return "#support";
 }
+
+export const COPYRIGHT_LINE = "YouNeeK™ · © 2026 Andrew Gray";

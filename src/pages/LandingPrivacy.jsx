@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { SUPPORT_CONTACT, YOUNEEK_HOME_URL, supportHref } from "@/lib/landing/launch";
+import CopyrightLine from "@/components/landing/CopyrightLine";
 
 export default function LandingPrivacy() {
   return (
@@ -73,6 +74,9 @@ export default function LandingPrivacy() {
           </a>
         </p>
       </main>
+      <footer className="px-4 pb-8 text-center">
+        <CopyrightLine />
+      </footer>
     </div>
   );
 }

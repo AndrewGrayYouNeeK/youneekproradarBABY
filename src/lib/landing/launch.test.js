@@ -87,3 +87,12 @@ test("the site has only the minimal landing, privacy, support, and locked pages"
   assert.match(app, /LOCKED_PATHS = \["\/Forecast", "\/Hourly", "\/Daily", "\/Radio", "\/Globe", "\/Contacts", "\/Settings"\]/);
   assert.match(app, /window\.location\.replace\(RADAR_APP_URL\)/);
 });
+
+test("every youneekproradar.com page footer carries the trademark and copyright line", async () => {
+  const { COPYRIGHT_LINE } = await import("./launch.js");
+  assert.equal(COPYRIGHT_LINE, "YouNeeK™ · © 2026 Andrew Gray");
+  for (const page of ["Landing", "LandingPrivacy", "LandingSupport"]) {
+    const source = readFileSync(new URL(`../../pages/${page}.jsx`, import.meta.url), "utf8");
+    assert.match(source, /<footer[\s\S]*<CopyrightLine[\s\S]*<\/footer>/, page);
+  }
+});
