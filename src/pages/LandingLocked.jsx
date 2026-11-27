@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import AppDownloadLink from "@/components/landing/AppDownloadLink";
+import CopyrightLine from "@/components/landing/CopyrightLine";
 import { RADAR_APP_URL } from "@/lib/landing/radarApp";
 
 /** Every former web-app page on youneekproradar.com. The features are in the paid app. */
@@ -32,6 +33,9 @@ export default function LandingLocked() {
       <Link to="/" className="mt-6 text-sm text-[#00ff9c] underline-offset-4 hover:underline">
         Back to YouNeeK Pro Radar
       </Link>
+      <footer className="mt-10">
+        <CopyrightLine />
+      </footer>
     </div>
   );
 }

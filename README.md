@@ -46,3 +46,7 @@ No API keys required — uses Iowa Mesonet public tiles and NWS public GeoJSON e
 ## Built By
 
 Andrew Gray — YouNeeK
+
+---
+
+YouNeeK™ · © 2026 Andrew Gray

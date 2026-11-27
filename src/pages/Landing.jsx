@@ -1,4 +1,5 @@
 import AppDownloadLink from "@/components/landing/AppDownloadLink";
+import CopyrightLine from "@/components/landing/CopyrightLine";
 import RadarSweep from "@/components/landing/RadarSweep";
 import { APP_ADDS_LINE, APP_COMING_SOON, MINIMAL_TAGLINE, appDownloadIsLive } from "@/lib/landing/launch";
 import { RADAR_APP_URL } from "@/lib/landing/radarApp";
@@ -45,6 +46,7 @@ export default function Landing() {
             Support
           </a>
         </nav>
+        <CopyrightLine className="mt-2" />
       </footer>
     </div>
   );
