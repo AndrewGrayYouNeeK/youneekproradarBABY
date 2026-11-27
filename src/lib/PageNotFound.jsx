@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import CopyrightLine from "@/components/landing/CopyrightLine";
 
 export default function PageNotFound() {
   const location = useLocation();
@@ -24,6 +25,9 @@ export default function PageNotFound() {
             Back to welcome
           </Link>
         </div>
+        <footer className="mt-10">
+          <CopyrightLine />
+        </footer>
       </div>
     </div>
   );
