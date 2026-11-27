@@ -8,19 +8,21 @@ import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider } from "@/lib/AuthContext";
 import { NavigationStackProvider } from "@/lib/NavigationStack";
 import { RadioProvider } from "@/lib/RadioContext";
+import { RADAR_APP_URL } from "@/lib/landing/radarApp";
 
-const Radar = lazy(() => import("./pages/Radar"));
-const Contacts = lazy(() => import("./pages/Contacts"));
-const Settings = lazy(() => import("./pages/Settings"));
-const Forecast = lazy(() => import("./pages/Forecast"));
-const Hourly = lazy(() => import("./pages/Hourly"));
-const Daily = lazy(() => import("./pages/Daily"));
-const RadioPage = lazy(() => import("./pages/Radio"));
-const Globe = lazy(() => import("./pages/Globe"));
 const Landing = lazy(() => import("./pages/Landing"));
 const LandingPrivacy = lazy(() => import("./pages/LandingPrivacy"));
 const LandingSupport = lazy(() => import("./pages/LandingSupport"));
-const Privacy = lazy(() => import("./pages/Privacy"));
+const LandingLocked = lazy(() => import("./pages/LandingLocked"));
+
+/** The web radar preview lives on the radar Worker. Old /Radar links go there. */
+function RadarPreviewRedirect() {
+  if (typeof window !== "undefined") window.location.replace(RADAR_APP_URL);
+  return null;
+}
+
+/** Former web-app pages. Their features are app-only now. */
+const LOCKED_PATHS = ["/Forecast", "/Hourly", "/Daily", "/Radio", "/Globe", "/Contacts", "/Settings"];
 
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center bg-[#4DA6EA]">
@@ -28,8 +30,9 @@ const Spinner = () => (
   </div>
 );
 
-function isLandingPath(pathname) {
-  return pathname === "/" || pathname === "/landing" || pathname === "/privacy" || pathname === "/support";
+function isLandingPath() {
+  // Every page on this site is a dark landing-style page now.
+  return true;
 }
 
 const AppRoutes = () => {
@@ -51,17 +54,12 @@ const AppRoutes = () => {
             <Routes location={location}>
               <Route path="/" element={<Landing />} />
               <Route path="/landing" element={<Landing />} />
-              <Route path="/Radar" element={<Radar />} />
-              <Route path="/Forecast" element={<Forecast />} />
-              <Route path="/Hourly" element={<Hourly />} />
-              <Route path="/Daily" element={<Daily />} />
-              <Route path="/Radio" element={<RadioPage />} />
-              <Route path="/Globe" element={<Globe />} />
-              <Route path="/Contacts" element={<Contacts />} />
-              <Route path="/Settings" element={<Settings />} />
               <Route path="/privacy" element={<LandingPrivacy />} />
               <Route path="/support" element={<LandingSupport />} />
-              <Route path="/Privacy" element={<Privacy />} />
+              <Route path="/Radar" element={<RadarPreviewRedirect />} />
+              {LOCKED_PATHS.map((path) => (
+                <Route key={path} path={path} element={<LandingLocked />} />
+              ))}
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>
